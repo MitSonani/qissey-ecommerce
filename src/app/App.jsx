@@ -15,6 +15,7 @@ import Footer from '../layouts/Footer';
 import { CartProvider, CartDrawer } from '../features/cart';
 import { AuthProvider, ProtectedRoute } from '../features/auth';
 import PageLoader from '../components/ui/PageLoader';
+import PageTitle from '../components/ui/PageTitle';
 import './styles/App.css';
 
 function MainLayout({ children }) {
@@ -36,6 +37,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <Router>
+          <PageTitle />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<MainLayout><Home /></MainLayout>} />

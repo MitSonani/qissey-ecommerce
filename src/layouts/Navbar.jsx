@@ -44,8 +44,15 @@ export default function Navbar() {
                         <Menu size={24} />
                     </button>
 
-                    <Link to="/" className="text-2xl font-display font-black uppercase tracking-tighter">
-                        QISSEY
+                    <Link to="/" className="flex items-center">
+                        <img
+                            src="/logo.webp"
+                            alt="QISSEY"
+                            className={cn(
+                                "h-10 md:h-14 w-auto object-contain transition-all duration-500",
+                                (isScrolled || !isHome) && "brightness-0"
+                            )}
+                        />
                     </Link>
 
                     <div className="hidden md:flex gap-8">

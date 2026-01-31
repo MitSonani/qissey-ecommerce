@@ -10,9 +10,9 @@ export default function Footer() {
             <div className="container">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
                     <div className="lg:col-span-5">
-                        <h2 className="text-4xl font-display font-black uppercase tracking-tighter mb-8 italic">
-                            QISSEY
-                        </h2>
+                        <Link to="/" className="block mb-8">
+                            <img src="/logo.webp" alt="QISSEY" className="h-16 w-auto" />
+                        </Link>
                         <p className="text-white/40 text-sm max-w-sm leading-relaxed mb-12">
                             WE ARE A CREATIVE STUDIO FOCUSING ON THE INTERSECTION OF DESIGN, CULTURE, AND SUSTAINABLE MATERIALITY.
                         </p>

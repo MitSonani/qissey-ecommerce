@@ -23,9 +23,7 @@ const PageLoader = () => {
                     }}
                     className="flex flex-col items-center"
                 >
-                    <span className="text-[14px] font-display font-black uppercase tracking-[0.8em] text-brand-charcoal mb-6 ml-[0.8em]">
-                        QISSEY
-                    </span>
+                    <img src="/logo.webp" alt="QISSEY" className="h-16 md:h-20 w-auto object-contain mb-8 brightness-0" />
 
                     {/* Minimal Progress Trace */}
                     <div className="w-24 h-[1px] bg-brand-charcoal/5 relative overflow-hidden">

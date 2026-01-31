@@ -11,6 +11,7 @@ import { AuthProvider } from './context/AuthContext';
 import Auth from './pages/Auth';
 import Account from './pages/Account';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import NotFound from './pages/NotFound';
 
 function MainLayout({ children }) {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
             </Route>
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </CartProvider>

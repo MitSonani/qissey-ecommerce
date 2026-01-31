@@ -14,14 +14,8 @@ import Navbar from '../layouts/Navbar';
 import Footer from '../layouts/Footer';
 import { CartProvider, CartDrawer } from '../features/cart';
 import { AuthProvider, ProtectedRoute } from '../features/auth';
+import PageLoader from '../components/ui/PageLoader';
 import './styles/App.css';
-
-// Loading fallback component
-const PageLoader = () => (
-  <div className="h-screen w-full flex items-center justify-center bg-white">
-    <div className="text-[10px] uppercase font-bold tracking-[0.4em] animate-pulse">Loading...</div>
-  </div>
-);
 
 function MainLayout({ children }) {
   return (

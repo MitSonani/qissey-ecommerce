@@ -11,7 +11,7 @@ export default function Footer() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
                     <div className="lg:col-span-5">
                         <h2 className="text-4xl font-display font-black uppercase tracking-tighter mb-8 italic">
-                            AESTHETIC<span className="font-light not-italic">™</span>
+                            QISSEY
                         </h2>
                         <p className="text-white/40 text-sm max-w-sm leading-relaxed mb-12">
                             WE ARE A CREATIVE STUDIO FOCUSING ON THE INTERSECTION OF DESIGN, CULTURE, AND SUSTAINABLE MATERIALITY.
@@ -63,7 +63,7 @@ export default function Footer() {
 
                 <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-white/5 gap-8">
                     <p className="text-[9px] uppercase font-bold tracking-[0.3em] text-white/20">
-                        © {currentYear} AESTHETIC™ STUDIO. ALL RIGHTS RESERVED.
+                        © {currentYear} QISSEY STUDIO. ALL RIGHTS RESERVED.
                     </p>
                     <div className="flex gap-8 text-[9px] uppercase font-bold tracking-[0.3em] text-white/20">
                         <a href="#" className="hover:text-white transition-colors">Privacy</a>

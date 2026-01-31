@@ -7,26 +7,42 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import CartDrawer from './components/cart/CartDrawer';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
+import Auth from './pages/Auth';
+import Account from './pages/Account';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+
+function MainLayout({ children }) {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-grow">
+        {children}
+      </main>
+      <Footer />
+      <CartDrawer />
+      <Toaster position="bottom-right" expand={false} richColors />
+    </div>
+  );
+}
 
 function App() {
   return (
-    <CartProvider>
-      <Router>
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-            </Routes>
-          </main>
-          <Footer />
-          <CartDrawer />
-          <Toaster position="bottom-right" expand={false} richColors />
-        </div>
-      </Router>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+            <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
+            <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
+            <Route path="/auth" element={<Auth />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
+            </Route>
+          </Routes>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

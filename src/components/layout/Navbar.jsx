@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, X, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, ChevronRight, User } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import { cn } from '../ui/Primitives';
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { cart, setIsCartOpen } = useCart();
+    const { user, isAuthenticated } = useAuth();
     const location = useLocation();
     const isHome = location.pathname === '/';
 
@@ -43,7 +45,7 @@ export default function Navbar() {
                     </button>
 
                     <Link to="/" className="text-2xl font-display font-black uppercase tracking-tighter">
-                        AESTHETIC<span className="font-light">™</span>
+                        QISSEY
                     </Link>
 
                     <div className="hidden md:flex gap-8">
@@ -63,6 +65,16 @@ export default function Navbar() {
                     <button className="opacity-70 hover:opacity-100 transition-opacity hidden md:block">
                         <Search size={20} strokeWidth={1.5} />
                     </button>
+
+                    <Link
+                        to={isAuthenticated ? "/account" : "/auth"}
+                        className="flex items-center gap-2 group opacity-70 hover:opacity-100 transition-opacity"
+                    >
+                        <User size={20} strokeWidth={1.5} />
+                        <span className="text-[11px] font-bold uppercase tracking-widest hidden lg:block">
+                            {isAuthenticated ? user.name : "Login"}
+                        </span>
+                    </Link>
 
                     <button
                         className="relative flex items-center gap-2 group"

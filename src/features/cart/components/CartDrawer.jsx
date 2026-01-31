@@ -1,6 +1,6 @@
 import { ShoppingCart, Plus, Minus, X } from 'lucide-react';
-import { useCart } from '../../context/CartContext';
-import { Button, cn } from '../ui/Primitives';
+import { useCart } from '../store/CartContext';
+import { Button, cn } from '../../../components/ui/Primitives';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CartDrawer() {

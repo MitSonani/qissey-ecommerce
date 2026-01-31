@@ -1,4 +1,4 @@
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../features/auth';
 import { Button } from '../components/ui/Primitives';
 import { User, Package, Settings, LogOut, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';

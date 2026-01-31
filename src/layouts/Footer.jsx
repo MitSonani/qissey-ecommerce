@@ -1,6 +1,6 @@
 import { Instagram, Twitter, Facebook, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button } from '../ui/Primitives';
+import { Button } from '../components/ui/Primitives';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();

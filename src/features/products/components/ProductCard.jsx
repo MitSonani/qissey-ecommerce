@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Plus } from 'lucide-react';
-import { useCart } from '../../context/CartContext';
-import { Badge, cn } from '../ui/Primitives';
+import { useCart } from '../../../features/cart';
+import { Badge, cn } from '../../../components/ui/Primitives';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 

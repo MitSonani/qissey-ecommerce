@@ -1,8 +1,7 @@
 import { ArrowRight, Play, Volume2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { products } from '../data/products';
-import ProductCard from '../components/product/ProductCard';
+import { products, ProductCard } from '../features/products';
 import { Button } from '../components/ui/Primitives';
 
 export default function Home() {

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { products } from '../data/products';
+import { products } from '../services/productService';
 
 export function useProducts() {
     const [category, setCategory] = useState('All');

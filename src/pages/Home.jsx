@@ -10,8 +10,19 @@ export default function Home() {
     return (
         <div className="relative overflow-hidden">
             {/* Hero Section */}
-            <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-white">
-                <div className="relative z-10 text-center text-black px-4 max-w-5xl">
+            <section className="relative min-h-[90vh] md:h-screen w-full flex flex-col md:items-center md:justify-center overflow-hidden bg-white">
+                {/* Mobile Branding Logo (Zara Style - Tightened Space) */}
+                <div className="block md:hidden pt-20 pb-4 flex justify-center px-6">
+                    <Link to="/" className="w-full max-w-[320px]">
+                        <img
+                            src="/logo.PNG"
+                            alt="QISSEY"
+                            className="w-full h-auto object-contain filter invert"
+                        />
+                    </Link>
+                </div>
+
+                <div className="relative z-10 text-center text-black px-4 max-w-5xl mt-6 md:mt-0">
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}

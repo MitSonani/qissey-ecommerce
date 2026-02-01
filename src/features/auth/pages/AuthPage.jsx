@@ -87,7 +87,7 @@ export default function Auth() {
                 <header className="fixed top-0 w-full z-50 px-6 md:px-12 h-20 flex items-center justify-between pointer-events-none">
                     <div className="flex items-center gap-8 pointer-events-auto">
                         <Link to="/" className="block -ml-3">
-                            <img src="/logo.webp" alt="QISSEY" className="h-20 w-auto brightness-0" />
+                            <img src="/logo.PNG" alt="QISSEY" className="h-20 w-auto brightness-0" />
                         </Link>
                     </div>
 
@@ -115,9 +115,9 @@ export default function Auth() {
                         <div className="w-full lg:w-1/2 p-10 md:px-20 md:pb-20 md:pt-10 flex flex-col justify-center">
                             <div className="max-w-sm w-full mx-auto lg:ml-0">
                                 {/* Logo for Login Page */}
-                                <div className="mb-10 flex items-center justify-between lg:justify-start lg:gap-1">
-                                    <Link to="/" className="block -ml-5">
-                                        <img src="/logo.webp" alt="QISSEY" className="h-20 w-auto brightness-0" />
+                                <div className="mb-10 ">
+                                    <Link to="/" className="block">
+                                        <img src="/logo.PNG" alt="QISSEY" className="h-20 w-auto brightness-0" />
                                     </Link>
                                 </div>
                                 <h2 className="text-[16px] uppercase font-bold tracking-[0.1em] mb-10">Log In</h2>

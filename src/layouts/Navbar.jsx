@@ -21,22 +21,6 @@ export default function Navbar() {
                 )}
             >
                 <div className="flex items-center w-full h-16 md:h-32">
-                    {/* Mobile Utils (Log In, Search, Bag) */}
-                    <div className={cn(
-                        "flex md:hidden items-center gap-4 ml-auto transition-opacity duration-300",
-                        isMobileMenuOpen ? "opacity-0 invisible" : "opacity-100 visible"
-                    )}>
-                        <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
-                        <button className="p-1"><Search size={18} strokeWidth={1.5} className="text-black" /></button>
-                        <button onClick={() => setIsCartOpen(true)} className="p-1 relative">
-                            <ShoppingBag size={18} strokeWidth={1.5} className="text-black" />
-                            {cart.length > 0 && (
-                                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[12px] h-3 text-[8px] font-bold bg-black text-white rounded-full px-0.5">
-                                    {cart.reduce((acc, item) => acc + item.quantity, 0)}
-                                </span>
-                            )}
-                        </button>
-                    </div>
 
                     {/* Desktop Utils (Search, Log In, Help, Bag) */}
                     <div className="hidden md:flex items-center w-full h-full">
@@ -75,10 +59,9 @@ export default function Navbar() {
                 </div>
             </nav>
 
-            {/* Top Layer: Logo and Menu Toggle (Interactive on top of overlay) */}
+            {/* Top Layer: Logo, Menu Toggle and Mobile Utilities (Interactive on top of overlay) */}
             <div className="fixed top-0 w-full z-[130] flex items-center px-6 md:px-12 h-16 md:h-32 pointer-events-none">
-                {/* Mobile/Desktop Combined Toggle & Logo */}
-                <div className="flex items-center w-full h-full">
+                <div className="flex items-center w-full h-full relative">
                     {/* Menu Toggle */}
                     <div className="flex-none pointer-events-auto">
                         <button
@@ -102,10 +85,13 @@ export default function Navbar() {
                         </button>
                     </div>
 
-                    {/* Logo */}
-                    <div className="flex-none ml-4 md:ml-10 pointer-events-auto">
+                    {/* Logo (Desktop only - Left-Center on Desktop) */}
+                    <div className={cn(
+                        "hidden md:block flex-none pointer-events-auto transition-all duration-500",
+                        "md:relative md:left-0 md:translate-x-0 md:ml-10"
+                    )}>
                         <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-                            <div className="relative top-4 w-[140px] md:w-[211.44px] h-[50px] md:h-[120px]">
+                            <div className="relative top-4 w-[211.44px] h-[120px]">
                                 <img
                                     src="/logo.PNG"
                                     alt="QISSEY"
@@ -114,6 +100,22 @@ export default function Navbar() {
                                 />
                             </div>
                         </Link>
+                    </div>
+
+                    {/* Mobile Header Utils (Log In, Search, Bag) - Far Right, Always on top on mobile */}
+                    <div className={cn(
+                        "flex md:hidden items-center gap-4 ml-auto transition-opacity duration-300 pointer-events-auto",
+                    )}>
+                        <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
+                        <button className="p-1"><Search size={18} strokeWidth={1.5} className="text-black" /></button>
+                        <button onClick={() => setIsCartOpen(true)} className="p-1 relative">
+                            <ShoppingBag size={18} strokeWidth={1.5} className="text-black" />
+                            {cart.length > 0 && (
+                                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[12px] h-3 text-[8px] font-bold bg-black text-white rounded-full px-0.5">
+                                    {cart.reduce((acc, item) => acc + item.quantity, 0)}
+                                </span>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -133,18 +135,11 @@ export default function Navbar() {
                 "duration-700 md:duration-500 md:ease-in-out",
                 isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             )}>
-                {/* Mobile Menu Header (Utils - Hidden on desktop to let main navbar show through) */}
-                <div className="flex items-center justify-between h-16 px-6 shrink-0 md:hidden">
+                {/* Mobile Menu Header (Cleaned up: only Close icon) */}
+                <div className="flex items-center h-16 px-6 shrink-0 md:hidden">
                     <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 -ml-2">
                         <X size={24} strokeWidth={1} className="text-black" />
                     </button>
-                    <div className="flex items-center gap-6">
-                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
-                        <button className="p-1"><Search size={18} strokeWidth={1} className="text-black" /></button>
-                        <button onClick={() => { setIsMobileMenuOpen(false); setIsCartOpen(true); }} className="p-1">
-                            <ShoppingBag size={18} strokeWidth={1} className="text-black" />
-                        </button>
-                    </div>
                 </div>
 
                 {/* Mobile Menu Content (Scrollable - zara style for mobile) */}

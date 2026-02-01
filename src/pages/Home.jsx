@@ -10,22 +10,13 @@ export default function Home() {
     return (
         <div className="relative overflow-hidden">
             {/* Hero Section */}
-            <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-brand-charcoal">
-                <div className="absolute inset-0 z-0">
-                    <img
-                        src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2000&auto=format&fit=crop"
-                        alt="Hero Background"
-                        className="w-full h-full object-cover opacity-50 scale-105 animate-[pulse_10s_ease-in-out_infinite]"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
-                </div>
-
-                <div className="relative z-10 text-center text-white px-4 max-w-5xl">
+            <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-white">
+                <div className="relative z-10 text-center text-black px-4 max-w-5xl">
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="text-[10px] md:text-[12px] uppercase font-bold tracking-[0.4em] mb-6"
+                        className="text-[10px] md:text-[12px] uppercase font-bold tracking-[0.4em] mb-6 text-black/60"
                     >
                         Spring Summer 2026 Collection
                     </motion.p>
@@ -33,7 +24,7 @@ export default function Home() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1, delay: 0.2 }}
-                        className="text-6xl md:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter mb-12 drop-shadow-2xl"
+                        className="text-6xl md:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter mb-12"
                     >
                         RAW<br />MINIMAL
                     </motion.h1>
@@ -43,22 +34,12 @@ export default function Home() {
                         transition={{ duration: 0.8, delay: 0.4 }}
                     >
                         <Link to="/shop">
-                            <Button size="lg" className="bg-white text-black hover:bg-brand-gray px-12 group">
+                            <Button size="lg" className="bg-black text-white hover:bg-black/80 px-12 group rounded-none border-none">
                                 Shop Collection
                                 <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
                             </Button>
                         </Link>
                     </motion.div>
-                </div>
-
-                {/* Hero Bottom Controls */}
-                <div className="absolute bottom-12 left-12 hidden lg:flex items-center gap-6 text-white/40 text-[10px] font-bold uppercase tracking-widest">
-                    <span className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
-                        <Play size={14} fill="currentColor" /> Play Film
-                    </span>
-                    <span className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors">
-                        <Volume2 size={14} /> Mute
-                    </span>
                 </div>
             </section>
 
@@ -115,12 +96,12 @@ export default function Home() {
             </section>
 
             {/* Brands Philosophy */}
-            <section className="py-40 bg-brand-gray flex flex-col items-center justify-center text-center px-6">
+            <section className="py-40 bg-white border-t border-black/5 flex flex-col items-center justify-center text-center px-6">
                 <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight max-w-4xl leading-tight mb-12">
                     WE BELIEVE IN CLOTHING THAT CELEBRATES THE INDIVIDUAL THROUGH REFINED MATERIALITY AND MINIMAL DESIGN.
                 </h2>
                 <Link to="/about">
-                    <Button variant="outline" className="px-16">Our Philosophy</Button>
+                    <Button variant="outline" className="px-16 border-black text-black hover:bg-black hover:text-white transition-colors">Our Philosophy</Button>
                 </Link>
             </section>
         </div>

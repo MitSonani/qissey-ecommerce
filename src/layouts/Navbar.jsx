@@ -25,12 +25,15 @@ export default function Navbar() {
         <>
             <nav
                 className={cn(
-                    "fixed top-0 w-full z-[110] transition-all duration-500 flex flex-col px-6 md:px-12",
-                    isScrolled || !isHome ? "bg-white" : "bg-transparent"
+                    "fixed top-0 w-full z-[130] transition-all duration-500 flex flex-col px-6 md:px-12",
+                    // !isHome ? "bg-white" : "bg-transparent"
                 )}
             >
                 {/* Mobile Layout (Visible only on mobile) */}
-                <div className="flex flex-col w-full md:hidden">
+                <div className={cn(
+                    "flex flex-col w-full md:hidden transition-opacity duration-300",
+                    isMobileMenuOpen ? "opacity-0 invisible pointer-events-none" : "opacity-100 visible"
+                )}>
                     {/* Mobile Row 1: Utils */}
                     <div className="flex items-center justify-between h-16">
                         <div className="flex-none">
@@ -70,15 +73,23 @@ export default function Navbar() {
                     {/* Mobile Row 2: Logo */}
                     <div className="flex justify-center pb-6">
                         <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-                            <span className="font-display text-[54px] font-black tracking-[-0.18em] uppercase leading-none select-none text-black">
-                                Qissey
-                            </span>
+                            <div className="relative w-[211.44px] h-[120px]">
+                                <img
+                                    src="/logo.PNG"
+                                    alt="QISSEY"
+                                    style={{ width: '211.44px', height: '120px', filter: 'invert(1)', objectFit: 'contain' }}
+                                    className="absolute left-1/2 -translate-x-1/2 top-4"
+                                />
+                            </div>
                         </Link>
                     </div>
                 </div>
 
                 {/* Desktop Layout (Visible only on md screens and up) */}
-                <div className="hidden md:flex items-center w-full h-24">
+                <div className={cn(
+                    "hidden md:flex items-center w-full h-32 transition-opacity duration-300",
+                    "opacity-100 visible"
+                )}>
                     {/* Left: Menu */}
                     <div className="flex-none">
                         <button
@@ -105,9 +116,14 @@ export default function Navbar() {
                     {/* Left-Center: Logo */}
                     <div className="flex-none ml-10">
                         <Link to="/" className="flex items-center">
-                            <span className="font-display text-4xl md:text-5xl font-black tracking-[-0.15em] uppercase leading-none select-none text-black">
-                                Qissey
-                            </span>
+                            <div className="relative w-[211.44px] h-[120px]">
+                                <img
+                                    src="/logo.PNG"
+                                    alt="QISSEY"
+                                    style={{ width: '211.44px', height: '120px', filter: 'invert(1)', objectFit: 'contain' }}
+                                    className="absolute left-0 top-4"
+                                />
+                            </div>
                         </Link>
                     </div>
 
@@ -129,20 +145,20 @@ export default function Navbar() {
                             <>
                                 <Link
                                     to={isAuthenticated ? "/account" : "/auth"}
-                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-inherit"
+                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black"
                                 >
                                     {isAuthenticated ? user.name : "Log In"}
                                 </Link>
 
                                 <Link
                                     to="/help"
-                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-inherit"
+                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black"
                                 >
                                     Help
                                 </Link>
 
                                 <button
-                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-100 whitespace-nowrap text-inherit"
+                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-100 whitespace-nowrap text-black"
                                     onClick={() => setIsCartOpen(true)}
                                 >
                                     Shopping Bag ({cart.reduce((acc, item) => acc + item.quantity, 0)})
@@ -153,22 +169,100 @@ export default function Navbar() {
                 </div>
             </nav>
 
-            {/* Mobile Menu */}
             <div className={cn(
-                "fixed inset-0 z-[100] bg-white transition-transform duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] md:w-[400px]",
+                "fixed inset-0 z-[120] bg-white md:bg-white/70 md:backdrop-blur-xl flex flex-col md:w-1/2",
+                "transition-transform ease-[cubic-bezier(0.85,0,0.15,1)]",
+                "duration-700 md:duration-500 md:ease-in-out",
                 isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             )}>
-                <div className="flex items-center justify-between h-24 px-6 md:px-12 border-b border-black/5">
-                    {/* Header cleared to let the Navbar's "X" show through */}
+                {/* Mobile Menu Header (Utils - Hidden on desktop to let main navbar show through) */}
+                <div className="flex items-center justify-between h-16 px-6 shrink-0 md:hidden">
+                    <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 -ml-2">
+                        <X size={24} strokeWidth={1} className="text-black" />
+                    </button>
+                    <div className="flex items-center gap-6">
+                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
+                        <button className="p-1"><Search size={18} strokeWidth={1} className="text-black" /></button>
+                        <button onClick={() => { setIsMobileMenuOpen(false); setIsCartOpen(true); }} className="p-1">
+                            <ShoppingBag size={18} strokeWidth={1} className="text-black" />
+                        </button>
+                    </div>
                 </div>
-                <div className="p-10 flex flex-col gap-6">
+
+                {/* Mobile Menu Content (Scrollable - zara style for mobile) */}
+                <div className="flex-grow overflow-y-auto no-scrollbar md:hidden">
+                    {/* Category Row (Horizontal Scroll) */}
+                    <div className="flex overflow-x-auto no-scrollbar px-6 mb-12 border-b border-black/5">
+                        {['WOMAN', 'MAN', 'KIDS', 'PERFUMES', 'TRAVEL MODE'].map((cat, i) => (
+                            <button key={cat} className={cn(
+                                "flex-none py-4 text-[11px] font-bold tracking-widest uppercase mr-6 transition-opacity",
+                                i === 0 ? "opacity-100 border-b-2 border-black" : "opacity-40"
+                            )}>
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="px-6 pb-20">
+                        {/* Featured Section */}
+                        <div className="mb-12">
+                            <div className="flex items-center justify-between mb-8">
+                                <span className="text-[11px] font-bold uppercase tracking-widest">New Collection</span>
+                                <div className="w-4 h-px bg-black opacity-20" />
+                            </div>
+
+                            {/* Promo Grid */}
+                            <div className="grid grid-cols-3 gap-3 mb-12">
+                                {[
+                                    { name: 'THE ITEM', img: 'https://images.unsplash.com/photo-1539109132314-34a77bc70fe2?q=80&w=400&auto=format&fit=crop' },
+                                    { name: 'THE NEW', img: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop' },
+                                    { name: 'KNITWEAR', img: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=400&auto=format&fit=crop' }
+                                ].map((item) => (
+                                    <Link key={item.name} to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col gap-2">
+                                        <div className="aspect-[3/4] overflow-hidden bg-gray-100">
+                                            <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                                        </div>
+                                        <span className="text-[8px] font-bold uppercase tracking-tight opacity-60">{item.name}</span>
+                                    </Link>
+                                ))}
+                            </div>
+
+                            {/* Dense List Links */}
+                            <div className="flex flex-col gap-2 mb-12">
+                                <Link to="/shop?filter=new" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">The New</Link>
+                                <Link to="/shop?filter=essentials" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">The Item</Link>
+                                <Link to="/shop?filter=ski" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">Ski Collection</Link>
+                            </div>
+                        </div>
+
+                        {/* Category List */}
+                        <div className="flex flex-col gap-4 mb-12">
+                            {['JACKETS', 'COATS', 'BLAZERS', 'KNITWEAR', 'CARDIGANS | JUMPERS', 'T-SHIRTS', 'TOPS', 'SHIRTS', 'JEANS', 'TROUSERS', 'DRESSES', 'LEATHER'].map((cat) => (
+                                <Link key={cat} to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity">
+                                    {cat}
+                                </Link>
+                            ))}
+                        </div>
+
+                        {/* Bottom Links */}
+                        <div className="flex flex-col gap-4 pt-12 border-t border-black/5">
+                            <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">My Account</Link>
+                            <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Contact Us</Link>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Desktop Menu Content (Original Minimalist Style) */}
+                <div className="hidden md:flex flex-col gap-6 p-12 pt-48 flex-grow overflow-y-auto">
                     <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Shop All</Link>
                     <Link to="/shop?filter=new" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">New</Link>
                     <Link to="/shop?filter=woman" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Woman</Link>
                     <Link to="/shop?filter=man" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Man</Link>
-                    <div className="h-px bg-black/10 my-4" />
-                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">My Account</Link>
-                    <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
+
+                    <div className="mt-auto flex flex-col gap-4 pt-10 border-t border-black/5">
+                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">My Account</Link>
+                        <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
+                    </div>
                 </div>
             </div>
         </>

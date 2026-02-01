@@ -6,25 +6,25 @@ export default function Footer() {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-brand-charcoal text-white pt-32 pb-12 px-6 md:px-12">
+        <footer className="bg-white text-black pt-32 pb-12 px-6 md:px-12 border-t border-black/5">
             <div className="container">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
                     <div className="lg:col-span-5">
                         <Link to="/" className="block mb-8">
-                            <img src="/logo.webp" alt="QISSEY" className="h-16 w-auto" />
+                            <img src="/logo.PNG" alt="QISSEY" className="h-16 w-auto" style={{ filter: 'invert(1)' }} />
                         </Link>
-                        <p className="text-white/40 text-sm max-w-sm leading-relaxed mb-12">
+                        <p className="text-black/40 text-sm max-w-sm leading-relaxed mb-12">
                             WE ARE A CREATIVE STUDIO FOCUSING ON THE INTERSECTION OF DESIGN, CULTURE, AND SUSTAINABLE MATERIALITY.
                         </p>
                         <div className="flex gap-6">
-                            <a href="#" className="hover:text-white/60 transition-colors"><Instagram size={20} /></a>
-                            <a href="#" className="hover:text-white/60 transition-colors"><Twitter size={20} /></a>
-                            <a href="#" className="hover:text-white/60 transition-colors"><Facebook size={20} /></a>
+                            <a href="#" className="hover:text-black/60 transition-colors"><Instagram size={20} /></a>
+                            <a href="#" className="hover:text-black/60 transition-colors"><Twitter size={20} /></a>
+                            <a href="#" className="hover:text-black/60 transition-colors"><Facebook size={20} /></a>
                         </div>
                     </div>
 
                     <div className="lg:col-span-2 space-y-8">
-                        <h3 className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/30">Connect</h3>
+                        <h3 className="text-[10px] uppercase font-bold tracking-[0.3em] text-black/30">Connect</h3>
                         <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
                             <li><Link to="/shop" className="hover:opacity-50 transition-opacity">Archive</Link></li>
                             <li><a href="#" className="hover:opacity-50 transition-opacity">Journal</a></li>
@@ -34,7 +34,7 @@ export default function Footer() {
                     </div>
 
                     <div className="lg:col-span-2 space-y-8">
-                        <h3 className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/30">Service</h3>
+                        <h3 className="text-[10px] uppercase font-bold tracking-[0.3em] text-black/30">Service</h3>
                         <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
                             <li><a href="#" className="hover:opacity-50 transition-opacity">Shipping</a></li>
                             <li><a href="#" className="hover:opacity-50 transition-opacity">Returns</a></li>
@@ -44,31 +44,31 @@ export default function Footer() {
                     </div>
 
                     <div className="lg:col-span-3 space-y-8">
-                        <h3 className="text-[10px] uppercase font-bold tracking-[0.3em] text-white/30">Bulletin</h3>
-                        <div className="relative border-b border-white/10 pb-4 group">
+                        <h3 className="text-[10px] uppercase font-bold tracking-[0.3em] text-black/30">Bulletin</h3>
+                        <div className="relative border-b border-black/10 pb-4 group">
                             <input
                                 type="email"
                                 placeholder="EMAIL ADDRESS"
-                                className="bg-transparent w-full outline-none text-[10px] font-bold tracking-widest placeholder:text-white/20"
+                                className="bg-transparent w-full outline-none text-[10px] font-bold tracking-widest placeholder:text-black/20"
                             />
                             <button className="absolute right-0 top-0 hover:translate-x-1 transition-transform">
                                 <ArrowRight size={16} />
                             </button>
                         </div>
-                        <p className="text-[9px] text-white/20 uppercase tracking-widest leading-loose">
+                        <p className="text-[9px] text-black/20 uppercase tracking-widest leading-loose">
                             By subscribing, you agree to our Privacy Policy and consent to receive updates.
                         </p>
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-white/5 gap-8">
-                    <p className="text-[9px] uppercase font-bold tracking-[0.3em] text-white/20">
+                <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-black/5 gap-8">
+                    <p className="text-[9px] uppercase font-bold tracking-[0.3em] text-black/20">
                         © {currentYear} QISSEY STUDIO. ALL RIGHTS RESERVED.
                     </p>
-                    <div className="flex gap-8 text-[9px] uppercase font-bold tracking-[0.3em] text-white/20">
-                        <a href="#" className="hover:text-white transition-colors">Privacy</a>
-                        <a href="#" className="hover:text-white transition-colors">Terms</a>
-                        <a href="#" className="hover:text-white transition-colors">Accessibility</a>
+                    <div className="flex gap-8 text-[9px] uppercase font-bold tracking-[0.3em] text-black/20">
+                        <a href="#" className="hover:text-black transition-colors">Privacy</a>
+                        <a href="#" className="hover:text-black transition-colors">Terms</a>
+                        <a href="#" className="hover:text-black transition-colors">Accessibility</a>
                     </div>
                 </div>
             </div>

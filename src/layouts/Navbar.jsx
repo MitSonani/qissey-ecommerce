@@ -6,171 +6,129 @@ import { useAuth } from '../features/auth';
 import { cn } from '../components/ui/Primitives';
 
 export default function Navbar() {
-    const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { cart, setIsCartOpen } = useCart();
     const { user, isAuthenticated } = useAuth();
     const location = useLocation();
     const isHome = location.pathname === '/';
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
     return (
         <>
+            {/* Bottom Layer: Search and Actions (Treated as page content for overlay) */}
             <nav
                 className={cn(
-                    "fixed top-0 w-full z-[130] transition-all duration-500 flex flex-col px-6 md:px-12",
-                    // !isHome ? "bg-white" : "bg-transparent"
+                    "fixed top-0 w-full z-[100] transition-all duration-500 px-6 md:px-12",
                 )}
             >
-                {/* Mobile Layout (Visible only on mobile) */}
-                <div className={cn(
-                    "flex flex-col w-full md:hidden transition-opacity duration-300",
-                    isMobileMenuOpen ? "opacity-0 invisible pointer-events-none" : "opacity-100 visible"
-                )}>
-                    {/* Mobile Row 1: Utils */}
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex-none">
-                            <button
-                                className="p-2 -ml-2"
-                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            >
-                                <div className="relative flex flex-col items-center justify-center w-6 h-6">
-                                    <div className={cn(
-                                        "absolute h-[1px] w-6 bg-black transition-all duration-500",
-                                        isMobileMenuOpen ? "rotate-45 translate-y-0" : "-translate-y-1.5"
-                                    )} />
-                                    <div className={cn(
-                                        "absolute h-[1px] w-6 bg-black transition-all duration-500",
-                                        isMobileMenuOpen ? "opacity-0" : "opacity-100"
-                                    )} />
-                                    <div className={cn(
-                                        "absolute h-[1px] w-6 bg-black transition-all duration-500",
-                                        isMobileMenuOpen ? "-rotate-45 translate-y-0" : "translate-y-1.5"
-                                    )} />
-                                </div>
-                            </button>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
-                            <button className="p-1"><Search size={18} strokeWidth={1.5} className="text-black" /></button>
-                            <button onClick={() => setIsCartOpen(true)} className="p-1 relative">
-                                <ShoppingBag size={18} strokeWidth={1.5} className="text-black" />
-                                {cart.length > 0 && (
-                                    <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[12px] h-3 text-[8px] font-bold bg-black text-white rounded-full px-0.5">
-                                        {cart.reduce((acc, item) => acc + item.quantity, 0)}
-                                    </span>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                    {/* Mobile Row 2: Logo */}
-                    <div className="flex justify-center pb-6">
-                        <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-                            <div className="relative w-[211.44px] h-[120px]">
-                                <img
-                                    src="/logo.PNG"
-                                    alt="QISSEY"
-                                    style={{ width: '211.44px', height: '120px', filter: 'invert(1)', objectFit: 'contain' }}
-                                    className="absolute left-1/2 -translate-x-1/2 top-4"
-                                />
-                            </div>
-                        </Link>
-                    </div>
-                </div>
-
-                {/* Desktop Layout (Visible only on md screens and up) */}
-                <div className={cn(
-                    "hidden md:flex items-center w-full h-32 transition-opacity duration-300",
-                    "opacity-100 visible"
-                )}>
-                    {/* Left: Menu */}
-                    <div className="flex-none">
-                        <button
-                            className="p-2 -ml-2 hover:opacity-100 transition-opacity"
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        >
-                            <div className="relative flex flex-col items-center justify-center w-8 h-8">
-                                <div className={cn(
-                                    "absolute h-[1px] w-8 bg-current transition-all duration-500",
-                                    isMobileMenuOpen ? "rotate-45 translate-y-0 text-black" : "-translate-y-2"
-                                )} />
-                                <div className={cn(
-                                    "absolute h-[1px] w-8 bg-current transition-all duration-500",
-                                    isMobileMenuOpen ? "opacity-0" : "opacity-100"
-                                )} />
-                                <div className={cn(
-                                    "absolute h-[1px] w-8 bg-current transition-all duration-500",
-                                    isMobileMenuOpen ? "-rotate-45 translate-y-0 text-black" : "translate-y-2"
-                                )} />
-                            </div>
+                <div className="flex items-center w-full h-16 md:h-32">
+                    {/* Mobile Utils (Log In, Search, Bag) */}
+                    <div className={cn(
+                        "flex md:hidden items-center gap-4 ml-auto transition-opacity duration-300",
+                        isMobileMenuOpen ? "opacity-0 invisible" : "opacity-100 visible"
+                    )}>
+                        <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
+                        <button className="p-1"><Search size={18} strokeWidth={1.5} className="text-black" /></button>
+                        <button onClick={() => setIsCartOpen(true)} className="p-1 relative">
+                            <ShoppingBag size={18} strokeWidth={1.5} className="text-black" />
+                            {cart.length > 0 && (
+                                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[12px] h-3 text-[8px] font-bold bg-black text-white rounded-full px-0.5">
+                                    {cart.reduce((acc, item) => acc + item.quantity, 0)}
+                                </span>
+                            )}
                         </button>
                     </div>
 
-                    {/* Left-Center: Logo */}
-                    <div className="flex-none ml-10">
-                        <Link to="/" className="flex items-center">
-                            <div className="relative w-[211.44px] h-[120px]">
-                                <img
-                                    src="/logo.PNG"
-                                    alt="QISSEY"
-                                    style={{ width: '211.44px', height: '120px', filter: 'invert(1)', objectFit: 'contain' }}
-                                    className="absolute left-0 top-4"
-                                />
-                            </div>
-                        </Link>
-                    </div>
-
-                    {/* Spacer / Right-Center: Search */}
-                    <div className="flex-grow flex justify-end mr-20 hidden lg:flex">
-                        {!isMobileMenuOpen && (
+                    {/* Desktop Utils (Search, Log In, Help, Bag) */}
+                    <div className="hidden md:flex items-center w-full h-full">
+                        <div className="flex-grow flex justify-end mr-20 hidden lg:flex">
                             <div className="relative group w-64">
                                 <div className="flex items-end border-b border-current pb-1 w-full opacity-60 hover:opacity-100 transition-opacity">
                                     <span className="text-[10px] font-bold tracking-[0.1em] uppercase">Search</span>
                                     <div className="flex-grow" />
                                 </div>
                             </div>
-                        )}
-                    </div>
+                        </div>
 
-                    {/* Right: Actions */}
-                    <div className="flex-none flex items-center gap-6 ml-auto">
-                        {!isMobileMenuOpen && (
-                            <>
-                                <Link
-                                    to={isAuthenticated ? "/account" : "/auth"}
-                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black"
-                                >
-                                    {isAuthenticated ? user.name : "Log In"}
-                                </Link>
+                        <div className="flex-none flex items-center gap-6 ml-auto">
+                            <Link
+                                to={isAuthenticated ? "/account" : "/auth"}
+                                className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black"
+                            >
+                                {isAuthenticated ? user.name : "Log In"}
+                            </Link>
 
-                                <Link
-                                    to="/help"
-                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black"
-                                >
-                                    Help
-                                </Link>
+                            <Link
+                                to="/help"
+                                className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black"
+                            >
+                                Help
+                            </Link>
 
-                                <button
-                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-100 whitespace-nowrap text-black"
-                                    onClick={() => setIsCartOpen(true)}
-                                >
-                                    Shopping Bag ({cart.reduce((acc, item) => acc + item.quantity, 0)})
-                                </button>
-                            </>
-                        )}
+                            <button
+                                className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black"
+                                onClick={() => setIsCartOpen(true)}
+                            >
+                                Shopping Bag ({cart.reduce((acc, item) => acc + item.quantity, 0)})
+                            </button>
+                        </div>
                     </div>
                 </div>
             </nav>
 
+            {/* Top Layer: Logo and Menu Toggle (Interactive on top of overlay) */}
+            <div className="fixed top-0 w-full z-[130] flex items-center px-6 md:px-12 h-16 md:h-32 pointer-events-none">
+                {/* Mobile/Desktop Combined Toggle & Logo */}
+                <div className="flex items-center w-full h-full">
+                    {/* Menu Toggle */}
+                    <div className="flex-none pointer-events-auto">
+                        <button
+                            className="p-2 -ml-2 hover:opacity-100 transition-opacity"
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        >
+                            <div className="relative flex flex-col items-center justify-center w-6 h-6 md:w-8 md:h-8">
+                                <div className={cn(
+                                    "absolute h-[1px] w-6 md:w-8 bg-black transition-all duration-500",
+                                    isMobileMenuOpen ? "rotate-45 translate-y-0" : "-translate-y-1.5 md:-translate-y-2"
+                                )} />
+                                <div className={cn(
+                                    "absolute h-[1px] w-6 md:w-8 bg-black transition-all duration-500",
+                                    isMobileMenuOpen ? "opacity-0" : "opacity-100"
+                                )} />
+                                <div className={cn(
+                                    "absolute h-[1px] w-6 md:w-8 bg-black transition-all duration-500",
+                                    isMobileMenuOpen ? "-rotate-45 translate-y-0" : "translate-y-1.5 md:translate-y-2"
+                                )} />
+                            </div>
+                        </button>
+                    </div>
+
+                    {/* Logo */}
+                    <div className="flex-none ml-4 md:ml-10 pointer-events-auto">
+                        <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
+                            <div className="relative top-4 w-[140px] md:w-[211.44px] h-[50px] md:h-[120px]">
+                                <img
+                                    src="/logo.PNG"
+                                    alt="QISSEY"
+                                    style={{ filter: 'invert(1)', objectFit: 'contain' }}
+                                    className="w-full h-full"
+                                />
+                            </div>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+
+            {/* Background Overlay with Blur */}
+            <div
+                className={cn(
+                    "fixed inset-0 z-[110] transition-all duration-500 pointer-events-none opacity-0",
+                    isMobileMenuOpen && "opacity-100 pointer-events-auto bg-white/40"
+                )}
+                onClick={() => setIsMobileMenuOpen(false)}
+            />
+
             <div className={cn(
-                "fixed inset-0 z-[120] bg-white md:bg-white/70 md:backdrop-blur-xl flex flex-col md:w-1/2",
+                "fixed inset-0 z-[120] bg-white md:bg-white flex flex-col md:w-1/2",
                 "transition-transform ease-[cubic-bezier(0.85,0,0.15,1)]",
                 "duration-700 md:duration-500 md:ease-in-out",
                 isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"

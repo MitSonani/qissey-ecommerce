@@ -2,75 +2,69 @@ import { Instagram, Twitter, Facebook, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Primitives';
 
+const FOOTER_LINKS = [
+    {
+        title: "Help",
+        links: [
+            { label: "My QISSEY Account", path: "/account" },
+            { label: "Shipping", path: "/" },
+            { label: "Payment and Invoices", path: "/" },
+            { label: "My Purchases", path: "/" },
+            { label: "Exchanges, Returns and Refunds", path: "/" },
+        ]
+    },
+    {
+        title: "Follow us",
+        links: [
+            { label: "Instagram", href: "#" },
+            { label: "Facebook", href: "#" },
+            { label: "Pinterest", href: "#" },
+        ]
+    },
+    {
+        title: "Company",
+        links: [
+            { label: "About us", path: "/about" },
+        ]
+    },
+    {
+        title: "Policies",
+        links: [
+            { label: "Privacy policy", path: "/" },
+            { label: "Purchase conditions", path: "/" },
+        ]
+    }
+];
+
 export default function Footer() {
-    const currentYear = new Date().getFullYear();
-
     return (
-        <footer className="bg-white text-black pt-32 pb-12 px-6 md:px-12 border-t border-black/5">
-            <div className="container">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
-                    <div className="lg:col-span-5">
-                        <Link to="/" className="block mb-8">
-                            <img src="/logo.PNG" alt="QISSEY" className="h-16 w-auto" style={{ filter: 'invert(1)' }} />
-                        </Link>
-                        <p className="text-black/40 text-sm max-w-sm leading-relaxed mb-12">
-                            WE ARE A CREATIVE STUDIO FOCUSING ON THE INTERSECTION OF DESIGN, CULTURE, AND SUSTAINABLE MATERIALITY.
-                        </p>
-                        <div className="flex gap-6">
-                            <a href="#" className="hover:text-black/60 transition-colors"><Instagram size={20} /></a>
-                            <a href="#" className="hover:text-black/60 transition-colors"><Twitter size={20} /></a>
-                            <a href="#" className="hover:text-black/60 transition-colors"><Facebook size={20} /></a>
+        <footer className="bg-white text-black pt-24 pb-12 px-20 mx-30">
+            <div className="container-fluid">
+                {/* Main Link Grid */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-32">
+                    {FOOTER_LINKS.map((group, groupIdx) => (
+                        <div key={groupIdx} className="space-y-6">
+                            <p className="text-[14px] uppercase mb-4 font-bold">{group.title}</p>
+                            <ul className="space-y-2 text-[12px] uppercase">
+                                {group.links.map((link, linkIdx) => (
+                                    <p key={linkIdx} className='text-grey'>
+                                        {link.path ? (
+                                            <Link to={link.path} className="hover:underline">{link.label}</Link>
+                                        ) : (
+                                            <a href={link.href} className="hover:underline">{link.label}</a>
+                                        )}
+                                    </p>
+                                ))}
+                            </ul>
                         </div>
-                    </div>
-
-                    <div className="lg:col-span-2 space-y-8">
-                        <h3 className="text-[10px] uppercase font-bold tracking-[0.3em] text-black/30">Connect</h3>
-                        <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
-                            <li><Link to="/shop" className="hover:opacity-50 transition-opacity">Archive</Link></li>
-                            <li><a href="#" className="hover:opacity-50 transition-opacity">Journal</a></li>
-                            <li><a href="#" className="hover:opacity-50 transition-opacity">Sustainability</a></li>
-                            <li><a href="#" className="hover:opacity-50 transition-opacity">About</a></li>
-                        </ul>
-                    </div>
-
-                    <div className="lg:col-span-2 space-y-8">
-                        <h3 className="text-[10px] uppercase font-bold tracking-[0.3em] text-black/30">Service</h3>
-                        <ul className="space-y-4 text-xs font-bold uppercase tracking-widest">
-                            <li><a href="#" className="hover:opacity-50 transition-opacity">Shipping</a></li>
-                            <li><a href="#" className="hover:opacity-50 transition-opacity">Returns</a></li>
-                            <li><a href="#" className="hover:opacity-50 transition-opacity">Size Guide</a></li>
-                            <li><a href="#" className="hover:opacity-50 transition-opacity">Contact</a></li>
-                        </ul>
-                    </div>
-
-                    <div className="lg:col-span-3 space-y-8">
-                        <h3 className="text-[10px] uppercase font-bold tracking-[0.3em] text-black/30">Bulletin</h3>
-                        <div className="relative border-b border-black/10 pb-4 group">
-                            <input
-                                type="email"
-                                placeholder="EMAIL ADDRESS"
-                                className="bg-transparent w-full outline-none text-[10px] font-bold tracking-widest placeholder:text-black/20"
-                            />
-                            <button className="absolute right-0 top-0 hover:translate-x-1 transition-transform">
-                                <ArrowRight size={16} />
-                            </button>
-                        </div>
-                        <p className="text-[9px] text-black/20 uppercase tracking-widest leading-loose">
-                            By subscribing, you agree to our Privacy Policy and consent to receive updates.
-                        </p>
-                    </div>
+                    ))}
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-black/5 gap-8">
-                    <p className="text-[9px] uppercase font-bold tracking-[0.3em] text-black/20">
-                        © {currentYear} QISSEY STUDIO. ALL RIGHTS RESERVED.
-                    </p>
-                    <div className="flex gap-8 text-[9px] uppercase font-bold tracking-[0.3em] text-black/20">
-                        <a href="#" className="hover:text-black transition-colors">Privacy</a>
-                        <a href="#" className="hover:text-black transition-colors">Terms</a>
-                        <a href="#" className="hover:text-black transition-colors">Accessibility</a>
-                    </div>
+
+                <div className="flex text-[10px] items-center gap-12 text-black/40 uppercase">
+                    <span>© {new Date().getFullYear()} All rights reserved</span>
                 </div>
+
             </div>
         </footer>
     );

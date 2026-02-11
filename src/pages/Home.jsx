@@ -1,58 +1,17 @@
+import { useState, useEffect } from 'react';
 import { ArrowRight, Play, Volume2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { products, ProductCard } from '../features/products';
 import { Button } from '../components/ui/Primitives';
+import Hero from '../components/Hero';
 
 export default function Home() {
     const featuredProducts = products.slice(0, 4);
 
     return (
-        <div className="relative overflow-hidden">
-            {/* Hero Section */}
-            <section className="relative min-h-[90vh] md:h-screen w-full flex flex-col md:items-center md:justify-center overflow-hidden bg-white">
-                {/* Mobile Branding Logo (Zara Style - Tightened Space) */}
-                <div className="block md:hidden pt-20 pb-4 flex justify-center px-6">
-                    <Link to="/" className="w-full max-w-[320px]">
-                        <img
-                            src="/logo.PNG"
-                            alt="QISSEY"
-                            className="w-full h-auto object-contain filter invert"
-                        />
-                    </Link>
-                </div>
-
-                <div className="relative z-10 text-center text-black px-4 max-w-5xl mt-6 md:mt-0">
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="text-[10px] md:text-[12px] uppercase font-bold tracking-[0.4em] mb-6 text-black/60"
-                    >
-                        Spring Summer 2026 Collection
-                    </motion.p>
-                    <motion.h1
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1, delay: 0.2 }}
-                        className="text-6xl md:text-[10rem] font-black uppercase leading-[0.85] tracking-tighter mb-12"
-                    >
-                        RAW<br />MINIMAL
-                    </motion.h1>
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                    >
-                        <Link to="/shop">
-                            <Button size="lg" className="bg-black text-white hover:bg-black/80 px-12 group rounded-none border-none">
-                                Shop Collection
-                                <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
-                            </Button>
-                        </Link>
-                    </motion.div>
-                </div>
-            </section>
+        <div className="relative overflow-hidden mx-20 my-34">
+            <Hero />
 
             {/* Featured Collections Tiles */}
             <section className="py-32 px-6 md:px-12 bg-white">
@@ -86,34 +45,24 @@ export default function Home() {
             </section>
 
             {/* New Arrivals Slider */}
-            <section className="pb-32 px-6 md:px-12 overflow-hidden">
+            <section className="pb-32 px-6 md:px-12 overflow-hidden ">
                 <div className="container">
                     <div className="flex justify-between items-end mb-16">
                         <div>
                             <p className="text-[10px] uppercase font-bold tracking-[0.4em] mb-4 text-black/40">The Latest Drops</p>
                             <h2 className="text-5xl font-black uppercase tracking-tighter">New Arrivals</h2>
                         </div>
-                        <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b border-black pb-1 hover:opacity-50 transition-opacity">
+                        <Link to="/shop" className="text-[10px] uppercase font-bold tracking-[0.4em] mb-4 text-black/40 hover:opacity-50 transition-opacity">
                             View All
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 ">
                         {featuredProducts.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>
                 </div>
-            </section>
-
-            {/* Brands Philosophy */}
-            <section className="py-40 bg-white border-t border-black/5 flex flex-col items-center justify-center text-center px-6">
-                <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight max-w-4xl leading-tight mb-12">
-                    WE BELIEVE IN CLOTHING THAT CELEBRATES THE INDIVIDUAL THROUGH REFINED MATERIALITY AND MINIMAL DESIGN.
-                </h2>
-                <Link to="/about">
-                    <Button variant="outline" className="px-16 border-black text-black hover:bg-black hover:text-white transition-colors">Our Philosophy</Button>
-                </Link>
             </section>
         </div>
     );

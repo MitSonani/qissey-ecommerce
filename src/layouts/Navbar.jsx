@@ -14,7 +14,6 @@ export default function Navbar() {
 
     return (
         <>
-            {/* Bottom Layer: Search and Actions (Treated as page content for overlay) */}
             <nav
                 className={cn(
                     "fixed top-0 w-full z-[100] transition-all duration-500 px-6 md:px-12",
@@ -22,7 +21,6 @@ export default function Navbar() {
             >
                 <div className="flex items-center w-full h-16 md:h-32">
 
-                    {/* Desktop Utils (Search, Log In, Help, Bag) */}
                     <div className="hidden md:flex items-center w-full h-full">
                         <div className="flex-grow flex justify-end mr-20 hidden lg:flex">
                             <div className="relative group w-64">
@@ -48,12 +46,13 @@ export default function Navbar() {
                                 Help
                             </Link>
 
-                            <button
+                            <Link
+                                to="/shopping-bag"
                                 className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black"
-                                onClick={() => setIsCartOpen(true)}
+
                             >
                                 Shopping Bag ({cart.reduce((acc, item) => acc + item.quantity, 0)})
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -85,13 +84,12 @@ export default function Navbar() {
                         </button>
                     </div>
 
-                    {/* Logo (Desktop only - Left-Center on Desktop) */}
                     <div className={cn(
                         "hidden md:block flex-none pointer-events-auto transition-all duration-500",
                         "md:relative md:left-0 md:translate-x-0 md:ml-10"
                     )}>
                         <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-                            <div className="relative top-4 w-[211.44px] h-[120px]">
+                            <div className="relative top-4 w-[200.44px] h-[100px]">
                                 <img
                                     src="/logo.PNG"
                                     alt="QISSEY"

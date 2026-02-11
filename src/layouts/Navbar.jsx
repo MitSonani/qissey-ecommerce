@@ -85,11 +85,12 @@ export default function Navbar() {
                     </div>
 
                     <div className={cn(
-                        "hidden md:block flex-none pointer-events-auto transition-all duration-500",
-                        "md:relative md:left-0 md:translate-x-0 md:ml-10"
+                        "flex-none pointer-events-auto transition-all duration-500",
+                        "relative",
+                        "md:left-0 md:translate-x-0 md:ml-10"
                     )}>
                         <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
-                            <div className="relative top-4 w-[200.44px] h-[100px]">
+                            <div className="relative top-2 md:top-4 w-[110px] md:w-[160px] h-[40px] md:h-[80px]">
                                 <img
                                     src="/logo.PNG"
                                     alt="QISSEY"

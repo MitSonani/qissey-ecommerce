@@ -6,18 +6,21 @@ const heroSlides = [
     {
         id: 1,
         image: '/images/hero/hero1.png',
+        mobileImage: '/images/hero/hero1.png',
         title: 'RAW MINIMAL',
         subtitle: 'Spring Summer 2026 Collection'
     },
     {
         id: 2,
         image: '/images/hero/hero2.png',
+        mobileImage: '/images/hero/hero1.png',
         title: 'MODERN LINES',
         subtitle: 'Spring Summer 2026 Collection'
     },
     {
         id: 3,
         image: '/images/hero/hero3.png',
+        mobileImage: '/images/hero/hero1.png',
         title: 'ETHYREAL FLOW',
         subtitle: 'Spring Summer 2026 Collection'
     }
@@ -25,6 +28,15 @@ const heroSlides = [
 
 export default function Hero() {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -34,13 +46,12 @@ export default function Hero() {
     }, []);
 
     return (
-        <section className="relative mx-auto max-w-[1080px] max-h-[82.5vh] md:h-screen w-full flex flex-col items-center md:items-center md:justify-center overflow-hidden bg-white">
-            {/* Hero Background Carousel */}
+        <section className="relative mx-auto max-w-[1080px] h-[79vh] md:h-screen w-full flex flex-col items-center md:justify-center overflow-hidden bg-white">
             <div className="absolute inset-0 z-0">
                 <AnimatePresence mode="wait">
                     <motion.img
-                        key={currentIndex}
-                        src={heroSlides[currentIndex].image}
+                        key={`${currentIndex}-${isMobile}`}
+                        src={isMobile ? heroSlides[currentIndex].mobileImage : heroSlides[currentIndex].image}
                         alt="Hero"
                         className="absolute inset-0 w-full h-full object-cover"
                         initial={{ opacity: 0, scale: 1.1 }}
@@ -52,15 +63,7 @@ export default function Hero() {
                 <div className="absolute inset-0 bg-white/10" />
             </div>
 
-            <div className="block md:hidden pt-20 pb-4 flex justify-center px-6 relative z-10">
-                <Link to="/" className="w-full max-w-[180px]">
-                    <img
-                        src="/logo.PNG"
-                        alt="QISSEY"
-                        className="w-auto h-12 object-contain filter invert"
-                    />
-                </Link>
-            </div>
+
 
 
         </section>

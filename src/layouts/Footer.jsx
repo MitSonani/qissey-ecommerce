@@ -36,7 +36,7 @@ const FOOTER_LINKS = [
 
 export default function Footer() {
     return (
-        <footer className="bg-white text-black pt-24 pb-12 px-20 mx-30">
+        <footer className="bg-white text-black pt-16 md:pt-24 pb-12 px-6 md:px-20 md:mx-30">
             <div className="container-fluid">
                 {/* Main Link Grid */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-32">

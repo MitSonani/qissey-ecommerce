@@ -10,11 +10,11 @@ export default function Home() {
     const featuredProducts = products.slice(0, 4);
 
     return (
-        <div className="relative overflow-hidden mx-20 my-34">
+        <div className="relative overflow-hidden mx-2 md:mx-24 mt-20 mb-16 md:my-34">
             <Hero />
 
             {/* Featured Collections Tiles */}
-            <section className="py-32 px-6 md:px-12 bg-white">
+            <section className="py-32  md:px-8 bg-white">
                 <div className="container">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="col-span-1 lg:col-span-2 relative aspect-[16/9] bg-brand-gray overflow-hidden group">
@@ -45,7 +45,7 @@ export default function Home() {
             </section>
 
             {/* New Arrivals Slider */}
-            <section className="pb-32 px-6 md:px-12 overflow-hidden ">
+            <section className="pb-32 md:px-8 overflow-hidden ">
                 <div className="container">
                     <div className="flex justify-between items-end mb-16">
                         <div>

@@ -85,8 +85,8 @@ export default function Auth() {
         <div className="min-h-screen bg-white flex flex-col font-sans text-[#1A1A1A]">
             {!isLogin && (
                 <header className="fixed top-0 w-full z-50 px-6 md:px-12 h-20 flex items-center justify-between pointer-events-none">
-                    <div className="flex items-center gap-8 pointer-events-auto">
-                        <Link to="/" className="block -ml-3">
+                    <div className="flex items-center gap-8 pointer-events-auto mt-[10px]">
+                        <Link to="/" className="block">
                             <img src="/logo.PNG" alt="QISSEY" className="h-20 w-auto brightness-0" />
                         </Link>
                     </div>
@@ -153,19 +153,7 @@ export default function Auth() {
                                     </div>
                                 </form>
 
-                                <div className="mt-20">
-                                    <h3 className="text-[10px] uppercase font-bold tracking-[0.2em] mb-6 text-[#1A1A1A]/80">Access With</h3>
-                                    <p className="text-[9px] text-[#1A1A1A]/50 mb-8 max-w-[280px]">
-                                        By logging in with my social login, I agree to link my account in accordance with the <span className="underline cursor-pointer">Privacy Policy</span>
-                                    </p>
-                                    <div className="space-y-3">
-                                        <button className="w-full border border-[#1A1A1A]/10 py-3 flex items-center justify-center gap-3 hover:border-[#1A1A1A] transition-colors">
-                                            <img src="https://www.google.com/favicon.ico" className="w-3 h-3 grayscale" alt="Google" />
-                                            <span className="text-[9px] uppercase font-bold tracking-widest">Continue with Google</span>
-                                        </button>
 
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div className="hidden lg:block w-1/2 bg-[#F5F5F5] overflow-hidden">
@@ -220,7 +208,7 @@ export default function Auth() {
                                             onChange={(e) => setFormData({ ...formData, phonePrefix: e.target.value })}
                                         />
                                         <FloatingInput
-                                            label="Telephone"
+                                            label="Mobile Number"
                                             className="flex-grow"
                                             value={formData.phone}
                                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}

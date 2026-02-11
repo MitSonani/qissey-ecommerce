@@ -1,6 +1,4 @@
-import { Instagram, Twitter, Facebook, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button } from '../components/ui/Primitives';
 
 const FOOTER_LINKS = [
     {

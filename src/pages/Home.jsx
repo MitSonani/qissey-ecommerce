@@ -1,13 +1,25 @@
 import { useState, useEffect } from 'react';
-import { ArrowRight, Play, Volume2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { products, ProductCard } from '../features/products';
-import { Button } from '../components/ui/Primitives';
+import { ProductCard } from '../features/products';
 import Hero from '../components/Hero';
-
+import { fetchProducts } from '../features/products/services/productService';
 export default function Home() {
-    const featuredProducts = products.slice(0, 4);
+    const [productsS, setProducts] = useState([]);
+
+
+    useEffect(() => {
+        const loadProducts = async () => {
+            try {
+                const res = await fetchProducts();
+                setProducts(res);
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        };
+
+        loadProducts();
+    }, []);
+
 
     return (
         <div className="relative overflow-hidden mx-2 md:mx-24 mt-20 mb-16 md:my-34">
@@ -58,7 +70,7 @@ export default function Home() {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 ">
-                        {featuredProducts.map(product => (
+                        {productsS.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>

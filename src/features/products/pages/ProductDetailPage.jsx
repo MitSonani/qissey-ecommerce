@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
-import { useState } from 'react';
-import { products } from '../services/productService';
+import { useState, useEffect } from 'react';
+import { fetchProductById, fetchRelatedProducts } from '../services/productService';
 import { useCart } from '../../../features/cart';
 import { Button, cn } from '../../../components/ui/Primitives';
 import { Plus, ChevronDown, ArrowRight } from 'lucide-react';
@@ -11,21 +11,85 @@ import SideDrawer from '../../../components/ui/SideDrawer';
 export default function ProductDetail() {
     const { id } = useParams();
     const { addToCart } = useCart();
-    const product = products.find(p => p.id === parseInt(id));
+    const [product, setProduct] = useState(null);
+    const [primaryProduct, setPrimaryProduct] = useState(null);
+    const [relatedProducts, setRelatedProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [showSizes, setShowSizes] = useState(false);
     const [activeDrawer, setActiveDrawer] = useState(null);
+    const [colors, setColors] = useState([])
+    console.log("showSizesshowSizes", showSizes)
+    console.log("colors", colors)
 
-    if (!product)
+    const findPrimaryProduct = (colorId) => {
+
+        const productData = product?.product_variants?.find((variant) => variant.color_id?.id === colorId)
+        setPrimaryProduct(productData)
+    }
+    useEffect(() => {
+        const loadProductData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                // Fetch product details
+                const productData = await fetchProductById(id);
+                const primaryProductImages = productData?.product_variants?.find((variant) => variant.is_primary)
+                const data = productData?.product_variants?.map((variant) => {
+                    return variant?.color_id
+                })
+                const uniqueColors = Array.from(
+                    new Map(data.map(item => [item.name, item])).values()
+                );
+
+                setColors([...uniqueColors])
+                setPrimaryProduct(primaryProductImages)
+                if (!productData) {
+                    setError('Product not found');
+                    setLoading(false);
+                    return;
+                }
+                setProduct(productData);
+
+                // Fetch related products
+                const related = [] || await fetchRelatedProducts(id);
+                setRelatedProducts(related);
+
+                setLoading(false);
+            } catch (err) {
+                console.error('Error loading product:', err);
+                setError('Failed to load product. Please try again.');
+                setLoading(false);
+            }
+        };
+
+        loadProductData();
+    }, [id]);
+
+    console.log(product, "product")
+
+    const currentProductSizes = product?.product_variants?.filter((variant) => variant?.color_id?.hex === primaryProduct?.color_id?.hex)
+
+    if (loading) {
         return (
             <div className="pt-40 container text-center">
-                Product not found
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-sm uppercase tracking-widest text-neutral-600">Loading...</p>
+                </div>
             </div>
         );
+    }
 
-    const relatedProducts = products
-        .filter(p => p.id !== product.id)
-        .slice(0, 4);
+    if (error || !product) {
+        return (
+            <div className="pt-40 container text-center">
+                <p className="text-sm uppercase tracking-widest text-neutral-600">{error || 'Product not found'}</p>
+            </div>
+        );
+    }
 
     const drawerContent = {
         measurement: {
@@ -104,7 +168,7 @@ export default function ProductDetail() {
                 <div className="flex flex-col lg:flex-row gap-10">
 
                     <div className="w-full lg:w-1/2 space-y-6">
-                        {product.images.map((img, idx) => (
+                        {primaryProduct?.image_urls?.map((img, idx) => (
                             <div
                                 key={idx}
                                 className="bg-neutral-100 overflow-hidden"
@@ -125,11 +189,11 @@ export default function ProductDetail() {
 
 
                                 <p className="text-[18px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black mb-2">
-                                    {product.title}
+                                    {product?.name}
                                 </p>
 
                                 <p className="text-[15px] font-bold tracking-wide  opacity-60 hover:opacity-100 ">
-                                    ₹ {product.price.toLocaleString()}
+                                    ₹ {product?.price.toLocaleString()}
                                 </p>
 
                                 <p className="text-[10px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black mt-1">
@@ -137,10 +201,21 @@ export default function ProductDetail() {
                                 </p>
                             </div>
 
-                            <div className="border-t border-neutral-200 pt-6">
-                                <p className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black mb-6">
-                                    {product.color || 'BROWN'}
-                                </p>
+                            <div className="border-t border-neutral-200 pt-6 ">
+                                <div className='flex gap-2 mb-[20px]'>
+                                    {
+                                        colors?.map((item) => (
+                                            <>
+                                                <div className={cn('w-8 h-8 flex justify-center items-center', { 'border-1 border-black': item?.id === primaryProduct?.color_id?.id })} onClick={() => findPrimaryProduct(item?.id)}>
+                                                    <div
+                                                        className="w-6 h-6 shadow-sm p-2"
+                                                        style={{ backgroundColor: item?.hex }}
+                                                    ></div>
+                                                </div>
+                                            </>
+                                        ))
+                                    }</div>
+
 
                                 <div className="space-y-4">
                                     <AnimatePresence>
@@ -152,20 +227,20 @@ export default function ProductDetail() {
                                                 className="overflow-hidden"
                                             >
                                                 <div className="flex flex-col gap-2 pb-4">
-                                                    {product.sizes.map(size => (
+                                                    {currentProductSizes?.map(size => (
                                                         <button
-                                                            key={size}
+                                                            key={size.id}
                                                             onClick={() => {
-                                                                setSelectedSize(size);
-                                                                addToCart(product, size);
-                                                                setShowSizes(false);
+                                                                setSelectedSize(size.size);
+                                                                // addToCart(product, size.size);
+                                                                // setShowSizes(false);
                                                             }}
                                                             className={cn(
                                                                 "w-full py-4 text-[11px] uppercase tracking-widest border border-neutral-200 transition-all hover:bg-black hover:text-white hover:border-black",
-                                                                selectedSize === size && "bg-black text-white border-black"
+                                                                selectedSize === size.size && "bg-black text-white border-black"
                                                             )}
                                                         >
-                                                            {size}
+                                                            {size.size}
                                                         </button>
                                                     ))}
                                                 </div>

@@ -223,7 +223,7 @@ export default function ProductDetail() {
                         <p className="text-xs tracking-widest text-neutral-600 leading-relaxed uppercase">
                             Standard delivery within 7-10 business days.<br />
 
-                            <br /> Free for delivery at any location.
+                            <br /> Free delivery at any location.
 
                             <br />    <br /> Cash on delivery is available.
                         </p>
@@ -374,7 +374,7 @@ export default function ProductDetail() {
                                 <div className="mt-2">
                                     {/* Mobile Tabs */}
                                     <div className="flex gap-6 lg:hidden mb-6 overflow-x-auto no-scrollbar">
-                                        {['DESCRIPTION', 'MEASUREMENTS'].map((tab) => (
+                                        {['DESCRIPTION', 'MEASUREMENTS', 'CARE', 'SHIPPING & RETURNS'].map((tab) => (
                                             <button
                                                 key={tab}
                                                 onClick={() => setActiveTab(tab)}
@@ -402,6 +402,18 @@ export default function ProductDetail() {
                                         {activeTab === 'MEASUREMENTS' && (
                                             <div className="pb-8 animate-in fade-in duration-500 overflow-x-auto">
                                                 {drawerContent.measurement.content}
+                                            </div>
+                                        )}
+
+                                        {activeTab === 'CARE' && (
+                                            <div className="pb-8 animate-in fade-in duration-500">
+                                                {drawerContent.composition.content}
+                                            </div>
+                                        )}
+
+                                        {activeTab === 'SHIPPING & RETURNS' && (
+                                            <div className="pb-8 animate-in fade-in duration-500">
+                                                {drawerContent.shipping.content}
                                             </div>
                                         )}
                                     </div>
@@ -449,10 +461,10 @@ export default function ProductDetail() {
 
                     <div className="flex flex-col lg:flex-row gap-12 items-center">
                         <div className="w-full lg:w-1/2">
-                            <div className="max-w-[500px] lg:ml-auto px-4 lg:px-0">
+                            <div className="max-w-[500px] lg:ml-auto px-4 lg:px-0 text-center lg:text-left">
                                 {
                                     product?.fabrics?.map((fabric, index) => (
-                                        <p key={index} className="text-[13px] opacity-60 font-medium leading-relaxed">
+                                        <p key={index} className="text-[13px] font-light uppercase">
                                             {fabric}
                                         </p>
                                     ))
@@ -487,10 +499,17 @@ export default function ProductDetail() {
                         </div>
                     )}
 
+                    <div className="lg:hidden mt-8">
+                        <CompleteYourLook completeTheLookIds={product?.complete_the_look} />
+                        <RealatedProduct collectionId={product?.collection_id} productId={product?.id} />
+                    </div>
+
 
                 </div>
 
-                <RealatedProduct collectionId={product?.collection_id} productId={product?.id} />
+                <div className="hidden lg:block">
+                    <RealatedProduct collectionId={product?.collection_id} productId={product?.id} />
+                </div>
 
 
                 <SideDrawer

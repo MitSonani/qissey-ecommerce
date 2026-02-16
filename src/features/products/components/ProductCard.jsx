@@ -40,7 +40,7 @@ export default function ProductCard({ product, isCompleteTheLook = false }) {
                 <div className="flex justify-between items-start">
                     <Link
                         to={`/product/${product.id}`}
-                        className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black max-w-[85%] leading-relaxed"
+                        className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black max-w-[85%] leading-relaxed"
                     >
                         {product.name}
                     </Link>
@@ -55,7 +55,7 @@ export default function ProductCard({ product, isCompleteTheLook = false }) {
                         <Plus size={16} strokeWidth={1} />
                     </button>
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black">
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black">
                     ₹ {product.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </p>
             </div>}

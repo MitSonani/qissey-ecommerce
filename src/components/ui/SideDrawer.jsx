@@ -28,10 +28,10 @@ export default function SideDrawer({ isOpen, onClose, title, children }) {
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col"
+                        className="relative w-full max-w-xl bg-white h-full shadow-2xl flex flex-col"
                     >
                         <div className="p-8 border-b border-black/5 flex items-center justify-between">
-                            <h2 className="text-xl uppercase font-bold tracking-tight">{title}</h2>
+                            <p className="text-xl uppercase font-medium tracking-tight">{title}</p>
                             <button
                                 onClick={onClose}
                                 className="p-2 hover:bg-neutral-100 rounded-full transition-colors"

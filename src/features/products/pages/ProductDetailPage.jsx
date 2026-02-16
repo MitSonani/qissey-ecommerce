@@ -8,6 +8,17 @@ import SideDrawer from '../../../components/ui/SideDrawer';
 import RealatedProduct from '../components/RealatedProduct';
 import CompleteYourLook from '../components/CompleteYourLook';
 import ProductDetailSkeleton from '../components/ProductDetailSkeleton';
+import CustomSizeModal from '../components/CustomSizeModal';
+
+
+const measurementData = [
+    { size: "XS", bust: "32″/81 cm", waist: "24″/61 cm", hips: "34″/86 cm", shoulder: "13.5″/34 cm" },
+    { size: "S", bust: "34″/86 cm", waist: "26″/66 cm", hips: "36″/91 cm", shoulder: "14″/36 cm" },
+    { size: "M", bust: "36″/91 cm", waist: "28″/71 cm", hips: "38″/97 cm", shoulder: "14.5″/37 cm" },
+    { size: "L", bust: "38″/97 cm", waist: "30″/76 cm", hips: "40″/102 cm", shoulder: "15″/39 cm" },
+    { size: "XL", bust: "40″/102 cm", waist: "32″/81 cm", hips: "42″/107 cm", shoulder: "15.5″/40 cm" },
+
+];
 
 export default function ProductDetail() {
     const { id } = useParams();
@@ -19,6 +30,7 @@ export default function ProductDetail() {
     const [showSizes, setShowSizes] = useState(false);
     const [activeDrawer, setActiveDrawer] = useState(null);
     const [colors, setColors] = useState([])
+    const [showCustomSizeModal, setShowCustomSizeModal] = useState(false);
     const sizeSelectorRef = useRef(null);
 
     useEffect(() => {
@@ -40,6 +52,23 @@ export default function ProductDetail() {
     useEffect(() => {
         window.scroll(0, 0)
     }, [])
+
+
+    useEffect(() => {
+        if (activeDrawer) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }, [activeDrawer])
+
+    useEffect(() => {
+        if (showCustomSizeModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }, [showCustomSizeModal])
 
 
     const findPrimaryProduct = (colorId) => {
@@ -108,20 +137,31 @@ export default function ProductDetail() {
             title: "Product Measurements",
             content: (
                 <div className="space-y-6">
-                    <p className="text-sm text-neutral-600 font-light">This guide provides the exact measurements for this product in each size.</p>
+                    <p className="text-[11px] font-light uppercase">
+                        This guide provides the exact measurements for this product in each size.
+                    </p>
+
                     <table className="w-full text-left text-[11px] uppercase tracking-wider">
                         <thead className="border-b border-neutral-100">
                             <tr>
-                                <th className="py-4 font-bold">SIZE</th>
-                                <th className="py-4 font-bold">CHEST</th>
-                                <th className="py-4 font-bold">LENGTH</th>
+                                <th className="py-4  font-bold">SIZE</th>
+                                <th className="py-4  font-bold">BUST <br />(inch/ cm)</th>
+                                <th className="py-4  font-bold">WAIST <br />(inch/ cm)</th>
+                                <th className="py-4  font-bold">HIPS <br />(inch/ cm)</th>
+                                <th className="py-4  font-bold">SHOULDER <br />(inch/ cm)</th>
                             </tr>
                         </thead>
+
                         <tbody className="divide-y divide-neutral-50 text-neutral-500">
-                            <tr><td className="py-4 text-black font-bold">S</td><td className="py-4">102 cm</td><td className="py-4">70 cm</td></tr>
-                            <tr><td className="py-4 text-black font-bold">M</td><td className="py-4">106 cm</td><td className="py-4">72 cm</td></tr>
-                            <tr><td className="py-4 text-black font-bold">L</td><td className="py-4">110 cm</td><td className="py-4">74 cm</td></tr>
-                            <tr><td className="py-4 text-black font-bold">XL</td><td className="py-4">114 cm</td><td className="py-4">76 cm</td></tr>
+                            {measurementData.map((item) => (
+                                <tr key={item.size}>
+                                    <td className="py-4 text-black font-bold">{item.size}</td>
+                                    <td className="py-4">{item.bust}</td>
+                                    <td className="py-4">{item.waist}</td>
+                                    <td className="py-4">{item.hips}</td>
+                                    <td className="py-4">{item.shoulder}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -132,21 +172,19 @@ export default function ProductDetail() {
             content: (
                 <div className="space-y-10">
                     <section>
-                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-neutral-400">Composition</h3>
-                        <p className="text-xs uppercase tracking-widest text-black mb-2">100% Organic Cotton</p>
-                        <p className="text-[11px] text-neutral-500 font-light leading-relaxed">
-                            We work with monitoring programmes to ensure compliance with safety, health and quality standards for our products.
-                            Grown without synthetic pesticides or fertilizers and without genetically modified seeds.
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-neutral-400">Composition</p>
+                        <p className="text-[11px] text-neutral-600 uppercase tracking-widest">
+                            Premium Fabric Crafted For Lasting Comfort, Durability, And Everyday Elegant Wear
                         </p>
                     </section>
                     <section>
-                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-neutral-400">Care</h3>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-neutral-400">Care</p>
                         <div className="space-y-4 text-[11px] text-neutral-600 uppercase tracking-widest">
                             <p>• Machine wash at max. 30ºC/86ºF</p>
                             <p>• Do not use bleach</p>
                             <p>• Iron at a maximum of 110ºC/230ºF</p>
-                            <p>• Do not dry clean</p>
-                            <p>• Do not tumble dry</p>
+                            <p>• use mild detergent</p>
+                            <p>• tumble dry low or hang to dry</p>
                         </div>
                     </section>
                 </div>
@@ -157,16 +195,32 @@ export default function ProductDetail() {
             content: (
                 <div className="space-y-8">
                     <section>
-                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-neutral-400">Shipping</h3>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-neutral-400">Shipping</p>
+
                         <p className="text-xs tracking-widest text-neutral-600 leading-relaxed uppercase">
-                            Standard delivery within 3-5 business days. Free for orders over ₹ 2,990.
+                            Standard delivery within 7-10 business days.<br />
+
+                            <br /> Free for delivery at any location.
+
+                            <br />    <br /> Cash on delivery is available.
                         </p>
                     </section>
                     <section>
-                        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-neutral-400">Returns</h3>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-neutral-400">Returns</p>
                         <p className="text-xs tracking-widest text-neutral-600 leading-relaxed uppercase">
-                            Free exchanges and returns within 30 days of purchase. Simply visit any of our stores or request a home pick-up.
-                        </p>
+                            You can request a return or exchange within 10 days of delivery, as long as the item is unused and in its original condition.
+                            <br />
+                            <br />
+                            <p className='font-bold'>  A few quick notes:</p>
+
+                            <br />
+
+                            • Custom size products are not eligible for return or exchange.
+                            <br />
+                            <br />
+                            • The item should be unused and in its original condition.
+                            <br /><br />
+                            For more information visit Return & Exchange Policy.                        </p>
                     </section>
                 </div>
             )
@@ -208,19 +262,22 @@ export default function ProductDetail() {
 
                                 <div className="border-t border-neutral-200 pt-6">
                                     <p className="pb-3 text-[12px] uppercase tracking-wider text-black font-medium">{primaryProduct?.color_id?.name}</p>
-                                    <div className="flex gap-2 mb-[20px]">
-                                        {colors?.map((item) => (
-                                            <div
-                                                key={item?.id}
-                                                className={cn('w-6 h-6 flex justify-center items-center cursor-pointer', { 'border border-black': item?.id === primaryProduct?.color_id?.id })}
-                                                onClick={() => findPrimaryProduct(item?.id)}
-                                            >
+                                    <div className="flex justify-between">
+                                        <div className="flex gap-2 mb-[20px]">
+                                            {colors?.map((item) => (
                                                 <div
-                                                    className="w-4 h-4 shadow-sm"
-                                                    style={{ backgroundColor: item?.hex }}
-                                                ></div>
-                                            </div>
-                                        ))}
+                                                    key={item?.id}
+                                                    className={cn('w-6 h-6 flex justify-center items-center cursor-pointer', { 'border border-black': item?.id === primaryProduct?.color_id?.id })}
+                                                    onClick={() => findPrimaryProduct(item?.id)}
+                                                >
+                                                    <div
+                                                        className="w-4 h-4 shadow-sm"
+                                                        style={{ backgroundColor: item?.hex }}
+                                                    ></div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="text-[12px] uppercase tracking-wider text-black font-medium cursor-pointer" onClick={() => setShowCustomSizeModal(true)}>CUSTOM SIZE</div>
                                     </div>
 
                                     <div className="space-y-4">
@@ -291,21 +348,21 @@ export default function ProductDetail() {
                                 <div className="border-t border-neutral-100 mt-10 pt-6 space-y-4 max-w-[600px] mx-auto">
                                     <button
                                         onClick={() => setActiveDrawer('measurement')}
-                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em] font-medium opacity-70 hover:opacity-100 transition-opacity"
+                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em]  opacity-70 hover:opacity-100 transition-opacity"
                                     >
                                         Product measurements
                                         <ArrowRight size={14} />
                                     </button>
                                     <button
                                         onClick={() => setActiveDrawer('composition')}
-                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em] font-medium opacity-70 hover:opacity-100 transition-opacity"
+                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em]  opacity-70 hover:opacity-100 transition-opacity"
                                     >
                                         Composition & Care
                                         <ArrowRight size={14} />
                                     </button>
                                     <button
                                         onClick={() => setActiveDrawer('shipping')}
-                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em] font-medium opacity-70 hover:opacity-100 transition-opacity"
+                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em]  opacity-70 hover:opacity-100 transition-opacity"
                                     >
                                         Shipping & Returns
                                         <ArrowRight size={14} />
@@ -370,6 +427,15 @@ export default function ProductDetail() {
                 >
                     {activeDrawer && drawerContent[activeDrawer].content}
                 </SideDrawer>
+
+                <CustomSizeModal
+                    isOpen={showCustomSizeModal}
+                    onClose={() => setShowCustomSizeModal(false)}
+                    onSave={(data) => {
+                        console.log("Custom Size Data:", data);
+                        // Handle saving custom size data here
+                    }}
+                />
 
             </div>
         </div >

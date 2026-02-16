@@ -54,7 +54,7 @@ export default function ProductDetail() {
             }
         };
 
-        if (showSizes) {
+        if (showSizes && window.innerWidth >= 1024) { // Only for desktop
             document.addEventListener('mousedown', handleClickOutside);
         }
 
@@ -62,6 +62,14 @@ export default function ProductDetail() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [showSizes]);
+
+    useEffect(() => {
+        if (showSizes && window.innerWidth < 1024) {
+            document.body.style.overflow = 'hidden';
+        } else if (!activeDrawer && !showCustomSizeModal) {
+            document.body.style.overflow = 'auto';
+        }
+    }, [showSizes, activeDrawer, showCustomSizeModal]);
 
     useEffect(() => {
         window.scroll(0, 0)
@@ -291,7 +299,6 @@ export default function ProductDetail() {
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="text-[12px] uppercase tracking-wider text-black font-medium cursor-pointer" onClick={() => setShowCustomSizeModal(true)}>CUSTOM SIZE</div>
                                     </div>
 
                                     <div className="space-y-4 hidden lg:block">
@@ -306,6 +313,17 @@ export default function ProductDetail() {
                                                         className="w-full border bg-white z-50 overflow-hidden"
                                                     >
                                                         <div className="flex flex-col max-h-[240px] overflow-y-auto">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setShowCustomSizeModal(true);
+                                                                    setShowSizes(false);
+                                                                }}
+                                                                className="group flex justify-between items-center px-4 py-4 hover:bg-neutral-50 border-b border-neutral-50 last:border-0 transition-colors"
+                                                            >
+                                                                <span className="text-[11px] uppercase tracking-widest text-black font-light group-hover:font-medium">
+                                                                    Custom Size
+                                                                </span>
+                                                            </button>
                                                             {currentProductSizes?.map(size => (
                                                                 <button
                                                                     key={size.size}
@@ -320,6 +338,7 @@ export default function ProductDetail() {
                                                                     </span>
                                                                 </button>
                                                             ))}
+
                                                         </div>
                                                     </motion.div>
                                                 ) : (
@@ -500,7 +519,6 @@ export default function ProductDetail() {
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="text-[11px] uppercase tracking-wider text-black font-medium cursor-pointer" onClick={() => setShowCustomSizeModal(true)}>CUSTOM SIZE</div>
                                     </div>
                                 </div>
                             </motion.div>
@@ -510,7 +528,7 @@ export default function ProductDetail() {
                     <motion.div layout className="flex items-center justify-between gap-4">
                         <motion.div
                             layout
-                            animate={{ maxWidth: isScrolled ? "320px" : "100%" }}
+                            animate={{ maxWidth: isScrolled ? "340px" : "100%" }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             className="flex-grow"
                         >
@@ -518,14 +536,13 @@ export default function ProductDetail() {
                                 onClick={() => {
                                     if (!selectedSize) {
                                         setShowSizes(true);
-                                        sizeSelectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                     } else {
                                         console.log("Adding to cart:", product.name, selectedSize);
                                     }
                                 }}
                                 className="w-full bg-white text-black border border-black rounded-none h-11 uppercase text-[11px] tracking-[0.2em] hover:bg-neutral-50"
                             >
-                                {selectedSize ? `ADD (${selectedSize})` : 'ADD'}
+                                ADD
                             </Button>
                         </motion.div>
 
@@ -547,6 +564,62 @@ export default function ProductDetail() {
                         </AnimatePresence>
                     </motion.div>
                 </motion.div>
+
+                <AnimatePresence>
+                    {showSizes && (
+                        <>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setShowSizes(false)}
+                                className="fixed inset-0 bg-black/40 z-[100] lg:hidden"
+                            />
+                            <motion.div
+                                initial={{ y: "100%" }}
+                                animate={{ y: 0 }}
+                                exit={{ y: "100%" }}
+                                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                                className="fixed bottom-0 left-0 right-0 bg-white z-[101] lg:hidden pb-safe-area shadow-[0_-8px_30px_rgb(0,0,0,0.12)]"
+                            >
+                                <div className="p-6">
+                                    <div className="flex justify-between items-center mb-6">
+                                        <p className="text-[11px] uppercase tracking-[0.2em] font-medium">Select Size</p>
+                                        <button onClick={() => setShowSizes(false)} className="text-[10px] uppercase tracking-widest opacity-60">Close</button>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setShowCustomSizeModal(true);
+                                                setShowSizes(false);
+                                            }}
+                                            className="w-full py-4 text-[11px] uppercase tracking-widest border border-neutral-100 hover:bg-neutral-50 transition-colors"
+                                        >
+                                            Custom Size
+                                        </button>
+                                        {currentProductSizes?.map(size => (
+                                            <button
+                                                key={size.size}
+                                                onClick={() => {
+                                                    setSelectedSize(size.size);
+                                                    setShowSizes(false);
+                                                }}
+                                                className={cn(
+                                                    "w-full py-4 text-[11px] uppercase tracking-widest border transition-colors",
+                                                    selectedSize === size.size ? "bg-black text-white border-black" : "bg-white text-black border-neutral-100 hover:bg-neutral-50"
+                                                )}
+                                            >
+                                                {size.size}
+                                            </button>
+                                        ))}
+
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>
+
 
 
 

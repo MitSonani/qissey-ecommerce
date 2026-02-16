@@ -26,30 +26,60 @@ export default function Home() {
             <Hero />
 
             {/* Featured Collections Tiles */}
-            <section className="py-32  md:px-8 bg-white">
+            <section className="py-16 md:px-8 bg-white">
                 <div className="container">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div className="col-span-1 lg:col-span-2 relative aspect-[16/9] bg-brand-gray overflow-hidden group">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                        {/* Dresses */}
+                        <div className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
                             <img
-                                src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2000&auto=format&fit=crop"
+                                src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=1000&auto=format&fit=crop"
                                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                alt="Category"
+                                alt="Dresses"
                             />
-                            <div className="absolute inset-0 bg-black/10 transition-opacity group-hover:bg-black/30" />
-                            <div className="absolute bottom-12 left-12 text-white">
-                                <h2 className="text-4xl font-black uppercase tracking-tighter mb-4">Essentials</h2>
-                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all">Explore</Link>
+                            <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
+                            <div className="absolute bottom-12 left-0 right-0 text-center text-white">
+                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">Dresses</h2>
+                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block drop-shadow-md">shop now</Link>
                             </div>
                         </div>
-                        <div className="relative aspect-square md:aspect-auto lg:aspect-[3/4] bg-brand-gray overflow-hidden group">
+
+                        {/* Shirts */}
+                        <div className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
                             <img
-                                src="https://images.unsplash.com/photo-1539106609512-71714f291077?q=80&w=1000&auto=format&fit=crop"
+                                src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1000&auto=format&fit=crop"
                                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                alt="Category"
+                                alt="Shirts"
                             />
-                            <div className="absolute top-12 left-12 text-white">
-                                <h2 className="text-4xl font-black uppercase tracking-tighter mb-4">Outerwear</h2>
-                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all">Shop Now</Link>
+                            <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
+                            <div className="absolute bottom-12 left-0 right-0 text-center text-white">
+                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">Shirts</h2>
+                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block drop-shadow-md">shop now</Link>
+                            </div>
+                        </div>
+
+                        {/* Tops & Tees */}
+                        <div className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
+                            <img
+                                src="https://images.unsplash.com/photo-1523381235208-25922313045d?q=80&w=1000&auto=format&fit=crop"
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                alt="Tops & Tees"
+                            />
+                            <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
+                            <div className="absolute bottom-12 left-0 right-0 text-center text-white">
+                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">Tops & Tees</h2>
+                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block drop-shadow-md">shop now</Link>
+                            </div>
+                        </div>
+                        <div className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
+                            <img
+                                src="https://images.unsplash.com/photo-1523381235208-25922313045d?q=80&w=1000&auto=format&fit=crop"
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                alt="Tops & Tees"
+                            />
+                            <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
+                            <div className="absolute bottom-12 left-0 right-0 text-center text-white">
+                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">Tops & Tees</h2>
+                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block drop-shadow-md">shop now</Link>
                             </div>
                         </div>
                     </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ProductCard } from '../features/products';
 import Hero from '../components/Hero';
-import { fetchProducts, fetchAllCollections } from '../features/products/services/productService';
+import { fetchNewArrivalProducts, fetchAllCollections } from '../features/products/services/productService';
 export default function Home() {
     const [productsS, setProducts] = useState([]);
     const [collections, setCollections] = useState([]);
@@ -11,7 +11,7 @@ export default function Home() {
         const loadData = async () => {
             try {
                 const [productsRes, collectionsRes] = await Promise.all([
-                    fetchProducts(),
+                    fetchNewArrivalProducts(),
                     fetchAllCollections()
                 ]);
                 setProducts(productsRes);
@@ -63,17 +63,15 @@ export default function Home() {
             {/* New Arrivals Slider */}
             <section className="pb-32 md:px-8 overflow-hidden ">
                 <div className="container">
-                    <div className="flex justify-between items-end mb-16">
+                    <div className="flex justify-between items-end mb-8">
                         <div>
                             <p className="text-[10px] uppercase font-bold tracking-[0.4em] mb-4 text-black/40">The Latest Drops</p>
-                            <h2 className="text-5xl font-black uppercase tracking-tighter">New Arrivals</h2>
+                            <h2 className="text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg ">New Arrivals</h2>
                         </div>
-                        <Link to="/shop" className="text-[10px] uppercase font-bold tracking-[0.4em] mb-4 text-black/40 hover:opacity-50 transition-opacity">
-                            View All
-                        </Link>
+
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 ">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-8 ">
                         {productsS.map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}

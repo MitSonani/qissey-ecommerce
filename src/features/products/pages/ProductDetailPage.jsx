@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { fetchProductById } from '../services/productService';
 import { Button, cn } from '../../../components/ui/Primitives';
-import { ChevronDown, ArrowRight } from 'lucide-react';
+import { ChevronDown, ArrowRight, Bookmark } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SideDrawer from '../../../components/ui/SideDrawer';
 import RealatedProduct from '../components/RealatedProduct';
@@ -272,9 +272,13 @@ export default function ProductDetail() {
                         <div className="w-full lg:w-1/2 flex flex-col ">
                             <div className="max-w-[500px] ">
                                 <div className="hidden lg:block">
-                                    <p className="text-[18px] uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black mb-1">
-                                        {product?.name}
-                                    </p>
+                                    <div className='flex justify-between items-center'>
+                                        <p className="text-[18px] uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black mb-1">
+                                            {product?.name}
+
+                                        </p>
+                                        <Bookmark size={18} strokeWidth={1} />
+                                    </div>
                                     <p className="text-[15px] font-bold tracking-wide opacity-60 hover:opacity-100 mb-1">
                                         ₹ {product?.price.toLocaleString()}
                                     </p>
@@ -349,21 +353,23 @@ export default function ProductDetail() {
                                                         animate={{ opacity: 1 }}
                                                         exit={{ opacity: 0 }}
                                                     >
-                                                        <Button
-                                                            onClick={() => {
-                                                                if (!selectedSize) {
-                                                                    setShowSizes(true);
-                                                                } else {
-                                                                    console.log("Adding to cart:", product.name, selectedSize);
-                                                                }
-                                                            }}
-                                                            className={cn(
-                                                                "w-full py-3 rounded-none uppercase text-[11px] tracking-[0.2em] transition-all duration-300 flex justify-center items-center gap-2",
-                                                                "bg-white text-black border border-black hover:bg-neutral-50"
-                                                            )}
-                                                        >
-                                                            Add
-                                                        </Button>
+                                                        <div className="flex gap-2">
+                                                            <Button
+                                                                onClick={() => {
+                                                                    if (!selectedSize) {
+                                                                        setShowSizes(true);
+                                                                    } else {
+                                                                        console.log("Adding to cart:", product.name, selectedSize);
+                                                                    }
+                                                                }}
+                                                                className={cn(
+                                                                    "flex-grow py-3 rounded-none uppercase text-[11px] tracking-[0.2em] transition-all duration-300 flex justify-center items-center gap-2",
+                                                                    "bg-white text-black border border-black hover:bg-neutral-50"
+                                                                )}
+                                                            >
+                                                                Add
+                                                            </Button>
+                                                        </div>
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
@@ -580,6 +586,9 @@ export default function ProductDetail() {
                                                 </div>
                                             ))}
                                         </div>
+                                        <div className="pl-1 mt-3 flex items-center gap-2">
+                                            <Bookmark size={18} strokeWidth={1} />
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>
@@ -591,7 +600,7 @@ export default function ProductDetail() {
                             layout
                             animate={{ maxWidth: isScrolled ? "340px" : "100%" }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="flex-grow"
+                            className="flex-grow flex gap-2"
                         >
                             <Button
                                 onClick={() => {
@@ -601,10 +610,11 @@ export default function ProductDetail() {
                                         console.log("Adding to cart:", product.name, selectedSize);
                                     }
                                 }}
-                                className="w-full bg-white text-black border border-black rounded-none h-11 uppercase text-[11px] tracking-[0.2em] hover:bg-neutral-50"
+                                className="flex-grow bg-white text-black border border-black rounded-none h-11 uppercase text-[11px] tracking-[0.2em] hover:bg-neutral-50"
                             >
                                 ADD
                             </Button>
+
                         </motion.div>
 
                         <AnimatePresence>

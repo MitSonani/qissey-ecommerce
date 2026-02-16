@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Plus } from 'lucide-react';
+import { ShoppingCart, Bookmark } from 'lucide-react';
 import { useCart } from '../../../features/cart';
 import { Badge, cn } from '../../../components/ui/Primitives';
 import { useState } from 'react';
@@ -52,7 +52,7 @@ export default function ProductCard({ product, isCompleteTheLook = false }) {
                         className="text-brand-charcoal hover:opacity-50 transition-opacity"
                         aria-label="Add to cart"
                     >
-                        <Plus size={16} strokeWidth={1} />
+                        <Bookmark size={16} strokeWidth={1} />
                     </button>
                 </div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black">

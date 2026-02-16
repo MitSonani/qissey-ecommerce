@@ -27,6 +27,30 @@ export const fetchProducts = async () => {
     }
 };
 
+export const fetchNewArrivalProducts = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .select(`id,
+                    name,
+                    price,
+                    product_variants(
+                       id,
+                       image_urls
+                    )
+                    `)
+            .eq('product_variants.is_primary', true)
+            .eq('new_arrival', true)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+    }
+};
+
 /**
  * Fetch a single product by ID
  * @param {string} id - Product UUID

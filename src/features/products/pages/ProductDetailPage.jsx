@@ -31,6 +31,7 @@ export default function ProductDetail() {
     const [activeDrawer, setActiveDrawer] = useState(null);
     const [colors, setColors] = useState([])
     const [showCustomSizeModal, setShowCustomSizeModal] = useState(false);
+    const [activeTab, setActiveTab] = useState('DESCRIPTION');
     const [isScrolled, setIsScrolled] = useState(false);
     const sizeSelectorRef = useRef(null);
 
@@ -370,36 +371,75 @@ export default function ProductDetail() {
                                     </div>
                                 </div>
 
-                                <div className="pt-4">
-                                    <p className="text-[13px] opacity-60 font-medium leading-relaxed whitespace-pre-line">
-                                        {product.description}
-                                    </p>
-                                </div>
+                                <div className="mt-2">
+                                    {/* Mobile Tabs */}
+                                    <div className="flex gap-6 lg:hidden mb-6 overflow-x-auto no-scrollbar">
+                                        {['DESCRIPTION', 'MEASUREMENTS'].map((tab) => (
+                                            <button
+                                                key={tab}
+                                                onClick={() => setActiveTab(tab)}
+                                                className={cn(
+                                                    "pb-2 text-[10px] sm:text-[11px] uppercase tracking-[0.2em] transition-all whitespace-nowrap",
+                                                    activeTab === tab ? "text-black font-medium" : "text-neutral-400"
+                                                )}
+                                            >
+                                                {tab}
+                                            </button>
+                                        ))}
+                                    </div>
 
-                                <CompleteYourLook completeTheLookIds={product?.complete_the_look} />
+                                    <div className="lg:hidden min-h-[50px]">
+                                        {activeTab === 'DESCRIPTION' && (
+                                            <div className="pb-8 animate-in fade-in duration-500">
+                                                <p className="text-[12px] whitespace-pre-line">
+                                                    {product.description}
+                                                </p>
+                                            </div>
+                                        )}
 
-                                <div className="border-t border-neutral-100 mt-10 pt-6 space-y-4 max-w-[600px] mx-auto">
-                                    <button
-                                        onClick={() => setActiveDrawer('measurement')}
-                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em]  opacity-70 hover:opacity-100 transition-opacity"
-                                    >
-                                        Product measurements
-                                        <ArrowRight size={14} />
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveDrawer('composition')}
-                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em]  opacity-70 hover:opacity-100 transition-opacity"
-                                    >
-                                        Composition & Care
-                                        <ArrowRight size={14} />
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveDrawer('shipping')}
-                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em]  opacity-70 hover:opacity-100 transition-opacity"
-                                    >
-                                        Shipping & Returns
-                                        <ArrowRight size={14} />
-                                    </button>
+
+
+                                        {activeTab === 'MEASUREMENTS' && (
+                                            <div className="pb-8 animate-in fade-in duration-500 overflow-x-auto">
+                                                {drawerContent.measurement.content}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Desktop Content */}
+                                    <div className="hidden lg:block">
+                                        <div className="pt-4">
+                                            <p className="text-[12px] whitespace-pre-line">
+                                                {product.description}
+                                            </p>
+                                        </div>
+
+                                        <CompleteYourLook completeTheLookIds={product?.complete_the_look} />
+
+                                        <div className="border-t border-neutral-100 mt-10 pt-6 space-y-4 max-w-[600px] mx-auto">
+                                            <button
+                                                onClick={() => setActiveDrawer('measurement')}
+                                                className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em]  opacity-70 hover:opacity-100 transition-opacity"
+                                            >
+                                                Product measurements
+                                                <ArrowRight size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => setActiveDrawer('composition')}
+                                                className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em]  opacity-70 hover:opacity-100 transition-opacity"
+                                            >
+                                                Composition & Care
+                                                <ArrowRight size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => setActiveDrawer('shipping')}
+                                                className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em]  opacity-70 hover:opacity-100 transition-opacity"
+                                            >
+                                                Shipping & Returns
+                                                <ArrowRight size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
@@ -493,10 +533,12 @@ export default function ProductDetail() {
                             >
                                 <div className='flex justify-between'>
                                     <div>
-                                        <p className="text-[16px] uppercase tracking-[0.1em] text-black-400 truncate">
+                                        <p className="text-[18px] uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black mb-1">
                                             {product?.name}
                                         </p>
-                                        <motion.p layoutId="product-price" className="text-[15px] font-medium tracking-tight whitespace-nowrap">
+
+
+                                        <motion.p layoutId="product-price" className="text-[15px] font-bold tracking-wide opacity-60 hover:opacity-100 mb-1">
                                             ₹ {product?.price.toLocaleString()}
                                         </motion.p>
                                         <p className="text-[10px] pt-1 font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-6">
@@ -556,7 +598,7 @@ export default function ProductDetail() {
                                     transition={{ duration: 0.3, ease: "easeOut" }}
                                     className="flex flex-col justify-center"
                                 >
-                                    <motion.p layoutId="product-price" className="text-[15px] font-medium tracking-tight whitespace-nowrap">
+                                    <motion.p layoutId="product-price" className="text-[15px] font-bold tracking-wide opacity-60 hover:opacity-100 mb-1">
                                         ₹ {product?.price.toLocaleString()}
                                     </motion.p>
                                 </motion.div>

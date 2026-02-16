@@ -19,11 +19,11 @@ const RelatedProduct = ({ collectionId, productId }) => {
 
         relatedProducts?.length > 0 ? (
             <section className="mt-12 md:mt-24 border-t border-neutral-100 pt-10 md:pt-20">
-                <h2 className="text-[16px] md:text-[20px] font-bold uppercase tracking-[0.1em] opacity-90 hover:opacity-100 transition-opacity whitespace-nowrap text-black mb-8 md:mb-12">
-                    Related Products
-                </h2>
+                <p className="pb-10 text-[14px] sm:text-[15px] uppercase tracking-[0.2em] transition-all whitespace-nowrap">
+                    You may intrested in
+                </p>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 ">
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-8 ">
                     {relatedProducts.map(p => (
                         <ProductCard key={p.id} product={p} />
                     ))}

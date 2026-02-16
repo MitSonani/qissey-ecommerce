@@ -29,22 +29,23 @@ const CompleteYourLook = ({ completeTheLookIds }) => {
 
     return (
         <section className="mt-2 border-t border-neutral-100 pt-6">
-            <p className="text-[12px] tracking-wider font-medium uppercase opacity-80 hover:opacity-100 transition-opacity text-black mb-5">
+            <p className="pb-4 text-[10px] sm:text-[11px] uppercase tracking-[0.2em] transition-all whitespace-nowrap">
                 Match it With
             </p>
 
-            {loading ? (
-                <div className="flex justify-center py-12">
-                    <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                </div>
-            ) : (
-                <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
-                    {completeTheLookProducts.map(product => (
-                        <ProductCard key={product.id} product={product} isCompleteTheLook={true} />
-                    ))}
-                </div>
-            )}
-        </section>
+            {
+                loading ? (
+                    <div className="flex justify-center py-12" >
+                        <div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+                        {completeTheLookProducts.map(product => (
+                            <ProductCard key={product.id} product={product} isCompleteTheLook={true} />
+                        ))}
+                    </div>
+                )}
+        </section >
     );
 };
 

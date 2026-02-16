@@ -452,58 +452,40 @@ export default function ProductDetail() {
                 />
 
 
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 p-4 lg:hidden z-[90] safe-area-inset-bottom">
-                    <AnimatePresence mode="wait">
-                        {isScrolled ? (
+                <motion.div
+                    layout
+                    transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                        mass: 1
+                    }}
+                    className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 p-4 lg:hidden z-[90] safe-area-inset-bottom"
+                >
+                    <AnimatePresence initial={false}>
+                        {!isScrolled && (
                             <motion.div
-                                key="compact-bar"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 10 }}
-                                className="flex gap-4"
-                            >
-
-                                <Button
-                                    onClick={() => {
-                                        if (!selectedSize) {
-                                            setShowSizes(true);
-                                            sizeSelectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        } else {
-                                            console.log("Adding to cart:", product.name, selectedSize);
-                                        }
-                                    }}
-                                    className="flex-grow max-w-[320px] bg-white text-black border border-black rounded-none h-11 uppercase text-[11px] tracking-[0.2em] hover:bg-neutral-50"
-                                >
-                                    {selectedSize ? `ADD (${selectedSize})` : 'ADD'}
-                                </Button>
-                                <div className="flex flex-col justify-center">
-                                    <p className="text-[15px] font-medium tracking-tight whitespace-nowrap">
-                                        ₹ {product?.price.toLocaleString()}
-                                    </p>
-
-                                </div>
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="full-bar"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 10 }}
+                                key="full-bar-details"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+                                className="overflow-hidden"
                             >
                                 <div className='flex justify-between'>
-                                    <div className="mb-2">
+                                    <div>
                                         <p className="text-[16px] uppercase tracking-[0.1em] text-black-400 truncate">
                                             {product?.name}
                                         </p>
-                                        <p className="text-[15px] font-medium tracking-tight whitespace-nowrap">
+                                        <motion.p layoutId="product-price" className="text-[15px] font-medium tracking-tight whitespace-nowrap">
                                             ₹ {product?.price.toLocaleString()}
-                                        </p>
+                                        </motion.p>
                                         <p className="text-[10px] pt-1 font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-6">
                                             MRP incl. of all taxes
                                         </p>
                                     </div>
 
-                                    <div className="flex flex-col gap-6 mb-4">
+                                    <div className="flex flex-col gap-6 ">
                                         <div className="flex gap-2">
                                             {[...colors]?.map((item) => (
                                                 <div
@@ -521,27 +503,54 @@ export default function ProductDetail() {
                                         <div className="text-[11px] uppercase tracking-wider text-black font-medium cursor-pointer" onClick={() => setShowCustomSizeModal(true)}>CUSTOM SIZE</div>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-between gap-4">
-                                    <Button
-                                        onClick={() => {
-                                            if (!selectedSize) {
-                                                setShowSizes(true);
-                                                sizeSelectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                            } else {
-                                                console.log("Adding to cart:", product.name, selectedSize);
-                                            }
-                                        }}
-                                        className="flex-grow bg-white text-black border border-black rounded-none h-11 uppercase text-[11px] tracking-[0.2em] hover:bg-neutral-50"
-                                    >
-                                        {selectedSize ? `ADD (${selectedSize})` : 'ADD'}
-                                    </Button>
-                                </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
-                </div>
 
-            </div>
+                    <motion.div layout className="flex items-center justify-between gap-4">
+                        <motion.div
+                            layout
+                            animate={{ maxWidth: isScrolled ? "320px" : "100%" }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className="flex-grow"
+                        >
+                            <Button
+                                onClick={() => {
+                                    if (!selectedSize) {
+                                        setShowSizes(true);
+                                        sizeSelectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    } else {
+                                        console.log("Adding to cart:", product.name, selectedSize);
+                                    }
+                                }}
+                                className="w-full bg-white text-black border border-black rounded-none h-11 uppercase text-[11px] tracking-[0.2em] hover:bg-neutral-50"
+                            >
+                                {selectedSize ? `ADD (${selectedSize})` : 'ADD'}
+                            </Button>
+                        </motion.div>
+
+                        <AnimatePresence>
+                            {isScrolled && (
+                                <motion.div
+                                    key="compact-price"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: 20 }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="flex flex-col justify-center"
+                                >
+                                    <motion.p layoutId="product-price" className="text-[15px] font-medium tracking-tight whitespace-nowrap">
+                                        ₹ {product?.price.toLocaleString()}
+                                    </motion.p>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
+                </motion.div>
+
+
+
+            </div >
         </div >
     );
 }

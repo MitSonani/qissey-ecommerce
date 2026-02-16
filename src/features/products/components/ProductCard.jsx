@@ -5,15 +5,15 @@ import { Badge, cn } from '../../../components/ui/Primitives';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, isCompleteTheLook = false }) {
     const { addToCart } = useCart();
     const [isHovered, setIsHovered] = useState(false);
 
     return (
         <div
             className="group relative flex flex-col"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            onMouseEnter={() => !isCompleteTheLook && setIsHovered(true)}
+            onMouseLeave={() => !isCompleteTheLook && setIsHovered(false)}
         >
             <Link to={`/product/${product.id}`}>
                 <div className="relative aspect-[3/4] overflow-hidden bg-brand-gray group">
@@ -36,7 +36,7 @@ export default function ProductCard({ product }) {
                 </div>
             </Link>
 
-            <div className="mt-4 flex flex-col gap-1.5 px-0.5">
+            {!isCompleteTheLook && <div className="mt-4 flex flex-col gap-1.5 px-0.5">
                 <div className="flex justify-between items-start">
                     <Link
                         to={`/product/${product.id}`}
@@ -58,7 +58,7 @@ export default function ProductCard({ product }) {
                 <p className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black">
                     ₹ {product.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </p>
-            </div>
+            </div>}
         </div>
     );
 }

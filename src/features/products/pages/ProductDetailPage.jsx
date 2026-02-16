@@ -1,27 +1,46 @@
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { fetchProductById, fetchRelatedProducts } from '../services/productService';
-import { useCart } from '../../../features/cart';
+import { useState, useEffect, useRef } from 'react';
+import { fetchProductById } from '../services/productService';
 import { Button, cn } from '../../../components/ui/Primitives';
-import { Plus, ChevronDown, ArrowRight } from 'lucide-react';
-import ProductCard from '../components/ProductCard';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SideDrawer from '../../../components/ui/SideDrawer';
+import RealatedProduct from '../components/RealatedProduct';
+import CompleteYourLook from '../components/CompleteYourLook';
+import ProductDetailSkeleton from '../components/ProductDetailSkeleton';
 
 export default function ProductDetail() {
     const { id } = useParams();
-    const { addToCart } = useCart();
     const [product, setProduct] = useState(null);
     const [primaryProduct, setPrimaryProduct] = useState(null);
-    const [relatedProducts, setRelatedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [showSizes, setShowSizes] = useState(false);
     const [activeDrawer, setActiveDrawer] = useState(null);
     const [colors, setColors] = useState([])
-    console.log("showSizesshowSizes", showSizes)
-    console.log("colors", colors)
+    const sizeSelectorRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (sizeSelectorRef.current && !sizeSelectorRef.current.contains(event.target)) {
+                setShowSizes(false);
+            }
+        };
+
+        if (showSizes) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showSizes]);
+
+    useEffect(() => {
+        window.scroll(0, 0)
+    }, [])
+
 
     const findPrimaryProduct = (colorId) => {
 
@@ -34,28 +53,29 @@ export default function ProductDetail() {
                 setLoading(true);
                 setError(null);
 
-                // Fetch product details
                 const productData = await fetchProductById(id);
+
                 const primaryProductImages = productData?.product_variants?.find((variant) => variant.is_primary)
+
                 const data = productData?.product_variants?.map((variant) => {
                     return variant?.color_id
                 })
+
                 const uniqueColors = Array.from(
                     new Map(data.map(item => [item.name, item])).values()
                 );
 
                 setColors([...uniqueColors])
+
                 setPrimaryProduct(primaryProductImages)
+
                 if (!productData) {
                     setError('Product not found');
                     setLoading(false);
                     return;
                 }
-                setProduct(productData);
 
-                // Fetch related products
-                const related = [] || await fetchRelatedProducts(id);
-                setRelatedProducts(related);
+                setProduct(productData)
 
                 setLoading(false);
             } catch (err) {
@@ -68,19 +88,11 @@ export default function ProductDetail() {
         loadProductData();
     }, [id]);
 
-    console.log(product, "product")
 
     const currentProductSizes = product?.product_variants?.filter((variant) => variant?.color_id?.hex === primaryProduct?.color_id?.hex)
 
     if (loading) {
-        return (
-            <div className="pt-40 container text-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-sm uppercase tracking-widest text-neutral-600">Loading...</p>
-                </div>
-            </div>
-        );
+        return <ProductDetailSkeleton />;
     }
 
     if (error || !product) {
@@ -165,142 +177,191 @@ export default function ProductDetail() {
         <div className="pt-30 bg-white">
             <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-10">
 
-                <div className="flex flex-col lg:flex-row gap-10">
+                <div className="space-y-12">
+                    {/* Section 1: 1st Image + Product Summary & Description */}
+                    <div className="flex flex-col lg:flex-row gap-12">
+                        <div className="w-full lg:w-1/2">
+                            {primaryProduct?.image_urls?.[0] && (
+                                <div className="bg-neutral-100 overflow-hidden">
+                                    <img
+                                        src={primaryProduct.image_urls[0]}
+                                        alt={`${product.name} - view 1`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            )}
+                        </div>
 
-                    <div className="w-full lg:w-1/2 space-y-6">
-                        {primaryProduct?.image_urls?.map((img, idx) => (
-                            <div
-                                key={idx}
-                                className="bg-neutral-100 overflow-hidden"
-                            >
-                                <img
-                                    src={img}
-                                    alt={`${product.title} - view ${idx + 1}`}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                        ))}
-                    </div>
+                        <div className="w-full lg:w-1/2 flex flex-col ">
+                            <div className="max-w-[500px] ">
+                                <div>
+                                    <p className="text-[18px] uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black mb-1">
+                                        {product?.name}
+                                    </p>
+                                    <p className="text-[15px] font-bold tracking-wide opacity-60 hover:opacity-100 mb-1">
+                                        ₹ {product?.price.toLocaleString()}
+                                    </p>
+                                    <p className="text-[10px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-6">
+                                        MRP incl. of all taxes
+                                    </p>
+                                </div>
 
-                    <div className="w-full lg:w-1/2 flex flex-col">
-                        <div className="sticky top-24 space-y-8">
-
-                            <div>
-
-
-                                <p className="text-[18px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black mb-2">
-                                    {product?.name}
-                                </p>
-
-                                <p className="text-[15px] font-bold tracking-wide  opacity-60 hover:opacity-100 ">
-                                    ₹ {product?.price.toLocaleString()}
-                                </p>
-
-                                <p className="text-[10px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black mt-1">
-                                    MRP incl. of all taxes
-                                </p>
-                            </div>
-
-                            <div className="border-t border-neutral-200 pt-6 ">
-                                <div className='flex gap-2 mb-[20px]'>
-                                    {
-                                        colors?.map((item) => (
-                                            <>
-                                                <div className={cn('w-8 h-8 flex justify-center items-center', { 'border-1 border-black': item?.id === primaryProduct?.color_id?.id })} onClick={() => findPrimaryProduct(item?.id)}>
-                                                    <div
-                                                        className="w-6 h-6 shadow-sm p-2"
-                                                        style={{ backgroundColor: item?.hex }}
-                                                    ></div>
-                                                </div>
-                                            </>
-                                        ))
-                                    }</div>
-
-
-                                <div className="space-y-4">
-                                    <AnimatePresence>
-                                        {showSizes && (
-                                            <motion.div
-                                                initial={{ height: 0, opacity: 0 }}
-                                                animate={{ height: 'auto', opacity: 1 }}
-                                                exit={{ height: 0, opacity: 0 }}
-                                                className="overflow-hidden"
+                                <div className="border-t border-neutral-200 pt-6">
+                                    <p className="pb-3 text-[12px] uppercase tracking-wider text-black font-medium">{primaryProduct?.color_id?.name}</p>
+                                    <div className="flex gap-2 mb-[20px]">
+                                        {colors?.map((item) => (
+                                            <div
+                                                key={item?.id}
+                                                className={cn('w-6 h-6 flex justify-center items-center cursor-pointer', { 'border border-black': item?.id === primaryProduct?.color_id?.id })}
+                                                onClick={() => findPrimaryProduct(item?.id)}
                                             >
-                                                <div className="flex flex-col gap-2 pb-4">
-                                                    {currentProductSizes?.map(size => (
-                                                        <button
-                                                            key={size.id}
+                                                <div
+                                                    className="w-4 h-4 shadow-sm"
+                                                    style={{ backgroundColor: item?.hex }}
+                                                ></div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="relative min-h-[56px]" ref={sizeSelectorRef}>
+                                            <AnimatePresence mode="wait">
+                                                {showSizes ? (
+                                                    <motion.div
+                                                        key="size-list"
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        exit={{ opacity: 0 }}
+                                                        className="w-full border bg-white z-50 overflow-hidden"
+                                                    >
+                                                        <div className="flex flex-col max-h-[240px] overflow-y-auto">
+                                                            {currentProductSizes?.map(size => (
+                                                                <button
+                                                                    key={size.size}
+                                                                    onClick={() => {
+                                                                        setSelectedSize(size.size);
+                                                                        setShowSizes(false);
+                                                                    }}
+                                                                    className="group flex justify-between items-center px-4 py-4 hover:bg-neutral-50 border-b border-neutral-50 last:border-0 transition-colors"
+                                                                >
+                                                                    <span className="text-[11px] uppercase tracking-widest text-black font-light group-hover:font-medium">
+                                                                        {size.size}
+                                                                    </span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </motion.div>
+                                                ) : (
+                                                    <motion.div
+                                                        key="add-button"
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        exit={{ opacity: 0 }}
+                                                    >
+                                                        <Button
                                                             onClick={() => {
-                                                                setSelectedSize(size.size);
-                                                                // addToCart(product, size.size);
-                                                                // setShowSizes(false);
+                                                                if (!selectedSize) {
+                                                                    setShowSizes(true);
+                                                                } else {
+                                                                    console.log("Adding to cart:", product.name, selectedSize);
+                                                                }
                                                             }}
                                                             className={cn(
-                                                                "w-full py-4 text-[11px] uppercase tracking-widest border border-neutral-200 transition-all hover:bg-black hover:text-white hover:border-black",
-                                                                selectedSize === size.size && "bg-black text-white border-black"
+                                                                "w-full py-3 rounded-none uppercase text-[11px] tracking-[0.2em] transition-all duration-300 flex justify-center items-center gap-2",
+                                                                "bg-white text-black border border-black hover:bg-neutral-50"
                                                             )}
                                                         >
-                                                            {size.size}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-
-                                    <Button
-                                        onClick={() => setShowSizes(!showSizes)}
-                                        className="w-full py-6 bg-transparent hover:bg-black hover:text-white text-black border border-black rounded-none uppercase text-xs tracking-widest transition-colors duration-300 flex justify-center items-center gap-2"
-                                    >
-                                        Add {showSizes && <ChevronDown size={14} className="animate-bounce" />}
-                                    </Button>
+                                                            Add
+                                                        </Button>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="space-y-6 text-[11px] leading-relaxed font-light text-neutral-800">
-                                <p className='text-[14px] uppercase tracking-wider'>QISSEY {product.category} COLLECTION</p>
-                                <p className='text-[13px]'>{product.description}</p>
-                            </div>
+                                <div className="pt-4">
+                                    <p className="text-[13px] opacity-60 font-medium leading-relaxed whitespace-pre-line">
+                                        {product.description}
+                                    </p>
+                                </div>
 
-                            <div className="border-t border-neutral-100 pt-6 space-y-4">
-                                <button
-                                    onClick={() => setActiveDrawer('measurement')}
-                                    className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em] font-medium opacity-70 hover:opacity-100 transition-opacity"
-                                >
-                                    Product measurements
-                                    <ArrowRight size={14} />
-                                </button>
-                                <button
-                                    onClick={() => setActiveDrawer('composition')}
-                                    className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em] font-medium opacity-70 hover:opacity-100 transition-opacity"
-                                >
-                                    Composition & Care
-                                    <ArrowRight size={14} />
-                                </button>
-                                <button
-                                    onClick={() => setActiveDrawer('shipping')}
-                                    className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em] font-medium opacity-70 hover:opacity-100 transition-opacity"
-                                >
-                                    Shipping & Returns
-                                    <ArrowRight size={14} />
-                                </button>
+                                <CompleteYourLook completeTheLookIds={product?.complete_the_look} />
+
+                                <div className="border-t border-neutral-100 mt-10 pt-6 space-y-4 max-w-[600px] mx-auto">
+                                    <button
+                                        onClick={() => setActiveDrawer('measurement')}
+                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em] font-medium opacity-70 hover:opacity-100 transition-opacity"
+                                    >
+                                        Product measurements
+                                        <ArrowRight size={14} />
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveDrawer('composition')}
+                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em] font-medium opacity-70 hover:opacity-100 transition-opacity"
+                                    >
+                                        Composition & Care
+                                        <ArrowRight size={14} />
+                                    </button>
+                                    <button
+                                        onClick={() => setActiveDrawer('shipping')}
+                                        className="w-full flex items-center justify-between text-[11px] uppercase tracking-[0.15em] font-medium opacity-70 hover:opacity-100 transition-opacity"
+                                    >
+                                        Shipping & Returns
+                                        <ArrowRight size={14} />
+                                    </button>
+                                </div>
+
                             </div>
 
                         </div>
                     </div>
+
+                    <div className="flex flex-col lg:flex-row gap-12 items-center">
+                        <div className="w-full lg:w-1/2">
+                            <div className="max-w-[500px] lg:ml-auto px-4 lg:px-0">
+                                {
+                                    product?.fabrics?.map((fabric, index) => (
+                                        <p key={index} className="text-[13px] opacity-60 font-medium leading-relaxed">
+                                            {fabric}
+                                        </p>
+                                    ))
+                                }
+
+                            </div>
+                        </div>
+                        <div className="w-full lg:w-1/2">
+                            {primaryProduct?.image_urls?.[1] && (
+                                <div className="bg-neutral-100 overflow-hidden">
+                                    <img
+                                        src={primaryProduct.image_urls[1]}
+                                        alt={`${product.name} - view 2`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {primaryProduct?.image_urls?.length > 2 && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {primaryProduct.image_urls.slice(2).map((img, idx) => (
+                                <div key={idx} className="bg-neutral-100 overflow-hidden">
+                                    <img
+                                        src={img}
+                                        alt={`${product.name} - view ${idx + 3}`}
+                                        className="w-full h-full object-contain"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+
                 </div>
 
-                <section className="mt-24 border-t border-neutral-100 pt-20">
-                    <h2 className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black mb-12">
-                        Related Products
-                    </h2>
+                <RealatedProduct collectionId={product?.collection_id} productId={product?.id} />
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 ">
-                        {relatedProducts.map(p => (
-                            <ProductCard key={p.id} product={p} />
-                        ))}
-                    </div>
-                </section>
 
                 <SideDrawer
                     isOpen={!!activeDrawer}
@@ -311,6 +372,6 @@ export default function ProductDetail() {
                 </SideDrawer>
 
             </div>
-        </div>
+        </div >
     );
 }

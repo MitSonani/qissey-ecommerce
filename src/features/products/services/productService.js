@@ -36,7 +36,7 @@ export const fetchProductById = async (id) => {
     try {
         const { data, error } = await supabase
             .from('products')
-            .select('*, product_variants(*, color_id(*))')
+            .select('*, product_variants(*, color_id(*)), complete_the_look')
             .eq('id', id)
             .single();
 
@@ -48,26 +48,7 @@ export const fetchProductById = async (id) => {
     }
 };
 
-/**
- * Fetch products by category
- * @param {string} category - Category name
- * @returns {Promise<Array>} Array of product objects
- */
-export const fetchProductsByCategory = async (category) => {
-    try {
-        const { data, error } = await supabase
-            .from('products')
-            .select('*')
-            .eq('category', category)
-            .order('created_at', { ascending: false });
 
-        if (error) throw error;
-        return data || [];
-    } catch (error) {
-        console.error('Error fetching products by category:', error);
-        throw error;
-    }
-};
 
 /**
  * Fetch related products based on complete_the_look field
@@ -75,41 +56,60 @@ export const fetchProductsByCategory = async (category) => {
  * @param {number} limit - Maximum number of related products to return
  * @returns {Promise<Array>} Array of related product objects
  */
-export const fetchRelatedProducts = async (productId, limit = 4) => {
+export const fetchRelatedProducts = async (collectionId, productId) => {
     try {
-        // First, get the current product to access complete_the_look
-        const { data: currentProduct, error: productError } = await supabase
-            .from('products')
-            .select('complete_the_look, category')
-            .eq('id', productId)
-            .single();
-
-        if (productError) throw productError;
-
-        // If complete_the_look has related product IDs, fetch those
-        if (currentProduct?.complete_the_look && currentProduct.complete_the_look.length > 0) {
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .in('id', currentProduct.complete_the_look)
-                .limit(limit);
-
-            if (error) throw error;
-            return data || [];
-        }
-
-        // Fallback: fetch products from the same category
         const { data, error } = await supabase
             .from('products')
-            .select('*')
-            .eq('category', currentProduct.category)
+            .select(`
+                id,
+                name,
+                price,
+                product_variants(
+                    id,
+                    image_urls
+                )
+            `)
+            .eq('collection_id', collectionId)
             .neq('id', productId)
-            .limit(limit);
+            .limit(8);
 
         if (error) throw error;
         return data || [];
     } catch (error) {
         console.error('Error fetching related products:', error);
+        return [];
+    }
+};
+
+/**
+ * Fetch "Complete Your Look" products based on complete_the_look field
+ * @param {Array<string>} productIds - Array of product UUIDs from complete_the_look field
+ * @returns {Promise<Array>} Array of product objects
+ */
+export const fetchCompleteTheLookProducts = async (productIds) => {
+    try {
+        if (!productIds || productIds.length === 0) {
+            return [];
+        }
+
+        const { data, error } = await supabase
+            .from('products')
+            .select(`
+                id,
+                name,
+                price,
+                product_variants(
+                    id,
+                    image_urls,
+                    is_primary
+                )
+            `)
+            .in('id', productIds);
+
+        if (error) throw error;
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching complete the look products:', error);
         return [];
     }
 };

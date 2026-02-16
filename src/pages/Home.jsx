@@ -2,22 +2,26 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ProductCard } from '../features/products';
 import Hero from '../components/Hero';
-import { fetchProducts } from '../features/products/services/productService';
+import { fetchProducts, fetchAllCollections } from '../features/products/services/productService';
 export default function Home() {
     const [productsS, setProducts] = useState([]);
-
+    const [collections, setCollections] = useState([]);
 
     useEffect(() => {
-        const loadProducts = async () => {
+        const loadData = async () => {
             try {
-                const res = await fetchProducts();
-                setProducts(res);
+                const [productsRes, collectionsRes] = await Promise.all([
+                    fetchProducts(),
+                    fetchAllCollections()
+                ]);
+                setProducts(productsRes);
+                setCollections(collectionsRes);
             } catch (error) {
-                console.error('Error loading products:', error);
+                console.error('Error loading home data:', error);
             }
         };
 
-        loadProducts();
+        loadData();
     }, []);
 
 
@@ -28,60 +32,30 @@ export default function Home() {
             {/* Featured Collections Tiles */}
             <section className="py-16 md:px-8 bg-white">
                 <div className="container">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                        {/* Dresses */}
-                        <div className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
-                            <img
-                                src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=1000&auto=format&fit=crop"
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                alt="Dresses"
-                            />
-                            <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
-                            <div className="absolute bottom-12 left-0 right-0 text-center text-white">
-                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">Dresses</h2>
-                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block drop-shadow-md">shop now</Link>
-                            </div>
-                        </div>
-
-                        {/* Shirts */}
-                        <div className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
-                            <img
-                                src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1000&auto=format&fit=crop"
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                alt="Shirts"
-                            />
-                            <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
-                            <div className="absolute bottom-12 left-0 right-0 text-center text-white">
-                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">Shirts</h2>
-                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block drop-shadow-md">shop now</Link>
-                            </div>
-                        </div>
-
-                        {/* Tops & Tees */}
-                        <div className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
-                            <img
-                                src="https://images.unsplash.com/photo-1523381235208-25922313045d?q=80&w=1000&auto=format&fit=crop"
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                alt="Tops & Tees"
-                            />
-                            <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
-                            <div className="absolute bottom-12 left-0 right-0 text-center text-white">
-                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">Tops & Tees</h2>
-                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block drop-shadow-md">shop now</Link>
-                            </div>
-                        </div>
-                        <div className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
-                            <img
-                                src="https://images.unsplash.com/photo-1523381235208-25922313045d?q=80&w=1000&auto=format&fit=crop"
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                alt="Tops & Tees"
-                            />
-                            <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
-                            <div className="absolute bottom-12 left-0 right-0 text-center text-white">
-                                <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">Tops & Tees</h2>
-                                <Link to="/shop" className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block drop-shadow-md">shop now</Link>
-                            </div>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-2">
+                        {[...collections].map((collection) => (
+                            <Link
+                                to={`/collection/${collection.id}`}
+                                className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block "
+                            >
+                                <div key={collection.id} className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
+                                    <img
+                                        src={collection.image_url}
+                                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                        alt={collection.name}
+                                    />
+                                    <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
+                                    <div className="absolute bottom-12 left-0 right-0 text-center text-white">
+                                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">
+                                            {collection.name}
+                                        </h2>
+                                        <p>
+                                            view collection
+                                        </p>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </section>

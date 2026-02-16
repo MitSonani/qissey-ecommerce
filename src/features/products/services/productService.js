@@ -172,3 +172,72 @@ export const products = [
         tags: ["New Arrival"]
     }
 ];
+/**
+ * Fetch collection metadata by ID
+ * @param {string} id - Collection UUID
+ * @returns {Promise<Object|null>} Collection object or null
+ */
+export const fetchCollectionById = async (id) => {
+    try {
+        const { data, error } = await supabase
+            .from('collections')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error fetching collection by ID:', error);
+        return null;
+    }
+};
+
+/**
+ * Fetch products belonging to a specific collection
+ * @param {string} collectionId - Collection UUID
+ * @returns {Promise<Array>} Array of product objects
+ */
+export const fetchProductsByCollectionId = async (collectionId) => {
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .select(`
+                id,
+                name,
+                price,
+                product_variants(
+                    id,
+                    image_urls,
+                    is_primary
+                )
+            `)
+            .eq('collection_id', collectionId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Filter is_primary at application level if needed, 
+        // but here we just return the products with their primary variants
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching products by collection:', error);
+        return [];
+    }
+};
+
+
+export const fetchAllCollections = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('collections')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return data || [];
+    } catch (error) {
+        console.error('Error fetching all collections:', error);
+        return [];
+    }
+}

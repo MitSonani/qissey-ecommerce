@@ -22,7 +22,7 @@ const CompleteYourLook = ({ completeTheLookIds }) => {
         };
 
         fetchProducts();
-    }, [completeTheLookIds, user?.id]);
+    }, [completeTheLookIds?.join(','), user?.id]);
 
     // Don't render if no products
     if (!completeTheLookIds || completeTheLookIds.length === 0 || completeTheLookProducts.length === 0) {

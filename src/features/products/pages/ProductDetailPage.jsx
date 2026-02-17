@@ -446,8 +446,6 @@ export default function ProductDetail() {
                                             </div>
                                         )}
 
-
-
                                         {activeTab === 'MEASUREMENTS' && (
                                             <div className="pb-8 animate-in fade-in duration-500 overflow-x-auto">
                                                 {drawerContent.measurement.content}

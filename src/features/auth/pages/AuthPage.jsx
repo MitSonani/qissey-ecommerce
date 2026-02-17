@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../store/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 
 const LoadingDots = () => (
@@ -76,6 +77,8 @@ const CustomCheckbox = ({ label, checked, onChange }) => (
 );
 
 export default function Auth() {
+    const { user } = useAuth();
+
     const [authStep, setAuthStep] = useState('login'); // 'login', 'register', 'verify'
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -94,6 +97,7 @@ export default function Auth() {
 
     // Clear error when switching steps
     useEffect(() => {
+        if (user) navigate('/');
         setError(null);
     }, [authStep]);
 
@@ -118,6 +122,13 @@ export default function Auth() {
                 // If we were in register step, use 'signup', otherwise use 'email' for login
                 const type = (formData.name) ? 'signup' : 'email';
                 await verifyOtp(formData.email, formData.otp, type);
+
+                if (type === 'signup') {
+                    toast.success('Welcome to Qissey! Your account has been created.');
+                } else {
+                    toast.success('Welcome back!');
+                }
+
                 navigate('/');
             }
         } catch (err) {
@@ -134,7 +145,7 @@ export default function Auth() {
         try {
             const type = (formData.name) ? 'signup' : 'email';
             await resendOtp(formData.email, type);
-            alert('OTP resent to your email');
+            toast.success('OTP resent to your email');
         } catch (err) {
             setError(err.message);
         } finally {

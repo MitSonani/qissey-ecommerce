@@ -19,11 +19,8 @@ export default function CollectionPage() {
                     fetchCollectionById(id),
                     fetchProductsByCollectionId(id)
                 ]);
-
-
-
                 setCollection(collectionData);
-                setProducts([...productsData, ...productsData, ...productsData]);
+                setProducts(productsData);
             } catch (error) {
                 console.error('Error loading collection page:', error);
             } finally {

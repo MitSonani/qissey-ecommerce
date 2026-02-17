@@ -9,6 +9,7 @@ const ProductDetail = lazy(() => import('../pages/ProductDetail'));
 const CollectionPage = lazy(() => import('../features/products/pages/CollectionPage'));
 const Auth = lazy(() => import('../pages/Auth'));
 const Account = lazy(() => import('../pages/Account'));
+const ShoppingBag = lazy(() => import('../pages/ShoppingBag'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 import Navbar from '../layouts/Navbar';
@@ -55,8 +56,8 @@ function MainLayout({ children }) {
 function App() {
   return (
     <AuthProvider>
-      <CartProvider>
-        <Router>
+      <Router>
+        <CartProvider>
           <PageTitle />
           <Suspense fallback={<PageLoader />}>
             <Routes>
@@ -64,6 +65,7 @@ function App() {
               <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
               <Route path="/collection/:id" element={<MainLayout><CollectionPage /></MainLayout>} />
               <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
+              <Route path="/shopping-bag" element={<MainLayout><ShoppingBag /></MainLayout>} />
               <Route path="/auth" element={<Auth />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
@@ -71,8 +73,8 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-        </Router>
-      </CartProvider>
+        </CartProvider>
+      </Router>
     </AuthProvider>
   );
 }

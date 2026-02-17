@@ -107,14 +107,14 @@ export default function Navbar() {
                     )}>
                         <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
                         <button className="p-1"><Search size={18} strokeWidth={1.5} className="text-black" /></button>
-                        <button onClick={() => setIsCartOpen(true)} className="p-1 relative">
+                        <Link to="/shopping-bag" className="p-1 relative">
                             <ShoppingBag size={18} strokeWidth={1.5} className="text-black" />
                             {cart.length > 0 && (
                                 <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[12px] h-3 text-[8px] font-bold bg-black text-white rounded-full px-0.5">
                                     {cart.reduce((acc, item) => acc + item.quantity, 0)}
                                 </span>
                             )}
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </div>

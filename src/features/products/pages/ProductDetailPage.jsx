@@ -1,7 +1,8 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { fetchProductById, saveProduct, unsaveProduct } from '../services/productService';
 import { useAuth } from '../../../features/auth';
+import { useCart } from '../../../features/cart';
 import { toast } from 'sonner';
 import { Button, cn } from '../../../components/ui/Primitives';
 import { ChevronDown, ArrowRight, Bookmark } from 'lucide-react';
@@ -37,6 +38,8 @@ export default function ProductDetail() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const { user } = useAuth();
+    const { addToCart } = useCart();
+    const navigate = useNavigate();
     const sizeSelectorRef = useRef(null);
 
     useEffect(() => {
@@ -166,6 +169,13 @@ export default function ProductDetail() {
             console.error('Error toggling save status:', error);
             setIsSaved(previousState);
         }
+    };
+
+    const handleAddToCart = async (size, variantId, customMeasurements = null) => {
+        if (!size || !variantId) return;
+
+        await addToCart(product, size, variantId, false, customMeasurements);
+        navigate('/shopping-bag');
     };
 
     const currentProductSizes = product?.product_variants?.filter((variant) => variant?.color_id?.hex === primaryProduct?.color_id?.hex)
@@ -371,6 +381,7 @@ export default function ProductDetail() {
                                                                     onClick={() => {
                                                                         setSelectedSize(size.size);
                                                                         setShowSizes(false);
+                                                                        handleAddToCart(size.size, size.id);
                                                                     }}
                                                                     className="group flex justify-between items-center px-4 py-4 hover:bg-neutral-50 border-b border-neutral-50 last:border-0 transition-colors"
                                                                 >
@@ -392,11 +403,7 @@ export default function ProductDetail() {
                                                         <div className="flex gap-2">
                                                             <Button
                                                                 onClick={() => {
-                                                                    if (!selectedSize) {
-                                                                        setShowSizes(true);
-                                                                    } else {
-                                                                        console.log("Adding to cart:", product.name, selectedSize);
-                                                                    }
+                                                                    setShowSizes(true);
                                                                 }}
                                                                 className={cn(
                                                                     "flex-grow py-3 rounded-none uppercase text-[11px] tracking-[0.2em] transition-all duration-300 flex justify-center items-center gap-2",
@@ -566,8 +573,7 @@ export default function ProductDetail() {
                     isOpen={showCustomSizeModal}
                     onClose={() => setShowCustomSizeModal(false)}
                     onSave={(data) => {
-                        console.log("Custom Size Data:", data);
-                        // Handle saving custom size data here
+                        handleAddToCart('CUSTOM', primaryProduct.id, data);
                     }}
                 />
 
@@ -647,11 +653,7 @@ export default function ProductDetail() {
                         >
                             <Button
                                 onClick={() => {
-                                    if (!selectedSize) {
-                                        setShowSizes(true);
-                                    } else {
-                                        console.log("Adding to cart:", product.name, selectedSize);
-                                    }
+                                    setShowSizes(true);
                                 }}
                                 className="flex-grow bg-white text-black border border-black rounded-none h-11 uppercase text-[11px] tracking-[0.2em] hover:bg-neutral-50"
                             >
@@ -717,6 +719,7 @@ export default function ProductDetail() {
                                                 onClick={() => {
                                                     setSelectedSize(size.size);
                                                     setShowSizes(false);
+                                                    handleAddToCart(size.size, size.id);
                                                 }}
                                                 className={cn(
                                                     "w-full py-4 text-[11px] uppercase tracking-widest border transition-colors",

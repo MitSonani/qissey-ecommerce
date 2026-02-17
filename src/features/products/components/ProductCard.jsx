@@ -78,7 +78,7 @@ export default function ProductCard({ product, isCompleteTheLook = false }) {
                     <button
                         onClick={handleToggleSave}
                         className={cn(
-                            "transition-all duration-300",
+                            "transition-all duration-300 cursor-pointer",
                             isSaved ? "text-black" : "text-brand-charcoal hover:opacity-50"
                         )}
                         aria-label={isSaved ? "Remove from saved" : "Save product"}

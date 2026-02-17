@@ -306,7 +306,7 @@ export default function ProductDetail() {
                                         </p>
                                         <button
                                             onClick={handleToggleSave}
-                                            className={cn("transition-all duration-300", isSaved ? "text-black" : "text-neutral-400 hover:text-black")}
+                                            className={cn("transition-all duration-300 cursor-pointer", isSaved ? "text-black" : "text-neutral-400 hover:text-black")}
                                         >
                                             <Bookmark
                                                 size={18}
@@ -624,7 +624,7 @@ export default function ProductDetail() {
                                         </div>
                                         <button
                                             onClick={handleToggleSave}
-                                            className={cn("pl-1 mt-3 flex items-center gap-2 transition-all duration-300", isSaved ? "text-black" : "text-neutral-400")}
+                                            className={cn("pl-1 mt-3 flex items-center gap-2 transition-all duration-300 cursor-pointer", isSaved ? "text-black" : "text-neutral-400")}
                                         >
                                             <Bookmark
                                                 size={18}

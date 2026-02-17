@@ -37,15 +37,20 @@ export default function Home() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-2">
                         {[...collections].map((collection) => (
                             <Link
+                                key={collection.id}
                                 to={`/collection/${collection.id}`}
                                 className="text-xs uppercase font-bold tracking-widest border-b-2 border-white pb-1 hover:pb-2 transition-all inline-block "
                             >
-                                <div key={collection.id} className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
-                                    <img
-                                        src={collection.image_url}
-                                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-                                        alt={collection.name}
-                                    />
+                                <div className="relative aspect-[3/4] bg-brand-gray overflow-hidden group">
+                                    {collection.image_url ? (
+                                        <img
+                                            src={collection.image_url}
+                                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                                            alt={collection.name}
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-brand-gray" />
+                                    )}
                                     <div className="absolute inset-0 bg-black/5 transition-opacity group-hover:bg-black/20" />
                                     <div className="absolute bottom-12 left-0 right-0 text-center text-white">
                                         <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg">

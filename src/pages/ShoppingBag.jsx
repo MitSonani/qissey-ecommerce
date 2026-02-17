@@ -4,6 +4,7 @@ import { useAuth } from '../features/auth';
 import { useCart } from '../features/cart';
 import { Button } from '../components/ui/Primitives';
 import { cn } from '../components/ui/Primitives';
+import ShoppingBagSkeleton from '../features/cart/components/ShoppingBagSkeleton';
 import { useEffect } from 'react';
 
 export default function ShoppingBag() {
@@ -18,11 +19,7 @@ export default function ShoppingBag() {
     }, [user, isLoading, navigate]);
 
     if (isLoading || !user) {
-        return (
-            <div className="min-h-screen pt-48 flex flex-col items-center justify-center">
-                <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
-            </div>
-        );
+        return <ShoppingBagSkeleton />;
     }
 
     return (

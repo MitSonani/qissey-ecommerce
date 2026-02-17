@@ -2,12 +2,43 @@ import { Link } from 'react-router-dom';
 import { ShoppingCart, Bookmark } from 'lucide-react';
 import { useCart } from '../../../features/cart';
 import { Badge, cn } from '../../../components/ui/Primitives';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../../features/auth';
+import { saveProduct, unsaveProduct } from '../../../features/products/services/productService';
+import { toast } from 'sonner';
 
 export default function ProductCard({ product, isCompleteTheLook = false }) {
-    const { addToCart } = useCart();
     const [isHovered, setIsHovered] = useState(false);
+    const [isSaved, setIsSaved] = useState(product.is_saved || false);
+    const { user } = useAuth();
+
+    useEffect(() => {
+        setIsSaved(product.is_saved || false);
+    }, [product.is_saved]);
+
+    const handleToggleSave = async (e) => {
+        e.preventDefault();
+        if (!user) {
+            toast.error('Please login to save products');
+            return;
+        }
+
+        const previousState = isSaved;
+        setIsSaved(!previousState);
+
+        try {
+            if (previousState) {
+                const success = await unsaveProduct(user.id, product.id);
+                if (!success) setIsSaved(previousState);
+            } else {
+                const success = await saveProduct(user.id, product.id);
+                if (!success) setIsSaved(previousState);
+            }
+        } catch (error) {
+            console.error('Error toggling save status:', error);
+            setIsSaved(previousState);
+        }
+    };
 
     return (
         <div
@@ -45,14 +76,18 @@ export default function ProductCard({ product, isCompleteTheLook = false }) {
                         {product.name}
                     </Link>
                     <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            addToCart(product, product.sizes[0]);
-                        }}
-                        className="text-brand-charcoal hover:opacity-50 transition-opacity"
-                        aria-label="Add to cart"
+                        onClick={handleToggleSave}
+                        className={cn(
+                            "transition-all duration-300",
+                            isSaved ? "text-black" : "text-brand-charcoal hover:opacity-50"
+                        )}
+                        aria-label={isSaved ? "Remove from saved" : "Save product"}
                     >
-                        <Bookmark size={16} strokeWidth={1} />
+                        <Bookmark
+                            size={16}
+                            strokeWidth={1}
+                            fill={isSaved ? "currentColor" : "none"}
+                        />
                     </button>
                 </div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black">

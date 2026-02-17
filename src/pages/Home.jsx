@@ -3,15 +3,17 @@ import { Link } from 'react-router-dom';
 import { ProductCard } from '../features/products';
 import Hero from '../components/Hero';
 import { fetchNewArrivalProducts, fetchAllCollections } from '../features/products/services/productService';
+import { useAuth } from '../features/auth';
 export default function Home() {
     const [productsS, setProducts] = useState([]);
     const [collections, setCollections] = useState([]);
+    const { user } = useAuth();
 
     useEffect(() => {
         const loadData = async () => {
             try {
                 const [productsRes, collectionsRes] = await Promise.all([
-                    fetchNewArrivalProducts(),
+                    fetchNewArrivalProducts(user?.id),
                     fetchAllCollections()
                 ]);
                 setProducts(productsRes);
@@ -22,7 +24,7 @@ export default function Home() {
         };
 
         loadData();
-    }, []);
+    }, [user?.id]);
 
 
     return (

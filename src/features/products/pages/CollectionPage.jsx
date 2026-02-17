@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { fetchCollectionById, fetchProductsByCollectionId } from '../services/productService';
 import ProductCard from '../components/ProductCard';
 import PageLoader from '../../../components/ui/PageLoader';
+import { useAuth } from '../../auth';
 
 export default function CollectionPage() {
     const { id } = useParams();
@@ -10,6 +11,7 @@ export default function CollectionPage() {
     const [collection, setCollection] = useState(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
 
     useEffect(() => {
         const loadData = async () => {
@@ -17,7 +19,7 @@ export default function CollectionPage() {
             try {
                 const [collectionData, productsData] = await Promise.all([
                     fetchCollectionById(id),
-                    fetchProductsByCollectionId(id)
+                    fetchProductsByCollectionId(id, user?.id)
                 ]);
                 setCollection(collectionData);
                 setProducts(productsData);
@@ -29,7 +31,7 @@ export default function CollectionPage() {
         };
 
         loadData();
-    }, [id, navigate]);
+    }, [id, navigate, user?.id]);
 
     if (loading) {
         return <PageLoader />;

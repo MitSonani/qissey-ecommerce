@@ -1,12 +1,14 @@
 import { supabase } from '../../../lib/supabase';
+import { toast } from 'sonner';
 
 /**
  * Fetch all products from Supabase
+ * @param {string} [userId] - Optional user UUID to check saved status
  * @returns {Promise<Array>} Array of product objects
  */
-export const fetchProducts = async () => {
+export const fetchProducts = async (userId) => {
     try {
-        const { data, error } = await supabase
+        let query = supabase
             .from('products')
             .select(`id,
                     name,
@@ -15,21 +17,36 @@ export const fetchProducts = async () => {
                        id,
                        image_urls
                     )
+                    ${userId ? ', saved_products:saved_products!left(id)' : ''}
                     `)
-            .eq('product_variants.is_primary', true)
-            .order('created_at', { ascending: false });
+            .eq('product_variants.is_primary', true);
+
+        if (userId) {
+            query = query.eq('saved_products.user_id', userId);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false });
 
         if (error) throw error;
-        return data
+
+        return data?.map(product => ({
+            ...product,
+            is_saved: product.saved_products?.length > 0
+        })) || [];
     } catch (error) {
         console.error('Error fetching products:', error);
         throw error;
     }
 };
 
-export const fetchNewArrivalProducts = async () => {
+/**
+ * Fetch new arrival products from Supabase
+ * @param {string} [userId] - Optional user UUID to check saved status
+ * @returns {Promise<Array>} Array of product objects
+ */
+export const fetchNewArrivalProducts = async (userId) => {
     try {
-        const { data, error } = await supabase
+        let query = supabase
             .from('products')
             .select(`id,
                     name,
@@ -38,13 +55,23 @@ export const fetchNewArrivalProducts = async () => {
                        id,
                        image_urls
                     )
+                    ${userId ? ', saved_products:saved_products!left(id)' : ''}
                     `)
             .eq('product_variants.is_primary', true)
-            .eq('new_arrival', true)
-            .order('created_at', { ascending: false });
+            .eq('new_arrival', true);
+
+        if (userId) {
+            query = query.eq('saved_products.user_id', userId);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false });
 
         if (error) throw error;
-        return data
+
+        return data?.map(product => ({
+            ...product,
+            is_saved: product.saved_products?.length > 0
+        })) || [];
     } catch (error) {
         console.error('Error fetching products:', error);
         throw error;
@@ -54,18 +81,32 @@ export const fetchNewArrivalProducts = async () => {
 /**
  * Fetch a single product by ID
  * @param {string} id - Product UUID
+ * @param {string} [userId] - Optional user UUID to check saved status
  * @returns {Promise<Object|null>} Product object or null
  */
-export const fetchProductById = async (id) => {
+export const fetchProductById = async (id, userId) => {
     try {
-        const { data, error } = await supabase
+        let query = supabase
             .from('products')
-            .select('*, product_variants(*, color_id(*)), complete_the_look')
-            .eq('id', id)
-            .single();
+            .select(`*, 
+                    product_variants(*, color_id(*)), 
+                    complete_the_look
+                    ${userId ? ', saved_products:saved_products!left(id)' : ''}
+                    `)
+            .eq('id', id);
+
+        if (userId) {
+            query = query.eq('saved_products.user_id', userId);
+        }
+
+        const { data, error } = await query.single();
 
         if (error) throw error;
-        return data;
+
+        return {
+            ...data,
+            is_saved: data.saved_products?.length > 0
+        };
     } catch (error) {
         console.error('Error fetching product by ID:', error);
         return null;
@@ -76,13 +117,14 @@ export const fetchProductById = async (id) => {
 
 /**
  * Fetch related products based on complete_the_look field
+ * @param {string} collectionId - Collection UUID
  * @param {string} productId - Current product UUID
- * @param {number} limit - Maximum number of related products to return
+ * @param {string} [userId] - Optional user UUID to check saved status
  * @returns {Promise<Array>} Array of related product objects
  */
-export const fetchRelatedProducts = async (collectionId, productId) => {
+export const fetchRelatedProducts = async (collectionId, productId, userId) => {
     try {
-        const { data, error } = await supabase
+        let query = supabase
             .from('products')
             .select(`
                 id,
@@ -92,13 +134,24 @@ export const fetchRelatedProducts = async (collectionId, productId) => {
                     id,
                     image_urls
                 )
+                ${userId ? ', saved_products:saved_products!left(id)' : ''}
             `)
             .eq('collection_id', collectionId)
             .neq('id', productId)
             .limit(8);
 
+        if (userId) {
+            query = query.eq('saved_products.user_id', userId);
+        }
+
+        const { data, error } = await query;
+
         if (error) throw error;
-        return data || [];
+
+        return data?.map(product => ({
+            ...product,
+            is_saved: product.saved_products?.length > 0
+        })) || [];
     } catch (error) {
         console.error('Error fetching related products:', error);
         return [];
@@ -108,15 +161,16 @@ export const fetchRelatedProducts = async (collectionId, productId) => {
 /**
  * Fetch "Complete Your Look" products based on complete_the_look field
  * @param {Array<string>} productIds - Array of product UUIDs from complete_the_look field
+ * @param {string} [userId] - Optional user UUID to check saved status
  * @returns {Promise<Array>} Array of product objects
  */
-export const fetchCompleteTheLookProducts = async (productIds) => {
+export const fetchCompleteTheLookProducts = async (productIds, userId) => {
     try {
         if (!productIds || productIds.length === 0) {
             return [];
         }
 
-        const { data, error } = await supabase
+        let query = supabase
             .from('products')
             .select(`
                 id,
@@ -127,11 +181,22 @@ export const fetchCompleteTheLookProducts = async (productIds) => {
                     image_urls,
                     is_primary
                 )
+                ${userId ? ', saved_products:saved_products!left(id)' : ''}
             `)
             .in('id', productIds);
 
+        if (userId) {
+            query = query.eq('saved_products.user_id', userId);
+        }
+
+        const { data, error } = await query;
+
         if (error) throw error;
-        return data || [];
+
+        return data?.map(product => ({
+            ...product,
+            is_saved: product.saved_products?.length > 0
+        })) || [];
     } catch (error) {
         console.error('Error fetching complete the look products:', error);
         return [];
@@ -220,11 +285,12 @@ export const fetchCollectionById = async (id) => {
 /**
  * Fetch products belonging to a specific collection
  * @param {string} collectionId - Collection UUID
+ * @param {string} [userId] - Optional user UUID to check saved status
  * @returns {Promise<Array>} Array of product objects
  */
-export const fetchProductsByCollectionId = async (collectionId) => {
+export const fetchProductsByCollectionId = async (collectionId, userId) => {
     try {
-        const { data, error } = await supabase
+        let query = supabase
             .from('products')
             .select(`
                 id,
@@ -235,15 +301,22 @@ export const fetchProductsByCollectionId = async (collectionId) => {
                     image_urls,
                     is_primary
                 )
+                ${userId ? ', saved_products:saved_products!left(id)' : ''}
             `)
-            .eq('collection_id', collectionId)
-            .order('created_at', { ascending: false });
+            .eq('collection_id', collectionId);
+
+        if (userId) {
+            query = query.eq('saved_products.user_id', userId);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        // Filter is_primary at application level if needed, 
-        // but here we just return the products with their primary variants
-        return data || [];
+        return data?.map(product => ({
+            ...product,
+            is_saved: product.saved_products?.length > 0
+        })) || [];
     } catch (error) {
         console.error('Error fetching products by collection:', error);
         return [];
@@ -265,3 +338,79 @@ export const fetchAllCollections = async () => {
         return [];
     }
 }
+
+/**
+ * Fetch saved products for a user
+ * @param {string} userId - User UUID
+ * @returns {Promise<Array>} Array of saved product objects
+ */
+export const fetchSavedProducts = async (userId) => {
+    try {
+        const { data, error } = await supabase
+            .from('saved_products')
+            .select(`
+                product_id,
+                products (
+                    id,
+                    name,
+                    price,
+                    product_variants (
+                        id,
+                        image_urls,
+                        is_primary
+                    )
+                )
+            `)
+            .eq('user_id', userId);
+
+        if (error) throw error;
+        return data?.map(item => item.products) || [];
+    } catch (error) {
+        console.error('Error fetching saved products:', error);
+        return [];
+    }
+};
+
+/**
+ * Save a product for a user
+ * @param {string} userId - User UUID
+ * @param {string} productId - Product UUID
+ * @returns {Promise<boolean>} Success status
+ */
+export const saveProduct = async (userId, productId) => {
+    try {
+        const { error } = await supabase
+            .from('saved_products')
+            .insert({ user_id: userId, product_id: productId });
+
+        if (error) throw error;
+        toast.success('Product saved successfully');
+        return true;
+    } catch (error) {
+        console.error('Error saving product:', error);
+        return false;
+    }
+};
+
+/**
+ * Unsave a product for a user
+ * @param {string} userId - User UUID
+ * @param {string} productId - Product UUID
+ * @returns {Promise<boolean>} Success status
+ */
+export const unsaveProduct = async (userId, productId) => {
+    try {
+        const { error } = await supabase
+            .from('saved_products')
+            .delete()
+            .eq('user_id', userId)
+            .eq('product_id', productId);
+
+        if (error) throw error;
+        toast.success('Product removed from saved');
+        return true;
+    } catch (error) {
+        console.error('Error unsaving product:', error);
+        return false;
+    }
+};

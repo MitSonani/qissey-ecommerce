@@ -28,7 +28,26 @@ function MainLayout({ children }) {
       </main>
       <Footer />
       <CartDrawer />
-      <Toaster position="bottom-right" expand={false} richColors />
+      <Toaster
+        position="top-right"
+        expand={false}
+        richColors={false}
+        toastOptions={{
+          style: {
+            background: 'white',
+            color: '#1A1A1A',
+            border: '1px solid #1A1A1A10',
+            borderRadius: '0px',
+            fontFamily: '"Helvetica Now Text", "Helvetica Neue", "Helvetica", sans-serif',
+            fontSize: '11px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            padding: '16px',
+            boxShadow: '0 10px 30px -10px rgba(0,0,0,0.1)'
+          },
+          className: 'premium-toast',
+        }}
+      />
     </div>
   );
 }

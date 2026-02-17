@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { fetchProductById } from '../services/productService';
+import { fetchProductById, saveProduct, unsaveProduct } from '../services/productService';
+import { useAuth } from '../../../features/auth';
+import { toast } from 'sonner';
 import { Button, cn } from '../../../components/ui/Primitives';
 import { ChevronDown, ArrowRight, Bookmark } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -33,6 +35,8 @@ export default function ProductDetail() {
     const [showCustomSizeModal, setShowCustomSizeModal] = useState(false);
     const [activeTab, setActiveTab] = useState('DESCRIPTION');
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
+    const { user } = useAuth();
     const sizeSelectorRef = useRef(null);
 
     useEffect(() => {
@@ -105,7 +109,13 @@ export default function ProductDetail() {
                 setLoading(true);
                 setError(null);
 
-                const productData = await fetchProductById(id);
+                const productData = await fetchProductById(id, user?.id);
+
+                if (!productData) {
+                    setError('Product not found');
+                    setLoading(false);
+                    return;
+                }
 
                 const primaryProductImages = productData?.product_variants?.find((variant) => variant.is_primary)
 
@@ -118,16 +128,9 @@ export default function ProductDetail() {
                 );
 
                 setColors([...uniqueColors])
-
                 setPrimaryProduct(primaryProductImages)
-
-                if (!productData) {
-                    setError('Product not found');
-                    setLoading(false);
-                    return;
-                }
-
-                setProduct(productData)
+                setProduct(productData);
+                setIsSaved(productData.is_saved || false);
 
                 setLoading(false);
             } catch (err) {
@@ -138,8 +141,32 @@ export default function ProductDetail() {
         };
 
         loadProductData();
-    }, [id]);
+    }, [id, user?.id]);
 
+
+    const handleToggleSave = async (e) => {
+        e.preventDefault();
+        if (!user) {
+            toast.error('Please login to save products');
+            return;
+        }
+
+        const previousState = isSaved;
+        setIsSaved(!previousState);
+
+        try {
+            if (previousState) {
+                const success = await unsaveProduct(user.id, product.id);
+                if (!success) setIsSaved(previousState);
+            } else {
+                const success = await saveProduct(user.id, product.id);
+                if (!success) setIsSaved(previousState);
+            }
+        } catch (error) {
+            console.error('Error toggling save status:', error);
+            setIsSaved(previousState);
+        }
+    };
 
     const currentProductSizes = product?.product_variants?.filter((variant) => variant?.color_id?.hex === primaryProduct?.color_id?.hex)
 
@@ -277,7 +304,16 @@ export default function ProductDetail() {
                                             {product?.name}
 
                                         </p>
-                                        <Bookmark size={18} strokeWidth={1} />
+                                        <button
+                                            onClick={handleToggleSave}
+                                            className={cn("transition-all duration-300", isSaved ? "text-black" : "text-neutral-400 hover:text-black")}
+                                        >
+                                            <Bookmark
+                                                size={18}
+                                                strokeWidth={1}
+                                                fill={isSaved ? "currentColor" : "none"}
+                                            />
+                                        </button>
                                     </div>
                                     <p className="text-[15px] font-bold tracking-wide opacity-60 hover:opacity-100 mb-1">
                                         ₹ {product?.price.toLocaleString()}
@@ -586,9 +622,16 @@ export default function ProductDetail() {
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="pl-1 mt-3 flex items-center gap-2">
-                                            <Bookmark size={18} strokeWidth={1} />
-                                        </div>
+                                        <button
+                                            onClick={handleToggleSave}
+                                            className={cn("pl-1 mt-3 flex items-center gap-2 transition-all duration-300", isSaved ? "text-black" : "text-neutral-400")}
+                                        >
+                                            <Bookmark
+                                                size={18}
+                                                strokeWidth={1}
+                                                fill={isSaved ? "currentColor" : "none"}
+                                            />
+                                        </button>
                                     </div>
                                 </div>
                             </motion.div>

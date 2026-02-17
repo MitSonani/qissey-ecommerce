@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import ProductCard from './ProductCard'
 import { fetchRelatedProducts } from '../services/productService'
+import { useAuth } from '../../auth'
 
 const RelatedProduct = ({ collectionId, productId }) => {
 
     const [relatedProducts, setRelatedProducts] = useState([]);
+    const { user } = useAuth();
 
     useEffect(() => {
         const fetchRelatedProduct = async () => {
-            const related = await fetchRelatedProducts(collectionId, productId);
+            const related = await fetchRelatedProducts(collectionId, productId, user?.id);
             setRelatedProducts(related);
         }
         fetchRelatedProduct();
-    }, [collectionId]);
+    }, [collectionId, user?.id]);
 
     return (
 

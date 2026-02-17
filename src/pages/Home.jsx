@@ -28,7 +28,7 @@ export default function Home() {
 
 
     return (
-        <div className="relative overflow-hidden mx-2 md:mx-24 mt-20 mb-16 md:my-34">
+        <div className="relative overflow-hidden mx-2 md:mx-24 mt-20 md:my-34">
             <Hero />
 
             {/* Featured Collections Tiles */}
@@ -68,7 +68,7 @@ export default function Home() {
             </section>
 
             {/* New Arrivals Slider */}
-            <section className="pb-32 md:px-8 overflow-hidden ">
+            <section className="md:px-8 overflow-hidden ">
                 <div className="container">
                     <div className="flex justify-between items-end mb-8">
                         <div>

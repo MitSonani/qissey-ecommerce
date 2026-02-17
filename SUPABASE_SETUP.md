@@ -130,9 +130,65 @@ If you plan to upload product images directly to Supabase:
 - Supabase allows all origins by default for the anon key
 - If you see CORS errors, check your Supabase project settings
 
-## Next Steps
+## Step 8: Set Up Email Authentication
 
-- Add more products via Supabase Table Editor
-- Set up authentication for user accounts
-- Implement order management
-- Create an admin panel for product management
+To enable users to sign up and verify their accounts via 6-digit OTP codes, follow these steps:
+
+1.  **Enable Email Provider**:
+    *   In the Supabase Dashboard, go to **Authentication** -> **Providers**.
+    *   Ensure **Email** is enabled.
+    *   Toggle **Confirm email** to **ON**. (This ensures users must verify their email before they can fully log in).
+
+2.  **Configure 6-Digit OTP (Email Token)**:
+    *   Go to **Authentication** -> **Email Templates**.
+    *   **For Signup**: Click on **Confirm signup**. Replace `{{ .ConfirmationURL }}` with `{{ .Token }}`.
+    *   **For Login**: Click on **Magic link**. Replace `{{ .ConfirmationURL }}` with `{{ .Token }}`.
+    *   **Example Template**:
+        ```html
+        <h2>Your Login Code</h2>
+        <p>Use this code to sign in to QISSEY: <strong>{{ .Token }}</strong></p>
+        ```
+    *   Click **Save**.
+
+3.  **Optional: Configure Custom SMTP**:
+    *   By default, Supabase allows 3 emails per hour for testing.
+    *   For production, go to **Authentication** -> **SMTP Settings** and connect a provider like Resend, SendGrid, or AWS SES.
+
+## Step 11: Implement Unique Email & Phone Tracking
+
+To prevent duplicate registrations with the same phone number or email, you must add a `profiles` table that tracks these identities.
+
+1.  Open the **SQL Editor** in Supabase.
+2.  Run the following SQL to create the `profiles` table and the automation trigger:
+    ```sql
+    -- 1. Create Profiles table
+    CREATE TABLE public.profiles (
+      id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+      name TEXT,
+      email TEXT UNIQUE NOT NULL,
+      phone TEXT UNIQUE,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+
+    -- 2. Create trigger function to sync auth.users -> profiles
+    CREATE OR REPLACE FUNCTION public.handle_new_user()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      INSERT INTO public.profiles (id, name, email, phone)
+      VALUES (
+        NEW.id,
+        NEW.raw_user_meta_data->>'name',
+        NEW.email,
+        NEW.raw_user_meta_data->>'phone'
+      );
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+    -- 3. Apply trigger
+    DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+    CREATE TRIGGER on_auth_user_created
+      AFTER INSERT ON auth.users
+      FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+    ```
+3.  This ensures that every time someone registers, their email and phone are stored in a place where we can check them for uniqueness.

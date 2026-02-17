@@ -1,9 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../store/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
-const FloatingInput = ({ label, value, onChange, type = "text", required = false, className, prefix }) => {
+
+const LoadingDots = () => (
+    <div className="flex justify-center items-center gap-1 h-3">
+        {[0, 1, 2].map((i) => (
+            <motion.div
+                key={i}
+                initial={{ opacity: 0.3 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                    duration: 0.6,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    delay: i * 0.2
+                }}
+                className="w-1 h-1 bg-current rounded-full"
+            />
+        ))}
+    </div>
+);
+
+const FloatingInput = ({ label, value, onChange, type = "text", required = false, className, prefix, readOnly = false }) => {
     const [isFocused, setIsFocused] = useState(false);
 
     return (
@@ -27,10 +47,11 @@ const FloatingInput = ({ label, value, onChange, type = "text", required = false
                     type={type}
                     required={required}
                     value={value}
-                    onFocus={() => setIsFocused(true)}
+                    onFocus={() => !readOnly && setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    onChange={onChange}
-                    className="w-full bg-transparent outline-none text-[11px] font-medium tracking-wide pt-1"
+                    onChange={readOnly ? undefined : onChange}
+                    readOnly={readOnly}
+                    className={`w-full bg-transparent outline-none text-[11px] font-medium tracking-wide pt-1 ${readOnly ? 'cursor-default' : ''}`}
                 />
             </div>
         </div >
@@ -55,35 +76,75 @@ const CustomCheckbox = ({ label, checked, onChange }) => (
 );
 
 export default function Auth() {
-    const [isLogin, setIsLogin] = useState(true);
+    const [authStep, setAuthStep] = useState('login'); // 'login', 'register', 'verify'
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
         name: '',
         phonePrefix: '+91',
         phone: '',
+        otp: '',
         acceptNews: false,
         acceptPrivacy: false
     });
-    const { login, register } = useAuth();
+    const { login, register, verifyOtp, resendOtp } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    // Clear error when switching steps
+    useEffect(() => {
+        setError(null);
+    }, [authStep]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (isLogin) {
-            if (login(formData.email, formData.password)) {
+        setError(null);
+        setIsLoading(true);
+
+        try {
+            if (authStep === 'login') {
+                const { email } = await login(formData.email);
+                setFormData(prev => ({ ...prev, email }));
+                setAuthStep('verify');
+            } else if (authStep === 'register') {
+                if (!formData.acceptPrivacy) {
+                    throw new Error('Please accept the privacy statement');
+                }
+                const fullPhone = `${formData.phonePrefix}${formData.phone}`;
+                await register(formData.email, formData.password, formData.name, fullPhone);
+                setAuthStep('verify');
+            } else if (authStep === 'verify') {
+                // If we were in register step, use 'signup', otherwise use 'email' for login
+                const type = (formData.name) ? 'signup' : 'email';
+                await verifyOtp(formData.email, formData.otp, type);
                 navigate('/');
             }
-        } else {
-            if (register(formData.email, formData.password, formData.name)) {
-                navigate('/');
-            }
+        } catch (err) {
+            console.error('Auth error:', err);
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResendOtp = async () => {
+        setError(null);
+        setIsLoading(true);
+        try {
+            const type = (formData.name) ? 'signup' : 'email';
+            await resendOtp(formData.email, type);
+            alert('OTP resent to your email');
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
         <div className="min-h-screen bg-white flex flex-col font-sans text-[#1A1A1A]">
-            {!isLogin && (
+            {authStep !== 'login' && (
                 <header className="fixed top-0 w-full z-50 px-6 md:px-12 h-20 flex items-center justify-between pointer-events-none">
                     <div className="flex items-center gap-8 pointer-events-auto mt-[10px]">
                         <Link to="/" className="block">
@@ -95,15 +156,22 @@ export default function Auth() {
                         <Link to="/shop" className="text-[10px] uppercase font-bold tracking-widest">
                             Back to Shop
                         </Link>
-                        <button onClick={() => setIsLogin(true)} className="text-[10px] uppercase font-bold tracking-widest border-b border-black/10">
-                            Log In
-                        </button>
+                        {authStep === 'register' && (
+                            <button onClick={() => setAuthStep('login')} className="text-[14px] uppercase tracking-widest border-b border-black/10">
+                                Log In
+                            </button>
+                        )}
+                        {authStep === 'verify' && (
+                            <button onClick={() => setAuthStep('register')} className="text-[10px] uppercase font-bold tracking-widest border-b border-black/10">
+                                Back to Register
+                            </button>
+                        )}
                     </div>
                 </header>
             )}
 
             <AnimatePresence mode="wait">
-                {isLogin ? (
+                {authStep === 'login' ? (
                     /* LOGIN VIEW: Two Column */
                     <motion.div
                         key="login"
@@ -123,31 +191,31 @@ export default function Auth() {
                                 <h2 className="text-[16px] uppercase font-bold tracking-[0.1em] mb-10">Log In</h2>
                                 <form onSubmit={handleSubmit} className="space-y-12">
                                     <FloatingInput
-                                        label="Email"
-                                        type="email"
+                                        label="Email or Mobile Number"
+                                        type="text"
                                         className={"mb-8"}
                                         required
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     />
-                                    <div className="mb-6">
-                                        <FloatingInput
-                                            label="Password"
-                                            type="password"
-                                            className={"mb-0"}
-                                            required
-                                            value={formData.password}
-                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                        />
-                                        <button type="button" className="text-[9px] uppercase font-medium tracking-tight text-[#1A1A1A]/60 hover:text-[#1A1A1A] transition-colors">
-                                            Have you forgotten your password?
-                                        </button>
-                                    </div>
+                                    {error && (
+                                        <div className="text-red-500 text-[10px] uppercase font-bold tracking-tight bg-red-50 p-3">
+                                            {error}
+                                        </div>
+                                    )}
                                     <div className="flex flex-col gap-3 pt-5">
-                                        <button type="submit" className="w-full bg-[#1A1A1A] text-white py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-black transition-colors">
-                                            Log In
+                                        <button
+                                            type="submit"
+                                            disabled={isLoading}
+                                            className="w-full bg-[#1A1A1A] text-white py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-black transition-colors disabled:opacity-50 flex justify-center items-center"
+                                        >
+                                            {isLoading ? <LoadingDots /> : 'Log In'}
                                         </button>
-                                        <button type="button" onClick={() => setIsLogin(false)} className="w-full border border-[#1A1A1A] py-2.75 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] hover:text-white transition-all">
+                                        <button
+                                            type="button"
+                                            onClick={() => setAuthStep('register')}
+                                            className="w-full border border-[#1A1A1A] py-2.75 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] hover:text-white transition-all"
+                                        >
                                             Register
                                         </button>
                                     </div>
@@ -167,7 +235,7 @@ export default function Auth() {
                             />
                         </div>
                     </motion.div>
-                ) : (
+                ) : authStep === 'register' ? (
                     /* REGISTER VIEW: Single Column Center */
                     <motion.div
                         key="register"
@@ -205,7 +273,7 @@ export default function Auth() {
                                             label="Prefix"
                                             className="w-20"
                                             value={formData.phonePrefix}
-                                            onChange={(e) => setFormData({ ...formData, phonePrefix: e.target.value })}
+                                            readOnly
                                         />
                                         <FloatingInput
                                             label="Mobile Number"
@@ -234,16 +302,74 @@ export default function Auth() {
                                         </div>
                                     </div>
 
+                                    {error && (
+                                        <div className="text-red-500 text-[10px] uppercase font-bold tracking-tight bg-red-50 p-3 max-w-sm">
+                                            {error}
+                                        </div>
+                                    )}
                                     <div className="pt-10">
                                         <button
                                             type="submit"
-                                            className="w-52 border border-[#1A1A1A] py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] hover:text-white transition-all"
+                                            disabled={isLoading}
+                                            className="w-52 border border-[#1A1A1A] py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] hover:text-white transition-all disabled:opacity-50 flex justify-center items-center"
                                         >
-                                            Create Account
+                                            {isLoading ? <LoadingDots /> : 'Create Account'}
                                         </button>
                                     </div>
                                 </form>
                             </div>
+                        </div>
+                    </motion.div>
+                ) : (
+                    /* OTP VERIFICATION VIEW */
+                    <motion.div
+                        key="verify"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="flex-grow flex flex-col items-center justify-center px-6"
+                    >
+                        <div className="max-w-md w-full space-y-12 text-center">
+                            <div>
+                                <h2 className="text-[16px] uppercase font-bold tracking-[0.2em] mb-4">Verify Your Account</h2>
+                                <p className="text-[11px] text-[#1A1A1A]/60 uppercase font-medium tracking-wide">
+                                    We've sent a 6-digit verification code to <span className="text-[#1A1A1A] font-bold">{formData.email}</span>
+                                </p>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-10">
+                                <FloatingInput
+                                    label="6-Digit Code"
+                                    required
+                                    value={formData.otp}
+                                    onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
+                                />
+
+                                {error && (
+                                    <div className="text-red-500 text-[10px] uppercase font-bold tracking-tight bg-red-50 p-3">
+                                        {error}
+                                    </div>
+                                )}
+
+                                <div className="flex flex-col items-center gap-6">
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="w-52 bg-[#1A1A1A] text-white py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-black transition-colors disabled:opacity-50 flex justify-center items-center"
+                                    >
+                                        {isLoading ? <LoadingDots /> : 'Verify & Log In'}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleResendOtp}
+                                        disabled={isLoading}
+                                        className="text-[10px] uppercase font-bold tracking-widest border-b border-black/10 hover:border-black transition-colors disabled:opacity-50"
+                                    >
+                                        Resend Code
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </motion.div>
                 )}

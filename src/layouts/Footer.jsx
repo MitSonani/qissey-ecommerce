@@ -1,38 +1,5 @@
 import { Link } from 'react-router-dom';
-
-const FOOTER_LINKS = [
-    {
-        title: "Help",
-        links: [
-            { label: "My QISSEY Account", path: "/account" },
-            { label: "Shipping", path: "/" },
-            { label: "Payment and Invoices", path: "/" },
-            { label: "My Purchases", path: "/" },
-            { label: "Exchanges, Returns and Refunds", path: "/" },
-        ]
-    },
-    {
-        title: "Follow us",
-        links: [
-            { label: "Instagram", href: "#" },
-            { label: "Facebook", href: "#" },
-            { label: "Pinterest", href: "#" },
-        ]
-    },
-    {
-        title: "Company",
-        links: [
-            { label: "About us", path: "/about" },
-        ]
-    },
-    {
-        title: "Policies",
-        links: [
-            { label: "Privacy policy", path: "/" },
-            { label: "Purchase conditions", path: "/" },
-        ]
-    }
-];
+import { FOOTER_LINKS } from '../constants/content';
 
 export default function Footer() {
     return (

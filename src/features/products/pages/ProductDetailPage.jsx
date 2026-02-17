@@ -6,22 +6,12 @@ import { useCart } from '../../../features/cart';
 import { toast } from 'sonner';
 import { Button, cn } from '../../../components/ui/Primitives';
 import { ChevronDown, ArrowRight, Bookmark } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import SideDrawer from '../../../components/ui/SideDrawer';
 import RealatedProduct from '../components/RealatedProduct';
 import CompleteYourLook from '../components/CompleteYourLook';
 import ProductDetailSkeleton from '../components/ProductDetailSkeleton';
 import CustomSizeModal from '../components/CustomSizeModal';
-
-
-const measurementData = [
-    { size: "XS", bust: "32″/81 cm", waist: "24″/61 cm", hips: "34″/86 cm", shoulder: "13.5″/34 cm" },
-    { size: "S", bust: "34″/86 cm", waist: "26″/66 cm", hips: "36″/91 cm", shoulder: "14″/36 cm" },
-    { size: "M", bust: "36″/91 cm", waist: "28″/71 cm", hips: "38″/97 cm", shoulder: "14.5″/37 cm" },
-    { size: "L", bust: "38″/97 cm", waist: "30″/76 cm", hips: "40″/102 cm", shoulder: "15″/39 cm" },
-    { size: "XL", bust: "40″/102 cm", waist: "32″/81 cm", hips: "42″/107 cm", shoulder: "15.5″/40 cm" },
-
-];
+import { MEASUREMENT_DATA, PRODUCT_PAGE_TABS } from '../../../constants/content';
 
 export default function ProductDetail() {
     const { id } = useParams();
@@ -34,7 +24,7 @@ export default function ProductDetail() {
     const [activeDrawer, setActiveDrawer] = useState(null);
     const [colors, setColors] = useState([])
     const [showCustomSizeModal, setShowCustomSizeModal] = useState(false);
-    const [activeTab, setActiveTab] = useState('DESCRIPTION');
+    const [activeTab, setActiveTab] = useState(PRODUCT_PAGE_TABS[0]);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const { user } = useAuth();
@@ -213,7 +203,7 @@ export default function ProductDetail() {
                         </thead>
 
                         <tbody className="divide-y divide-neutral-50 text-neutral-500">
-                            {measurementData.map((item) => (
+                            {MEASUREMENT_DATA.map((item) => (
                                 <tr key={item.size}>
                                     <td className="py-4 text-black font-bold">{item.size}</td>
                                     <td className="py-4">{item.bust}</td>
@@ -422,17 +412,23 @@ export default function ProductDetail() {
 
                                 <div className="mt-2">
                                     {/* Mobile Tabs */}
-                                    <div className="flex gap-6 lg:hidden mb-6 overflow-x-auto no-scrollbar">
-                                        {['DESCRIPTION', 'MEASUREMENTS', 'CARE', 'SHIPPING & RETURNS'].map((tab) => (
+                                    <div className="flex gap-8 mb-12 border-b border-black/5">
+                                        {PRODUCT_PAGE_TABS.map((tab) => (
                                             <button
                                                 key={tab}
                                                 onClick={() => setActiveTab(tab)}
                                                 className={cn(
-                                                    "pb-2 text-[10px] sm:text-[11px] uppercase tracking-[0.2em] transition-all whitespace-nowrap",
-                                                    activeTab === tab ? "text-black font-medium" : "text-neutral-400"
+                                                    "pb-4 text-[10px] uppercase font-bold tracking-[0.2em] transition-all relative",
+                                                    activeTab === tab ? "text-black" : "text-black/30 hover:text-black"
                                                 )}
                                             >
                                                 {tab}
+                                                {activeTab === tab && (
+                                                    <motion.div
+                                                        layoutId="activeTab"
+                                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-black"
+                                                    />
+                                                )}
                                             </button>
                                         ))}
                                     </div>

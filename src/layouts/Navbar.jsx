@@ -1,16 +1,22 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Search, Menu, X, ChevronRight, User } from 'lucide-react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ShoppingBag, Search, X } from 'lucide-react';
 import { useCart } from '../features/cart';
 import { useAuth } from '../features/auth';
 import { cn } from '../components/ui/Primitives';
+import {
+    NAV_LINKS,
+    MOBILE_CATEGORIES,
+    MOBILE_PROMO_ITEMS,
+    MOBILE_DENSE_LINKS,
+    MOBILE_CATEGORY_LIST,
+    DESKTOP_NAV_CATEGORIES
+} from '../constants/content';
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { cart, setIsCartOpen } = useCart();
+    const { cart } = useCart();
     const { user, isAuthenticated } = useAuth();
-    const location = useLocation();
-    const isHome = location.pathname === '/';
 
     return (
         <>
@@ -33,21 +39,21 @@ export default function Navbar() {
 
                         <div className="flex-none flex items-center gap-6 ml-auto">
                             <Link
-                                to={isAuthenticated ? "/account" : "/auth"}
+                                to={isAuthenticated ? NAV_LINKS.ACCOUNT : NAV_LINKS.AUTH}
                                 className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black"
                             >
                                 {isAuthenticated ? user.name : "Log In"}
                             </Link>
 
                             <Link
-                                to="/help"
+                                to={NAV_LINKS.HELP}
                                 className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black"
                             >
                                 Help
                             </Link>
 
                             <Link
-                                to="/shopping-bag"
+                                to={NAV_LINKS.SHOPPING_BAG}
                                 className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black"
 
                             >
@@ -105,9 +111,9 @@ export default function Navbar() {
                     <div className={cn(
                         "flex md:hidden items-center gap-4 ml-auto transition-opacity duration-300 pointer-events-auto",
                     )}>
-                        <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
+                        <Link to={NAV_LINKS.AUTH} className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
                         <button className="p-1"><Search size={18} strokeWidth={1.5} className="text-black" /></button>
-                        <Link to="/shopping-bag" className="p-1 relative">
+                        <Link to={NAV_LINKS.SHOPPING_BAG} className="p-1 relative">
                             <ShoppingBag size={18} strokeWidth={1.5} className="text-black" />
                             {cart.length > 0 && (
                                 <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[12px] h-3 text-[8px] font-bold bg-black text-white rounded-full px-0.5">
@@ -145,7 +151,7 @@ export default function Navbar() {
                 <div className="flex-grow overflow-y-auto no-scrollbar md:hidden">
                     {/* Category Row (Horizontal Scroll) */}
                     <div className="flex overflow-x-auto no-scrollbar px-6 mb-12 border-b border-black/5">
-                        {['WOMAN', 'MAN', 'KIDS', 'PERFUMES', 'TRAVEL MODE'].map((cat, i) => (
+                        {MOBILE_CATEGORIES.map((cat, i) => (
                             <button key={cat} className={cn(
                                 "flex-none py-4 text-[11px] font-bold tracking-widest uppercase mr-6 transition-opacity",
                                 i === 0 ? "opacity-100 border-b-2 border-black" : "opacity-40"
@@ -165,12 +171,8 @@ export default function Navbar() {
 
                             {/* Promo Grid */}
                             <div className="grid grid-cols-3 gap-3 mb-12">
-                                {[
-                                    { name: 'THE ITEM', img: 'https://images.unsplash.com/photo-1539109132314-34a77bc70fe2?q=80&w=400&auto=format&fit=crop' },
-                                    { name: 'THE NEW', img: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop' },
-                                    { name: 'KNITWEAR', img: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=400&auto=format&fit=crop' }
-                                ].map((item) => (
-                                    <Link key={item.name} to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col gap-2">
+                                {MOBILE_PROMO_ITEMS.map((item) => (
+                                    <Link key={item.name} to={NAV_LINKS.SHOP} onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col gap-2">
                                         <div className="aspect-[3/4] overflow-hidden bg-gray-100">
                                             <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
                                         </div>
@@ -181,16 +183,18 @@ export default function Navbar() {
 
                             {/* Dense List Links */}
                             <div className="flex flex-col gap-2 mb-12">
-                                <Link to="/shop?filter=new" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">The New</Link>
-                                <Link to="/shop?filter=essentials" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">The Item</Link>
-                                <Link to="/shop?filter=ski" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">Ski Collection</Link>
+                                {MOBILE_DENSE_LINKS.map((link) => (
+                                    <Link key={link.label} to={link.path} onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">
+                                        {link.label}
+                                    </Link>
+                                ))}
                             </div>
                         </div>
 
                         {/* Category List */}
                         <div className="flex flex-col gap-4 mb-12">
-                            {['JACKETS', 'COATS', 'BLAZERS', 'KNITWEAR', 'CARDIGANS | JUMPERS', 'T-SHIRTS', 'TOPS', 'SHIRTS', 'JEANS', 'TROUSERS', 'DRESSES', 'LEATHER'].map((cat) => (
-                                <Link key={cat} to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity">
+                            {MOBILE_CATEGORY_LIST.map((cat) => (
+                                <Link key={cat} to={NAV_LINKS.SHOP} onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity">
                                     {cat}
                                 </Link>
                             ))}
@@ -198,22 +202,28 @@ export default function Navbar() {
 
                         {/* Bottom Links */}
                         <div className="flex flex-col gap-4 pt-12 border-t border-black/5">
-                            <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">My Account</Link>
-                            <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Contact Us</Link>
+                            <Link to={NAV_LINKS.ACCOUNT} onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">My Account</Link>
+                            <Link to={NAV_LINKS.HELP} onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Contact Us</Link>
                         </div>
                     </div>
                 </div>
 
                 {/* Desktop Menu Content (Original Minimalist Style) */}
                 <div className="hidden md:flex flex-col gap-6 p-12 pt-48 flex-grow overflow-y-auto">
-                    <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Shop All</Link>
-                    <Link to="/shop?filter=new" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">New</Link>
-                    <Link to="/shop?filter=woman" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Woman</Link>
-                    <Link to="/shop?filter=man" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Man</Link>
+                    {DESKTOP_NAV_CATEGORIES.map((cat) => (
+                        <Link
+                            key={cat.label}
+                            to={cat.path}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity"
+                        >
+                            {cat.label}
+                        </Link>
+                    ))}
 
                     <div className="mt-auto flex flex-col gap-4 pt-10 border-t border-black/5">
-                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">My Account</Link>
-                        <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
+                        <Link to={NAV_LINKS.ACCOUNT} onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">My Account</Link>
+                        <Link to={NAV_LINKS.HELP} onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
                     </div>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Search, Menu, X, ChevronRight, User } from 'lucide-react';
 import { useCart } from '../features/cart';
 import { useAuth } from '../features/auth';
@@ -7,13 +7,69 @@ import { cn } from '../components/ui/Primitives';
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const { cart } = useCart();
     const { user, isAuthenticated } = useAuth();
     const location = useLocation();
     const isHome = location.pathname === '/';
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const search = searchParams.get('search');
+        setSearchQuery(search || '');
+    }, [location.search]);
+
+    // Debounce search
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            const currentParams = new URLSearchParams(location.search);
+            const currentSearch = currentParams.get('search') || '';
+            if (searchQuery.trim() !== currentSearch) {
+                navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+            }
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchQuery, location.search, navigate]);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+            setIsMobileMenuOpen(false);
+            setIsMobileSearchOpen(false);
+        }
+    };
 
     return (
         <>
+            {/* Mobile Search Overlay - Minimalist & Inline */}
+            <div className={cn(
+                "fixed inset-x-0 top-0 h-16 bg-white z-[150] flex items-center px-6 md:hidden transition-all duration-300 ease-out",
+                isMobileSearchOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            )}>
+                <form onSubmit={handleSearch} className="flex-grow w-full relative">
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="SEARCH"
+                        className="w-full h-full py-2 text-[10px] font-bold uppercase tracking-[0.1em] outline-none bg-transparent border-b border-black placeholder:text-black placeholder:opacity-40"
+                        autoFocus={isMobileSearchOpen}
+                        onBlur={() => {
+                            if (!searchQuery.trim()) {
+                                setIsMobileSearchOpen(false);
+                            }
+                        }}
+                    />
+                </form>
+                <button onClick={() => setIsMobileSearchOpen(false)} className="p-2 -mr-2 ml-4">
+                    <X size={20} strokeWidth={1} className="text-black" />
+                </button>
+            </div>
+
             <nav
                 className={cn(
                     "fixed top-0 w-full z-[100] transition-all duration-500 px-6 md:px-12",
@@ -24,10 +80,15 @@ export default function Navbar() {
                     <div className="hidden md:flex items-center w-full h-full">
                         <div className="flex-grow flex justify-end mr-20 hidden lg:flex">
                             <div className="relative group w-64">
-                                <div className="flex items-end border-b border-current pb-1 w-full opacity-60 hover:opacity-100 transition-opacity">
-                                    <span className="text-[10px] font-bold tracking-[0.1em] uppercase">Search</span>
-                                    <div className="flex-grow" />
-                                </div>
+                                <form onSubmit={handleSearch} className="flex items-end border-b border-current pb-1 w-full opacity-60 hover:opacity-100 transition-opacity focus-within:opacity-100">
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="SEARCH"
+                                        className="w-full bg-transparent border-none outline-none text-[10px] font-bold tracking-[0.1em] uppercase placeholder:text-black placeholder:opacity-100"
+                                    />
+                                </form>
                             </div>
                         </div>
 
@@ -106,7 +167,12 @@ export default function Navbar() {
                         "flex md:hidden items-center gap-4 ml-auto transition-opacity duration-300 pointer-events-auto",
                     )}>
                         {!isAuthenticated && <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>}
-                        <button className="p-1"><Search size={18} strokeWidth={1.5} className="text-black" /></button>
+                        <button
+                            className="p-1"
+                            onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                        >
+                            <Search size={18} strokeWidth={1.5} className="text-black" />
+                        </button>
                         <Link to="/shopping-bag" className="p-1 relative">
                             <ShoppingBag size={18} strokeWidth={1.5} className="text-black" />
                             {cart.length > 0 && (

@@ -5,7 +5,7 @@ import { Filter, ChevronDown, LayoutGrid, Square } from 'lucide-react';
 import { cn } from '../../../components/ui/Primitives';
 
 export default function Shop() {
-    const { products, setCategory, setSort, category, sort } = useProducts();
+    const { products, isLoading, setCategory, setSort, category, sort, search } = useProducts();
     const [viewCols, setViewCols] = useState(4);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -16,6 +16,8 @@ export default function Shop() {
         { label: "Price High to Low", value: "price-high" }
     ];
 
+    if (isLoading) return <div className="h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-black border-t-transparent rounded-full animate-spin"></div></div>;
+
     return (
         <div className="pt-32 pb-20 px-6 md:px-12">
             <div className="container">
@@ -23,18 +25,21 @@ export default function Shop() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
                     <div>
                         <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">Shop</h1>
-                        <p className="text-xs text-black/40 uppercase font-bold tracking-widest">
-                            Showing {products.length} Products
-                        </p>
+                        {search && (
+                            <p className="text-sm font-bold uppercase tracking-widest text-black/60">
+                                Search Results for "{search}"
+                            </p>
+                        )}
+
                     </div>
 
                     <div className="flex items-center gap-8 border-t md:border-t-0 pt-8 md:pt-0 border-black/5">
-                        <button
+                        {/* <button
                             onClick={() => setIsFilterOpen(!isFilterOpen)}
                             className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest"
                         >
                             <Filter size={16} /> {isFilterOpen ? 'Close Filters' : 'Filters'}
-                        </button>
+                        </button> */}
                         <div className="hidden md:flex items-center gap-4">
                             <button onClick={() => setViewCols(2)} className={cn("text-black/20", viewCols === 2 && "text-black")}><Square size={20} /></button>
                             <button onClick={() => setViewCols(4)} className={cn("text-black/20", viewCols === 4 && "text-black")}><LayoutGrid size={20} /></button>
@@ -89,14 +94,21 @@ export default function Shop() {
                 </div>
 
                 {/* Products Grid */}
-                <div className={cn(
-                    "grid gap-x-6 gap-y-12 transition-all duration-500",
-                    viewCols === 4 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-1 md:grid-cols-2"
-                )}>
-                    {products.map(product => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
-                </div>
+                {products.length > 0 ? (
+                    <div className={cn(
+                        "grid gap-x-6 gap-y-12 transition-all duration-500",
+                        viewCols === 4 ? "grid-cols-2 lg:grid-cols-4" : "grid-cols-1 md:grid-cols-2"
+                    )}>
+                        {products.map(product => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="py-32 text-center border-t border-black/5">
+                        <p className="text-sm font-bold uppercase tracking-widest text-black/40 mb-4">No products found</p>
+                        <p className="text-xs text-black/40">Try adjusting your search or filters</p>
+                    </div>
+                )}
             </div>
         </div>
     );

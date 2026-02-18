@@ -10,6 +10,7 @@ const CollectionPage = lazy(() => import('../features/products/pages/CollectionP
 const Auth = lazy(() => import('../pages/Auth'));
 const Account = lazy(() => import('../pages/Account'));
 const ShoppingBag = lazy(() => import('../pages/ShoppingBag'));
+const SavedProducts = lazy(() => import('../pages/SavedProducts'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 import Navbar from '../layouts/Navbar';
@@ -66,6 +67,7 @@ function App() {
               <Route path="/collection/:id" element={<MainLayout><CollectionPage /></MainLayout>} />
               <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
               <Route path="/shopping-bag" element={<MainLayout><ShoppingBag /></MainLayout>} />
+              <Route path="/saved-products" element={<MainLayout><SavedProducts /></MainLayout>} />
               <Route path="/auth" element={<Auth />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/account" element={<MainLayout><Account /></MainLayout>} />

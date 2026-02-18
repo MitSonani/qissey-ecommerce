@@ -33,7 +33,9 @@ export default function ShoppingBag() {
                         <span>SHOPPING BAG</span>
                         <span>{cart.length}</span>
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">FAVOURITES</span>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">
+                        <Link to="/saved-products">FAVOURITES</Link>
+                    </span>
                 </div>
 
                 {/* Main Content Area */}

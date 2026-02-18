@@ -8,7 +8,7 @@ import { saveProduct, unsaveProduct } from '../../../features/products/services/
 import { toast } from 'sonner';
 import CustomSizeModal from './CustomSizeModal';
 
-export default function ProductCard({ product, isCompleteTheLook = false, isCartProduct = false }) {
+export default function ProductCard({ product, isCompleteTheLook = false, isCartProduct = false, onToggleSave }) {
     const { addToCart } = useCart();
     const { user } = useAuth();
 
@@ -34,10 +34,18 @@ export default function ProductCard({ product, isCompleteTheLook = false, isCart
         try {
             if (previousState) {
                 const success = await unsaveProduct(user.id, product.id);
-                if (!success) setIsSaved(previousState);
+                if (!success) {
+                    setIsSaved(previousState);
+                } else if (onToggleSave) {
+                    onToggleSave(false);
+                }
             } else {
                 const success = await saveProduct(user.id, product.id);
-                if (!success) setIsSaved(previousState);
+                if (!success) {
+                    setIsSaved(previousState);
+                } else if (onToggleSave) {
+                    onToggleSave(true);
+                }
             }
         } catch (error) {
             console.error('Error toggling save status:', error);

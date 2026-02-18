@@ -7,7 +7,7 @@ import { cn } from '../components/ui/Primitives';
 
 export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { cart, setIsCartOpen } = useCart();
+    const { cart } = useCart();
     const { user, isAuthenticated } = useAuth();
     const location = useLocation();
     const isHome = location.pathname === '/';

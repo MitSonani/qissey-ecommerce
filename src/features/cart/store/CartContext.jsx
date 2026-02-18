@@ -68,9 +68,9 @@ export const CartProvider = ({ children }) => {
             })));
             toast.success(`${product.name} added to bag`);
 
-            if (openDrawer) {
-                setIsCartOpen(true);
-            }
+            // if (openDrawer) {
+            //     setIsCartOpen(true);
+            // }
         }
     }, [user, navigate]);
 

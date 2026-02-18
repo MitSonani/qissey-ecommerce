@@ -297,9 +297,16 @@ export const fetchProductsByCollectionId = async (collectionId, userId) => {
                 name,
                 price,
                 product_variants(
+                    *,
                     id,
                     image_urls,
-                    is_primary
+                    is_primary,
+                    size,
+                    color_id (
+                        id,
+                        name,
+                        hex
+                    )
                 )
                 ${userId ? ', saved_products:saved_products!left(id)' : ''}
             `)

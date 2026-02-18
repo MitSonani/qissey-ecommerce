@@ -14,7 +14,7 @@ const NotFound = lazy(() => import('../pages/NotFound'));
 
 import Navbar from '../layouts/Navbar';
 import Footer from '../layouts/Footer';
-import { CartProvider, CartDrawer } from '../features/cart';
+import { CartProvider } from '../features/cart';
 import { AuthProvider, ProtectedRoute } from '../features/auth';
 import PageLoader from '../components/ui/PageLoader';
 import PageTitle from '../components/ui/PageTitle';
@@ -28,7 +28,7 @@ function MainLayout({ children }) {
         {children}
       </main>
       <Footer />
-      <CartDrawer />
+
       <Toaster
         position="top-right"
         expand={false}

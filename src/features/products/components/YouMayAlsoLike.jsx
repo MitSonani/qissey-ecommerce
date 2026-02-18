@@ -54,10 +54,10 @@ const YouMayAlsoLike = ({ cartItems }) => {
     if (!isLoading && recommendations.length === 0) return null;
 
     return (
-        <div className=" mx-[150px] mt-24 mb-12">
-            <p className="text-sm font-bold uppercase tracking-widest mb-12 text-center md:text-left">You May Also Like</p>
+        <div className="px-0 md:mx-[150px] mt-24 mb-12">
+            <p className="text-sm font-bold uppercase tracking-widest mb-8 md:mb-12 text-left">You May Also Like</p>
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-x-8 gap-y-30">
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-x-8 gap-y-30">
                 {[...recommendations].map(product => (
                     <ProductCard key={product.id} product={product} isCartProduct={true} />
                 ))}

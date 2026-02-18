@@ -105,7 +105,7 @@ export default function Navbar() {
                     <div className={cn(
                         "flex md:hidden items-center gap-4 ml-auto transition-opacity duration-300 pointer-events-auto",
                     )}>
-                        <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
+                        {!isAuthenticated && <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>}
                         <button className="p-1"><Search size={18} strokeWidth={1.5} className="text-black" /></button>
                         <Link to="/shopping-bag" className="p-1 relative">
                             <ShoppingBag size={18} strokeWidth={1.5} className="text-black" />

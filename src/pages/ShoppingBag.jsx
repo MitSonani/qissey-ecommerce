@@ -27,6 +27,15 @@ export default function ShoppingBag() {
         <div className="min-h-screen pt-24 md:pt-32 pb-32 px-6 md:px-12 bg-white">
             <div className="max-w-[1600px] mx-auto relative">
 
+                {/* Header for Mobile */}
+                <div className="flex flex-row items-center justify-between mb-8 md:hidden">
+                    <div className="flex gap-1 text-[11px] font-bold uppercase tracking-widest text-black">
+                        <span>SHOPPING BAG</span>
+                        <span>{cart.length}</span>
+                    </div>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-black/40">FAVOURITES</span>
+                </div>
+
                 {/* Main Content Area */}
                 <div className="flex flex-col lg:flex-row gap-12 lg:gap-24">
 
@@ -41,11 +50,11 @@ export default function ShoppingBag() {
                                 </Button>
                             </div>
                         ) : (
-                            <div className="mx-[320px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-35">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 md:gap-x-10 md:gap-y-35 lg:mx-[320px]">
                                 {[...cart].map((item) => (
-                                    <div key={item.cartItemId} className="flex flex-col group relative">
+                                    <div key={item.cartItemId} className="flex flex-row md:flex-col gap-4 md:gap-0 group relative border-b border-black/5 pb-8 md:border-none md:pb-0">
                                         {/* Product Image */}
-                                        <div className="w-full aspect-[3/4] bg-[#f5f5f5] max-w-[150px] max-h-[200px] mb-4 overflow-hidden relative">
+                                        <div className="w-[100px] md:w-full aspect-[3/4] bg-[#f5f5f5] max-w-[100px] md:max-w-[150px] md:max-h-[200px] mb-0 md:mb-4 overflow-hidden relative flex-shrink-0">
                                             <Link to={`/product/${item.id}`}>
                                                 <img
                                                     src={item.variant?.image_urls?.[0] || item.product_variants?.[0]?.image_urls?.[0] || item.images?.[0]}
@@ -56,21 +65,22 @@ export default function ShoppingBag() {
                                         </div>
 
                                         {/* Product Details */}
-                                        <div className="flex flex-col items-start gap-1">
-                                            <Link to={`/product/${item.id}`} className="text-[11px] font-bold uppercase tracking-widest text-black hover:underline decoration-1 underline-offset-4">
-                                                {item.name}
-                                            </Link>
+                                        <div className="flex flex-col items-start gap-1 flex-grow">
+                                            <div className="flex flex-col w-full">
+                                                <Link to={`/product/${item.id}`} className="text-[11px] font-bold uppercase tracking-widest text-black hover:underline decoration-1 underline-offset-4 leading-normal">
+                                                    {item.name}
+                                                </Link>
+                                                <p className="text-[10px] uppercase tracking-widest text-black/60 mt-0.5">
+                                                    ₹ {(item.price * item.quantity).toLocaleString('en-IN')}.00
+                                                </p>
+                                            </div>
 
-                                            <p className="text-[10px] uppercase tracking-widest text-black/60">
-                                                {item.size === 'CUSTOM' ? 'Custom Size' : item.size}
-                                                {item.variant?.color?.name && ` | ${item.variant.color.name}`}
-                                            </p>
+                                            <div className="text-[10px] uppercase tracking-widest text-black/60 mt-2 flex flex-col gap-0.5">
+                                                <p>{item.size === 'CUSTOM' ? 'Custom Size' : item.size} {item.variant?.color?.name && `| ${item.variant.color.name}`}</p>
+                                            </div>
 
-                                            <p className="text-[10px] uppercase tracking-widest text-black mt-1">
-                                                ₹ {(item.price * item.quantity).toLocaleString('en-IN')}.00
-                                            </p>
 
-                                            <div className="flex items-center gap-6 mt-2">
+                                            <div className="flex items-center gap-6 mt-4 md:mt-2">
                                                 <button
                                                     onClick={() => removeFromCart(item.cartItemId)}
                                                     className="text-[10px] uppercase tracking-widest text-black/40 hover:text-black transition-colors"

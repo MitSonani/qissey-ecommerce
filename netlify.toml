@@ -2,6 +2,12 @@
   command = "npm run build"
   publish = "dist"
 
+[dev]
+  framework = "#auto"
+  targetPort = 5173 
+  port = 8888 
+  publish = "dist" 
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

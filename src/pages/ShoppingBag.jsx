@@ -3,21 +3,110 @@ import { ShoppingBag as BagIcon, Plus, Minus, X, ArrowRight, ShieldCheck, Truck 
 import { useAuth } from '../features/auth';
 import { useCart } from '../features/cart';
 import { Button } from '../components/ui/Primitives';
-import { cn } from '../components/ui/Primitives';
 import ShoppingBagSkeleton from '../features/cart/components/ShoppingBagSkeleton';
 import YouMayAlsoLike from '../features/products/components/YouMayAlsoLike';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { paymentService } from '../services/paymentService';
+import { toast } from 'sonner';
+import logo from '../../public/logo.PNG';
 
 export default function ShoppingBag() {
-    const { cart, updateQuantity, removeFromCart, cartTotal, isLoading } = useCart();
+    const { cart, updateQuantity, removeFromCart, cartTotal, isLoading, clearCart } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [isProcessing, setIsProcessing] = useState(false);
 
     useEffect(() => {
         if (!isLoading && !user) {
             navigate('/auth');
         }
     }, [user, isLoading, navigate]);
+
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
+            };
+            document.body.appendChild(script);
+        });
+    };
+
+    const handleCheckout = async () => {
+        setIsProcessing(true);
+        try {
+            const res = await loadRazorpayScript();
+
+            if (!res) {
+                toast.error('Razorpay SDK failed to load. Are you online?');
+                setIsProcessing(false);
+                return;
+            }
+
+            // Create order on backend
+            const orderData = await paymentService.createPaymentOrder(cartTotal * 100, 'INR');
+
+            if (!orderData) {
+                toast.error('Server error. Are you online?');
+                setIsProcessing(false);
+                return;
+            }
+
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                amount: orderData.amount,
+                currency: orderData.currency,
+                name: "Qissey",
+                description: `Payment for ${cart.length} item${cart.length !== 1 ? 's' : ''}`,
+                image: logo,
+                order_id: orderData.id,
+                handler: async function (response) {
+                    try {
+                        const verifyRes = await paymentService.verifyPayment({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                        });
+
+                        if (verifyRes.success) {
+                            toast.success('Payment Successful!');
+                            clearCart();
+                            navigate('/account/orders'); // Redirect to orders page
+                        } else {
+                            toast.error('Payment verification failed');
+                        }
+                    } catch (error) {
+                        console.error("Verification Error", error);
+                        toast.error('Payment verification failed');
+                    }
+                },
+                prefill: {
+                    name: user?.user_metadata?.name || user?.email,
+                    email: user?.email,
+                    contact: user?.user_metadata?.phone || "",
+                },
+                notes: {
+                    address: "Razorpay Corporate Office",
+                },
+                theme: {
+                    color: "#000000",
+                },
+            };
+
+            const paymentObject = new window.Razorpay(options);
+            paymentObject.open();
+
+        } catch (error) {
+            console.error("Checkout Error", error);
+            toast.error('Something went wrong during checkout');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     if (isLoading || !user) {
         return <ShoppingBagSkeleton />;
@@ -138,8 +227,12 @@ export default function ShoppingBag() {
                                 </p>
                             </div>
 
-                            <Button className="h-12 px-8 bg-black text-white text-[11px] font-bold uppercase tracking-widest rounded-none hover:bg-black/90 transition-opacity">
-                                Continue
+                            <Button
+                                onClick={handleCheckout}
+                                disabled={isProcessing}
+                                className="h-12 px-8 bg-black text-white text-[11px] font-bold uppercase tracking-widest rounded-none hover:bg-black/90 transition-opacity disabled:opacity-50"
+                            >
+                                {isProcessing ? 'Processing...' : 'Checkout'}
                             </Button>
                         </div>
 

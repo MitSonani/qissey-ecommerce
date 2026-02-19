@@ -2,25 +2,46 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ShoppingBag as BagIcon, Plus, Minus, X, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
 import { useAuth } from '../features/auth';
 import { useCart } from '../features/cart';
-import { Button } from '../components/ui/Primitives';
+import { Button, cn } from '../components/ui/Primitives';
 import ShoppingBagSkeleton from '../features/cart/components/ShoppingBagSkeleton';
 import YouMayAlsoLike from '../features/products/components/YouMayAlsoLike';
 import { useEffect, useState } from 'react';
 import { paymentService } from '../services/paymentService';
 import { toast } from 'sonner';
-import logo from '../../public/logo.PNG';
+const logo = '/logo.PNG';
+import AddressModal from '../components/ui/AddressModal';
+import { supabase } from '../lib/supabase';
 
 export default function ShoppingBag() {
     const { cart, updateQuantity, removeFromCart, cartTotal, isLoading, clearCart } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+
+    // Initial data for the modal based on logged-in user
+    const [initialAddressData, setInitialAddressData] = useState(null);
 
     useEffect(() => {
         if (!isLoading && !user) {
             navigate('/auth');
+        } else if (user) {
+            setInitialAddressData({
+                name: user.user_metadata?.name || '',
+                email: user.email || '',
+                phone: user.user_metadata?.phone || '',
+                country: 'IN'
+            });
         }
     }, [user, isLoading, navigate]);
+
+    useEffect(() => {
+        if (isAddressModalOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }, [isAddressModalOpen])
 
     const loadRazorpayScript = () => {
         return new Promise((resolve) => {
@@ -36,7 +57,20 @@ export default function ShoppingBag() {
         });
     };
 
-    const handleCheckout = async () => {
+    const handleCheckoutClick = () => {
+        setIsAddressModalOpen(true);
+    };
+
+    const handlePayment = async (shippingData) => {
+        // Validate Shipping Details (Double check, though Modal initiates this)
+        const requiredFields = ['name', 'email', 'phone', 'line1', 'city', 'state', 'postal_code'];
+        const missingFields = requiredFields.filter(field => !shippingData[field]);
+
+        if (missingFields.length > 0) {
+            toast.error(`Please fill in all shipping details`);
+            return;
+        }
+
         setIsProcessing(true);
         try {
             const res = await loadRazorpayScript();
@@ -48,7 +82,20 @@ export default function ShoppingBag() {
             }
 
             // Create order on backend
-            const orderData = await paymentService.createPaymentOrder(cartTotal * 100, 'INR');
+            // Get session token for RLS
+            const { data: { session } } = await supabase.auth.getSession();
+            const accessToken = session?.access_token;
+
+            const orderData = await paymentService.createPaymentOrder(
+                cartTotal * 100,
+                'INR',
+                {
+                    cartItems: cart,
+                    user_id: user.id,
+                    shipping_address: shippingData,
+                    accessToken // Pass token to backend
+                }
+            );
 
             if (!orderData) {
                 toast.error('Server error. Are you online?');
@@ -70,12 +117,15 @@ export default function ShoppingBag() {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,
+                            db_order_id: orderData.db_order_id,
+                            accessToken
                         });
 
                         if (verifyRes.success) {
                             toast.success('Payment Successful!');
                             clearCart();
-                            navigate('/account/orders'); // Redirect to orders page
+                            setIsAddressModalOpen(false);
+                            navigate('/account/orders');
                         } else {
                             toast.error('Payment verification failed');
                         }
@@ -85,9 +135,9 @@ export default function ShoppingBag() {
                     }
                 },
                 prefill: {
-                    name: user?.user_metadata?.name || user?.email,
-                    email: user?.email,
-                    contact: user?.user_metadata?.phone || "",
+                    name: shippingData.name,
+                    email: shippingData.email,
+                    contact: shippingData.phone,
                 },
                 notes: {
                     address: "Razorpay Corporate Office",
@@ -113,7 +163,7 @@ export default function ShoppingBag() {
     }
 
     return (
-        <div className="min-h-screen pt-24 md:pt-32 pb-32 px-6 md:px-12 bg-white">
+        <div className="min-h-screen pt-24 md:pt-32 pb-32 px-6 md:px-12 bg-white relative">
             <div className="max-w-[1600px] mx-auto relative">
 
                 {/* Header for Mobile */}
@@ -127,7 +177,7 @@ export default function ShoppingBag() {
                     </span>
                 </div>
 
-                {/* Main Content Area */}
+                {/* Main Content Area - Centered Grid (Reverted) */}
                 <div className="flex flex-col lg:flex-row gap-12 lg:gap-24">
 
                     {/* Left/Main Column: Cart Items Grid */}
@@ -204,18 +254,13 @@ export default function ShoppingBag() {
                             </div>
                         )}
                     </div>
-
-
                 </div>
-
 
                 <YouMayAlsoLike cartItems={cart} />
 
                 {/* Footer Action Bar */}
                 {cart.length > 0 && (
-                    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/5 py-4 px-6 md:px-12 z-50">
-
-                        {/* Total & Checkout */}
+                    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/5 py-4 px-6 md:px-12 z-40">
                         <div className="flex items-center gap-6 md:gap-12 w-full md:w-auto justify-between md:justify-end">
                             <div className="text-right">
                                 <p className="text-sm font-bold uppercase tracking-widest">
@@ -228,17 +273,25 @@ export default function ShoppingBag() {
                             </div>
 
                             <Button
-                                onClick={handleCheckout}
+                                onClick={handleCheckoutClick}
                                 disabled={isProcessing}
                                 className="h-12 px-8 bg-black text-white text-[11px] font-bold uppercase tracking-widest rounded-none hover:bg-black/90 transition-opacity disabled:opacity-50"
                             >
-                                {isProcessing ? 'Processing...' : 'Checkout'}
+                                Checkout
                             </Button>
                         </div>
-
                     </div>
                 )}
             </div>
+
+            {isAddressModalOpen && <AddressModal
+                isOpen={isAddressModalOpen}
+                onClose={() => setIsAddressModalOpen(false)}
+                onSubmit={handlePayment}
+                isProcessing={isProcessing}
+                totalAmount={cartTotal}
+                initialData={initialAddressData}
+            />}
         </div>
     );
 }

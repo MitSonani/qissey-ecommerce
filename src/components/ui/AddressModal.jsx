@@ -2,6 +2,26 @@ import { X } from 'lucide-react';
 import { Button, cn, Spinner } from './Primitives';
 import { useState, useEffect } from 'react';
 
+const InputField = ({ label, name, type = "text", placeholder, className, disabled = false, formData, onChange, isProcessing }) => (
+    <div className={cn("flex flex-col gap-2", className)}>
+        <label className="text-[10px] uppercase tracking-[0.2em] text-black/40 font-semibold">{label}</label>
+        <input
+            type={type}
+            name={name}
+            value={formData[name]}
+            onChange={onChange}
+            placeholder={placeholder}
+            disabled={disabled || isProcessing}
+            className={cn(
+                "w-full border-b py-2 text-sm font-medium focus:outline-none transition-all duration-300 bg-transparent rounded-none",
+                disabled
+                    ? "text-black/40 cursor-not-allowed border-transparent"
+                    : "border-black/20 focus:border-black placeholder:text-black/10"
+            )}
+        />
+    </div>
+);
+
 export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, totalAmount, initialData }) {
     const [formData, setFormData] = useState({
         name: '',
@@ -36,26 +56,6 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
 
     if (!isOpen) return null;
 
-    const InputField = ({ label, name, type = "text", placeholder, className, disabled = false }) => (
-        <div className={cn("flex flex-col gap-2", className)}>
-            <label className="text-[10px] uppercase tracking-[0.2em] text-black/40 font-semibold">{label}</label>
-            <input
-                type={type}
-                name={name}
-                value={formData[name]}
-                onChange={handleInputChange}
-                placeholder={placeholder}
-                disabled={disabled || isProcessing}
-                className={cn(
-                    "w-full border-b py-2 text-sm font-medium focus:outline-none transition-all duration-300 bg-transparent rounded-none",
-                    disabled
-                        ? "text-black/40 cursor-not-allowed border-transparent"
-                        : "border-black/20 focus:border-black placeholder:text-black/10"
-                )}
-            />
-        </div>
-    );
-
     return (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
             <div
@@ -80,23 +80,84 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
                     <div className="flex flex-col gap-8">
                         {/* Personal Info */}
                         <div className="flex flex-col gap-6">
-                            <InputField label="Full Name" name="name" placeholder="JOHN DOE" />
+                            <InputField
+                                label="Full Name"
+                                name="name"
+                                placeholder="JOHN DOE"
+                                formData={formData}
+                                onChange={handleInputChange}
+                                isProcessing={isProcessing}
+                            />
                             <div className="grid grid-cols-2 gap-6">
-                                <InputField label="Email" name="email" type="email" placeholder="email@example.com" disabled={true} />
-                                <InputField label="Phone" name="phone" type="tel" placeholder="+91 98765 43210" disabled={true} />
+                                <InputField
+                                    label="Email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="email@example.com"
+                                    disabled={true}
+                                    formData={formData}
+                                    onChange={handleInputChange}
+                                    isProcessing={isProcessing}
+                                />
+                                <InputField
+                                    label="Phone"
+                                    name="phone"
+                                    type="tel"
+                                    placeholder="+91 98765 43210"
+                                    disabled={true}
+                                    formData={formData}
+                                    onChange={handleInputChange}
+                                    isProcessing={isProcessing}
+                                />
                             </div>
                         </div>
 
                         {/* Address */}
                         <div className="flex flex-col gap-6">
-                            <InputField label="Address Line 1" name="line1" placeholder="FLAT / HOUSE NO / STREET" />
+                            <InputField
+                                label="Address Line 1"
+                                name="line1"
+                                placeholder="FLAT / HOUSE NO / STREET"
+                                formData={formData}
+                                onChange={handleInputChange}
+                                isProcessing={isProcessing}
+                            />
                             <div className="grid grid-cols-2 gap-6">
-                                <InputField label="City" name="city" placeholder="MUMBAI" />
-                                <InputField label="Pincode" name="postal_code" placeholder="400001" />
+                                <InputField
+                                    label="City"
+                                    name="city"
+                                    placeholder="MUMBAI"
+                                    formData={formData}
+                                    onChange={handleInputChange}
+                                    isProcessing={isProcessing}
+                                />
+                                <InputField
+                                    label="Pincode"
+                                    name="postal_code"
+                                    placeholder="400001"
+                                    formData={formData}
+                                    onChange={handleInputChange}
+                                    isProcessing={isProcessing}
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-6">
-                                <InputField label="State" name="state" placeholder="MAHARASHTRA" />
-                                <InputField label="Country" name="country" placeholder="INDIA" disabled={true} />
+                                <InputField
+                                    label="State"
+                                    name="state"
+                                    placeholder="MAHARASHTRA"
+                                    formData={formData}
+                                    onChange={handleInputChange}
+                                    isProcessing={isProcessing}
+                                />
+                                <InputField
+                                    label="Country"
+                                    name="country"
+                                    placeholder="INDIA"
+                                    disabled={true}
+                                    formData={formData}
+                                    onChange={handleInputChange}
+                                    isProcessing={isProcessing}
+                                />
                             </div>
                         </div>
 

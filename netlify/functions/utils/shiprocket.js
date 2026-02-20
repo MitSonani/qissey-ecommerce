@@ -85,9 +85,9 @@ export async function createShiprocketOrder(order, orderItems) {
     const isPaid = order.payment_status === 'paid';
 
     const payload = {
-        order_id: order.id, // Using ID directly as per original flow, user snippet used order_number OR ID
+        order_id: order.id,
         order_date: formattedDate,
-        pickup_location: 'QISSEY_Surat', // Must match Shiprocket settings
+        pickup_location: 'QISSEY_Surat',
         comment: "Order from Website",
         billing_customer_name: firstName,
         billing_last_name: lastName,

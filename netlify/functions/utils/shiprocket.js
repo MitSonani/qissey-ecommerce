@@ -1,5 +1,4 @@
-/* eslint-env node */
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 const SHIPROCKET_BASE_URL = 'https://apiv2.shiprocket.in/v1/external';
 
@@ -47,11 +46,23 @@ async function getShiprocketToken() {
     }
 }
 
-async function createShiprocketOrder(order, orderItems) {
+export async function createShiprocketOrder(order, orderItems) {
     const token = await getShiprocketToken();
     if (!token) {
         throw new Error('Failed to authenticate with Shiprocket');
     }
+
+    // Map Order details (adhering to user snippet logic where applicable)
+    // Supabase order.shipping_address is JSONB.
+    const address = order.shipping_address || {};
+    const billingName = address.name || order.customer_name || 'Customer';
+    const splitName = billingName.split(' ');
+    const firstName = splitName[0];
+    const lastName = splitName.slice(1).join(' ') || '';
+
+    // User snippet uses parseInt and replace regex
+    const billingPhone = parseInt((address.phone?.slice(3) || "0000000000").replace(/\D/g, ''));
+    const billingPincode = address.postal_code ? parseInt(address.postal_code) : 0;
 
     // 1. Prepare Payload
     const shiprocketItems = orderItems.map(item => ({
@@ -59,40 +70,33 @@ async function createShiprocketOrder(order, orderItems) {
         sku: item.sku || `ITEM-${item.id}`,
         units: parseInt(item.quantity) || 1,
         selling_price: parseFloat(item.price),
-        discount: 0,
-        tax: 0,
-        hsn: 441122 // Default HSN, user might want to make this dynamic later
+        discount: "",
+        tax: "",
+        hsn: 441122
     }));
 
     const subTotal = orderItems.reduce((total, item) => total + (parseFloat(item.price) * parseInt(item.quantity)), 0);
-    const totalWeight = orderItems.reduce((total, item) => total + 0.5, 0); // Default 0.5kg per item if not specified
+    const totalWeight = orderItems.reduce((total, item) => total + 0.5, 0);
 
     // Format date: YYYY-MM-DD HH:MM
-    const date = new Date(order.created_at || new Date());
-    const formattedDate = date.toISOString().slice(0, 10) + ' ' + date.toTimeString().slice(0, 5);
-
-    // Parse shipping address
-    // Assuming shipping_address is JSONB in Supabase: { name, email, phone, line1, city, state, postal_code, country }
-    const address = order.shipping_address || {};
-    const billingName = address.name || order.customer_name || 'Customer';
-    const splitName = billingName.split(' ');
-    const firstName = splitName[0];
-    const lastName = splitName.slice(1).join(' ') || '';
+    const d = new Date(order.created_at || new Date());
+    const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
     const payload = {
-        order_id: order.id,
+        order_id: order.id, // Using ID directly as per original flow, user snippet used order_number OR ID
         order_date: formattedDate,
-        pickup_location: 'Primary', // Must match Shiprocket settings
+        pickup_location: 'QISSEY_Surat', // Must match Shiprocket settings
         comment: "Order from Website",
         billing_customer_name: firstName,
         billing_last_name: lastName,
         billing_address: address.line1 || "Not Provided",
+        billing_address_2: address.line2 || "",
         billing_city: address.city || "Unknown",
-        billing_pincode: address.postal_code || "000000",
+        billing_pincode: billingPincode,
         billing_state: address.state || "Unknown",
         billing_country: address.country || "India",
         billing_email: address.email || order.customer_email || "noemail@example.com",
-        billing_phone: (address.phone || "0000000000").replace(/\D/g, ''),
+        billing_phone: billingPhone,
         shipping_is_billing: true,
         order_items: shiprocketItems,
         payment_method: "Prepaid",
@@ -101,15 +105,15 @@ async function createShiprocketOrder(order, orderItems) {
         transaction_charges: 0,
         total_discount: 0,
         sub_total: subTotal,
-        length: 10,
-        breadth: 10,
-        height: 10,
+        length: 15,
+        breadth: 15,
+        height: 7,
         weight: Math.max(totalWeight, 0.5)
     };
 
     console.log('Creating Shiprocket Order with payload:', JSON.stringify(payload));
 
-    // 2. Create Order
+    // STEP 1 — Create Shipment
     const createRes = await fetch(`${SHIPROCKET_BASE_URL}/orders/create/adhoc`, {
         method: 'POST',
         headers: {
@@ -132,65 +136,104 @@ async function createShiprocketOrder(order, orderItems) {
     let labelUrl = null;
     let pickupScheduled = false;
 
+    // STEP 2 — Check Serviceability (Optional but recommended)
+    let recommendedCourier = null;
     try {
-        // 3. Check Serviceability
-        // pickup_postcode is needed. Assuming it's configured in 'Primary' location which users set in dashboard.
-        // We'll skip strict serviceability check and rely on auto-assign which handles best available.
-        // Actually, user wants full automation. Let's try Auto-Assign directly.
-
-        console.log('Attempting Auto-Assign AWB...');
-        const assignRes = await fetch(`${SHIPROCKET_BASE_URL}/courier/assign/auto`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ shipment_id: srShipmentId })
+        console.log("Checking serviceability...");
+        // Use billing pincode as pickup pincode for checking availability (as per user snippet)
+        const params = new URLSearchParams({
+            pickup_postcode: billingPincode,
+            delivery_postcode: billingPincode,
+            weight: Math.max(totalWeight, 0.5).toString(),
+            cod: '0'
         });
 
-        const assignData = await assignRes.json();
-        console.log('AWB Auto-Assign Response:', assignData);
+        const serviceRes = await fetch(`${SHIPROCKET_BASE_URL}/courier/serviceability/?${params}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-        if (assignData.awb_assign_status === 1 && assignData.response?.data?.awb_code) {
-            awbCode = assignData.response.data.awb_code;
-            courierName = assignData.response.data.courier_name;
+        if (serviceRes.ok) {
+            const serviceData = await serviceRes.json();
+            console.log("Serviceability response:", JSON.stringify(serviceData));
+            if (serviceData.data?.available_courier_companies?.length > 0) {
+                recommendedCourier = serviceData.data.available_courier_companies[0];
+                console.log("Recommended courier:", recommendedCourier.courier_name);
+            }
+        }
+    } catch (serviceError) {
+        console.error("Serviceability check error:", serviceError);
+    }
 
-            // 4. Generate Label
-            console.log('Generating Label...');
+    // STEP 3 — Assign AWB
+    try {
+        if (recommendedCourier?.courier_company_id) {
+            console.log("Assigning AWB with specific courier ID:", recommendedCourier.courier_company_id);
+            const assignRes = await fetch(`${SHIPROCKET_BASE_URL}/courier/assign/awb`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({
+                    shipment_id: srShipmentId,
+                    courier_id: recommendedCourier.courier_company_id
+                })
+            });
+            const assignData = await assignRes.json();
+            console.log("AWB Assign Response:", assignData);
+            if (assignData.awb_assign_status === 1) {
+                awbCode = assignData.response.data.awb_code;
+                courierName = assignData.response.data.courier_name;
+            }
+        } else {
+            console.log("Using auto-assignment...");
+            const assignRes = await fetch(`${SHIPROCKET_BASE_URL}/courier/assign/auto`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ shipment_id: srShipmentId })
+            });
+            const assignData = await assignRes.json();
+            console.log("Auto Assign AWB Response:", assignData);
+            if (assignData.awb_assign_status === 1) {
+                awbCode = assignData.response.data.awb_code;
+                courierName = assignData.response.data.courier_name;
+            }
+        }
+    } catch (assignError) {
+        console.error("Error defining AWB:", assignError);
+    }
+
+    // STEP 4 — Generate Shipping Label
+    if (awbCode) {
+        try {
+            console.log("Generating shipping label...");
             const labelRes = await fetch(`${SHIPROCKET_BASE_URL}/courier/generate/label`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                method: "POST",
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ shipment_id: [srShipmentId] })
             });
             const labelData = await labelRes.json();
-            labelUrl = labelData.label_url;
-            console.log('Label URL:', labelUrl);
+            labelUrl = labelData.label_url || labelData.label_created;
+            console.log("Label URL:", labelUrl);
+        } catch (labelError) {
+            console.error("Error generating label:", labelError);
+        }
+    }
 
-            // 5. Schedule Pickup
-            console.log('Scheduling Pickup...');
+    // STEP 5 — Schedule Pickup
+    if (awbCode) {
+        try {
+            console.log("Scheduling pickup...");
             const pickupRes = await fetch(`${SHIPROCKET_BASE_URL}/courier/generate/pickup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                method: "POST",
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ shipment_id: [srShipmentId] })
             });
             const pickupData = await pickupRes.json();
-            console.log('Pickup Response:', pickupData);
+            console.log("Pickup Response:", pickupData);
             if (pickupData.pickup_status === 1) {
                 pickupScheduled = true;
             }
-        } else {
-            console.warn('AWB Auto-Assignment failed or returned no AWB. Manual intervention might be required.');
+        } catch (pickupError) {
+            console.error("Error scheduling pickup:", pickupError);
         }
-
-    } catch (automationError) {
-        console.error('Error during Shiprocket automation (AWB/Pickup):', automationError);
-        // We catch this so we still return the created order ID - partial success
     }
 
     return {
@@ -202,5 +245,3 @@ async function createShiprocketOrder(order, orderItems) {
         pickup_scheduled: pickupScheduled
     };
 }
-
-module.exports = { createShiprocketOrder };

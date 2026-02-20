@@ -1,8 +1,7 @@
-/* eslint-env node */
-const Razorpay = require('razorpay');
-const { createClient } = require('@supabase/supabase-js');
+import Razorpay from 'razorpay';
+import { createClient } from '@supabase/supabase-js';
 
-exports.handler = async function (event) {
+export const handler = async function (event) {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Make sure method is POST' };
     }
@@ -50,7 +49,6 @@ exports.handler = async function (event) {
                     total_amount: amount / 100,
                     currency: currency,
                     status: 'pending',
-                    payment_method: 'razorpay',
                     payment_status: 'unpaid',
                     shipping_address: shipping_address,
                     customer_name: shipping_address?.name,

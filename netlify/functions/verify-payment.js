@@ -1,9 +1,8 @@
-/* eslint-env node */
-const crypto = require('crypto');
-const { createClient } = require('@supabase/supabase-js');
-const { createShiprocketOrder } = require('./utils/shiprocket');
+import crypto from 'crypto';
+import { createClient } from '@supabase/supabase-js';
+import { createShiprocketOrder } from './utils/shiprocket.js';
 
-exports.handler = async function (event) {
+export const handler = async function (event) {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
@@ -86,15 +85,21 @@ exports.handler = async function (event) {
                         const shippingUpdate = {
                             shiprocket_order_id: shipRes.shiprocket_order_id,
                             shiprocket_shipment_id: shipRes.shiprocket_shipment_id,
-                            shiprocket_awb_code: shipRes.awb_code,
-                            shiprocket_courier_name: shipRes.courier_name,
-                            status: shipRes.awb_code ? 'shipped' : 'processing'
+                            shiprocket_awb: shipRes.awb_code,
+                            status: shipRes.awb_code ? 'shipped' : 'processing',
+                            label_url: shipRes.label_url,
                         };
 
-                        await supabaseAdmin
+                        const { error: shipUpdateError } = await supabaseAdmin
                             .from('orders')
                             .update(shippingUpdate)
                             .eq('id', order.id);
+
+                        if (shipUpdateError) {
+                            console.error('Error updating order with Shiprocket details:', shipUpdateError);
+                        } else {
+                            console.log('Successfully updated order with Shiprocket details:', shippingUpdate);
+                        }
                     }
                 }
             } catch (shippingError) {

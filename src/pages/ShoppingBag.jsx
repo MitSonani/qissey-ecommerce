@@ -73,82 +73,103 @@ export default function ShoppingBag() {
 
         setIsProcessing(true);
         try {
-            const res = await loadRazorpayScript();
-
-            if (!res) {
-                toast.error('Razorpay SDK failed to load. Are you online?');
-                setIsProcessing(false);
-                return;
-            }
-
-            // Create order on backend
             // Get session token for RLS
             const { data: { session } } = await supabase.auth.getSession();
             const accessToken = session?.access_token;
 
-            const orderData = await paymentService.createPaymentOrder(
-                cartTotal * 100,
-                'INR',
-                {
+            if (shippingData.paymentMethod === 'cod') {
+                // COD Flow
+                const res = await paymentService.createCodOrder({
+                    amount: cartTotal * 100,
+                    currency: 'INR',
                     cartItems: cart,
                     user_id: user.id,
                     shipping_address: shippingData,
-                    accessToken // Pass token to backend
+                    accessToken
+                });
+
+                if (res.success) {
+                    toast.success('Order Placed Successfully (COD)!');
+                    clearCart();
+                    setIsAddressModalOpen(false);
+                    navigate('/account/orders');
+                } else {
+                    toast.error(res.error || 'Failed to place COD order');
                 }
-            );
+            } else {
+                // Online Payment Flow
+                const res = await loadRazorpayScript();
 
-            if (!orderData) {
-                toast.error('Server error. Are you online?');
-                setIsProcessing(false);
-                return;
-            }
+                if (!res) {
+                    toast.error('Razorpay SDK failed to load. Are you online?');
+                    setIsProcessing(false);
+                    return;
+                }
 
-            const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: orderData.amount,
-                currency: orderData.currency,
-                name: "Qissey",
-                description: `Payment for ${cart.length} item${cart.length !== 1 ? 's' : ''}`,
-                image: logo,
-                order_id: orderData.id,
-                handler: async function (response) {
-                    try {
-                        const verifyRes = await paymentService.verifyPayment({
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            db_order_id: orderData.db_order_id,
-                            accessToken
-                        });
+                const orderData = await paymentService.createPaymentOrder(
+                    cartTotal * 100,
+                    'INR',
+                    {
+                        cartItems: cart,
+                        user_id: user.id,
+                        shipping_address: shippingData,
+                        accessToken // Pass token to backend
+                    }
+                );
 
-                        if (verifyRes.success) {
-                            toast.success('Payment Successful!');
-                            clearCart();
-                            setIsAddressModalOpen(false);
-                            navigate('/account/orders');
-                        } else {
+                if (!orderData) {
+                    toast.error('Server error. Are you online?');
+                    setIsProcessing(false);
+                    return;
+                }
+
+                const options = {
+                    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+                    amount: orderData.amount,
+                    currency: orderData.currency,
+                    name: "Qissey",
+                    description: `Payment for ${cart.length} item${cart.length !== 1 ? 's' : ''}`,
+                    image: logo,
+                    order_id: orderData.id,
+                    handler: async function (response) {
+                        try {
+                            const verifyRes = await paymentService.verifyPayment({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                db_order_id: orderData.db_order_id,
+                                accessToken
+                            });
+
+                            if (verifyRes.success) {
+                                toast.success('Payment Successful!');
+                                clearCart();
+                                setIsAddressModalOpen(false);
+                                navigate('/account/orders');
+                            } else {
+                                toast.error('Payment verification failed');
+                            }
+                        } catch (error) {
+                            console.error("Verification Error", error);
                             toast.error('Payment verification failed');
                         }
-                    } catch (error) {
-                        console.error("Verification Error", error);
-                        toast.error('Payment verification failed');
-                    }
-                },
-                prefill: {
-                    name: shippingData.name,
-                    email: shippingData.email,
-                    contact: shippingData.phone,
-                },
-                notes: {
-                    address: "Razorpay Corporate Office",
-                },
-                theme: {
-                    color: "#000000",
-                },
-            };
+                    },
+                    prefill: {
+                        name: shippingData.name,
+                        email: shippingData.email,
+                        contact: shippingData.phone,
+                    },
+                    notes: {
+                        address: "Razorpay Corporate Office",
+                    },
+                    theme: {
+                        color: "#000000",
+                    },
+                };
 
-            const paymentObject = new window.Razorpay(options);
-            paymentObject.open();
+                const paymentObject = new window.Razorpay(options);
+                paymentObject.open();
+            }
 
         } catch (error) {
             console.error("Checkout Error", error);

@@ -24,4 +24,14 @@ export const paymentService = {
             throw error;
         }
     },
+
+    createCodOrder: async (orderData) => {
+        try {
+            const response = await api.post('/.netlify/functions/create-cod-order', orderData);
+            return response;
+        } catch (error) {
+            console.error('Error creating COD order:', error);
+            throw error;
+        }
+    },
 };

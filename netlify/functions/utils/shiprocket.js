@@ -82,6 +82,8 @@ export async function createShiprocketOrder(order, orderItems) {
     const d = new Date(order.created_at || new Date());
     const formattedDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
+    const isPaid = order.payment_status === 'paid';
+
     const payload = {
         order_id: order.id, // Using ID directly as per original flow, user snippet used order_number OR ID
         order_date: formattedDate,
@@ -99,7 +101,7 @@ export async function createShiprocketOrder(order, orderItems) {
         billing_phone: billingPhone,
         shipping_is_billing: true,
         order_items: shiprocketItems,
-        payment_method: "Prepaid",
+        payment_method: isPaid ? "Prepaid" : "COD",
         shipping_charges: 0,
         giftwrap_charges: 0,
         transaction_charges: 0,
@@ -145,7 +147,7 @@ export async function createShiprocketOrder(order, orderItems) {
             pickup_postcode: billingPincode,
             delivery_postcode: billingPincode,
             weight: Math.max(totalWeight, 0.5).toString(),
-            cod: '0'
+            cod: isPaid ? '0' : '1'
         });
 
         const serviceRes = await fetch(`${SHIPROCKET_BASE_URL}/courier/serviceability/?${params}`, {

@@ -28,15 +28,10 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = () => {
-        const requiredFields = ['name', 'email', 'phone', 'line1', 'city', 'state', 'postal_code'];
-        const missingFields = requiredFields.filter(field => !formData[field]);
+    const [paymentMethod, setPaymentMethod] = useState('online');
 
-        if (missingFields.length > 0) {
-            onSubmit(formData);
-        } else {
-            onSubmit(formData);
-        }
+    const handleSubmit = () => {
+        onSubmit({ ...formData, paymentMethod });
     };
 
     if (!isOpen) return null;
@@ -104,12 +99,14 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
                                 <InputField label="Country" name="country" placeholder="INDIA" disabled={true} />
                             </div>
                         </div>
+
+
                     </div>
                 </div>
 
                 {/* Footer */}
                 <div className="px-10 py-8 mt-auto shrink-0 bg-neutral-50 border-t border-black/5">
-                    <div className="flex justify-between items-end mb-8">
+                    <div className="flex justify-between items-center mb-8">
                         <div className="flex flex-col gap-1">
                             <span className="text-[9px] uppercase tracking-widest text-black/40">Total Amount</span>
                             <span className="text-xl font-medium uppercase tracking-widest text-black ">
@@ -117,6 +114,33 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
                             </span>
                         </div>
 
+                        {/* Payment Method Selection */}
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setPaymentMethod('online')}
+                                disabled={isProcessing}
+                                className={cn(
+                                    "px-4 py-2 border text-[9px] font-bold uppercase tracking-widest transition-all duration-300 rounded-full",
+                                    paymentMethod === 'online'
+                                        ? "border-black bg-black text-white"
+                                        : "border-black/10 text-black/40 hover:border-black/40"
+                                )}
+                            >
+                                Online
+                            </button>
+                            <button
+                                onClick={() => setPaymentMethod('cod')}
+                                disabled={isProcessing}
+                                className={cn(
+                                    "px-4 py-2 border text-[9px] font-bold uppercase tracking-widest transition-all duration-300 rounded-full",
+                                    paymentMethod === 'cod'
+                                        ? "border-black bg-black text-white"
+                                        : "border-black/10 text-black/40 hover:border-black/40"
+                                )}
+                            >
+                                COD
+                            </button>
+                        </div>
                     </div>
 
                     <Button
@@ -129,7 +153,9 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
                                 <Spinner className="text-white" />
                                 <span>PROCESSING...</span>
                             </>
-                        ) : 'PROCEED TO PAYMENT'}
+                        ) : (
+                            paymentMethod === 'online' ? 'PROCEED TO PAYMENT' : 'PLACE ORDER (COD)'
+                        )}
                     </Button>
                 </div>
             </div>

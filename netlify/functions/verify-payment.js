@@ -86,7 +86,7 @@ export const handler = async function (event) {
                             shiprocket_order_id: shipRes.shiprocket_order_id,
                             shiprocket_shipment_id: shipRes.shiprocket_shipment_id,
                             shiprocket_awb: shipRes.awb_code,
-                            status: shipRes.awb_code ? 'shipped' : 'processing',
+                            status: 'pending',
                             label_url: shipRes.label_url,
                         };
 

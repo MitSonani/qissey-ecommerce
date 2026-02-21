@@ -3,6 +3,7 @@ import { useAuth } from '../features/auth';
 import { FileText, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Purchases from '../features/account/components/Purchases';
+import Favourites from '../features/account/components/Favourites';
 
 const MENU_ITEMS = [
     { id: '01', label: 'PURCHASES', content: 'NO PURCHASES YET' },
@@ -46,7 +47,7 @@ export default function Account() {
                                         className={`text-[11px] md:text-[13px] tracking-[0.15em] text-left hover:text-gray-500 transition-colors uppercase flex items-center ${activeTab === item.id ? 'font-bold' : 'font-normal text-gray-400'
                                             }`}
                                     >
-                                        <span className="mr-3 text-[10px] opacity-60">|{item.id}|</span>
+                                        <span className="mr-3 text-[10px] opacity-60">[{item.id}]</span>
                                         {item.label}
                                     </button>
 
@@ -84,6 +85,8 @@ export default function Account() {
                                 {activeTab === '01' ? (
                                     <Purchases user={user} selectedStatus={selectedStatus} />
                                 ) : activeTab === '02' ? (
+                                    <Favourites user={user} />
+                                ) : activeTab === '03' ? (
                                     <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-6">
                                         <FileText className="w-12 h-12 mx-auto stroke-[0.5] text-gray-300 mb-8" />
                                         <p className="text-[11px] md:text-[12px] tracking-[0.2em] uppercase font-medium text-gray-500">

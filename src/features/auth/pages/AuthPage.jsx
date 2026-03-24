@@ -24,7 +24,7 @@ const LoadingDots = () => (
     </div>
 );
 
-const FloatingInput = ({ label, value, onChange, type = "text", required = false, className, prefix, readOnly = false }) => {
+const FloatingInput = ({ label, value, onChange, type = "text", required = false, className, prefix, readOnly = false, ...rest }) => {
     const [isFocused, setIsFocused] = useState(false);
 
     return (
@@ -53,6 +53,7 @@ const FloatingInput = ({ label, value, onChange, type = "text", required = false
                     onChange={readOnly ? undefined : onChange}
                     readOnly={readOnly}
                     className={`w-full bg-transparent outline-none text-[11px] font-medium tracking-wide pt-1 ${readOnly ? 'cursor-default' : ''}`}
+                    {...rest}
                 />
             </div>
         </div >
@@ -80,11 +81,11 @@ export default function Auth() {
     const { user } = useAuth();
 
     const [authStep, setAuthStep] = useState('login'); // 'login', 'register', 'verify'
+    const [previousStep, setPreviousStep] = useState(null); // tracks which step led to 'verify'
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
         email: '',
-        password: '',
         name: '',
         phonePrefix: '+91',
         phone: '',
@@ -110,20 +111,20 @@ export default function Auth() {
             if (authStep === 'login') {
                 const { email } = await login(formData.email);
                 setFormData(prev => ({ ...prev, email }));
+                setPreviousStep('login');
                 setAuthStep('verify');
             } else if (authStep === 'register') {
                 if (!formData.acceptPrivacy) {
                     throw new Error('Please accept the privacy statement');
                 }
                 const fullPhone = `${formData.phonePrefix}${formData.phone}`;
-                await register(formData.email, formData.password, formData.name, fullPhone);
+                await register(formData.email, formData.name, fullPhone);
+                setPreviousStep('register');
                 setAuthStep('verify');
             } else if (authStep === 'verify') {
-                // If we were in register step, use 'signup', otherwise use 'email' for login
-                const type = (formData.name) ? 'signup' : 'email';
-                await verifyOtp(formData.email, formData.otp, type);
+                await verifyOtp(formData.email, formData.otp);
 
-                if (type === 'signup') {
+                if (previousStep === 'register') {
                     toast.success('Welcome to Qissey! Your account has been created.');
                 } else {
                     toast.success('Welcome back!');
@@ -143,8 +144,7 @@ export default function Auth() {
         setError(null);
         setIsLoading(true);
         try {
-            const type = (formData.name) ? 'signup' : 'email';
-            await resendOtp(formData.email, type);
+            await resendOtp(formData.email);
             toast.success('OTP resent to your email');
         } catch (err) {
             setError(err.message);
@@ -173,8 +173,8 @@ export default function Auth() {
                             </button>
                         )}
                         {authStep === 'verify' && (
-                            <button onClick={() => setAuthStep('register')} className="text-[10px] uppercase font-bold tracking-widest border-b border-black/10">
-                                Back to Register
+                            <button onClick={() => setAuthStep(previousStep === 'register' ? 'register' : 'login')} className="text-[10px] uppercase font-bold tracking-widest border-b border-black/10">
+                                {previousStep === 'register' ? 'Back to Register' : 'Back to Login'}
                             </button>
                         )}
                     </div>
@@ -267,13 +267,6 @@ export default function Auth() {
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     />
                                     <FloatingInput
-                                        label="Password"
-                                        type="password"
-                                        required
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    />
-                                    <FloatingInput
                                         label="Name"
                                         required
                                         value={formData.name}
@@ -289,6 +282,7 @@ export default function Auth() {
                                         <FloatingInput
                                             label="Mobile Number"
                                             className="flex-grow"
+                                            required
                                             value={formData.phone}
                                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                         />
@@ -296,7 +290,7 @@ export default function Auth() {
 
                                     <div className="pt-4 space-y-6">
                                         <p className="text-[9px] text-[#1A1A1A]/40 uppercase font-bold tracking-tight">
-                                            We will send you an SMS to verify your phone number
+                                            We will send you a verification code to your email
                                         </p>
 
                                         <div className="space-y-4">
@@ -353,7 +347,13 @@ export default function Auth() {
                                     label="6-Digit Code"
                                     required
                                     value={formData.otp}
-                                    onChange={(e) => setFormData({ ...formData, otp: e.target.value })}
+                                    maxLength={6}
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                                        setFormData({ ...formData, otp: value });
+                                    }}
                                 />
 
                                 {error && (

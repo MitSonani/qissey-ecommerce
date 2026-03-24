@@ -17,8 +17,16 @@ export const AuthProvider = ({ children }) => {
         });
 
         // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'TOKEN_REFRESHED' && !session) {
+                // Token refresh failed — session expired
+                await supabase.auth.signOut();
+                setUser(null);
+            } else if (event === 'SIGNED_OUT') {
+                setUser(null);
+            } else {
+                setUser(session?.user ?? null);
+            }
             setLoading(false);
         });
 
@@ -33,27 +41,23 @@ export const AuthProvider = ({ children }) => {
             // Remove any spaces or dashes for comparison
             const cleanIdentifier = identifier.replace(/[\s-]/g, '');
 
+            // Use RPC to bypass RLS (user is unauthenticated at this point)
             // Try exact match first
-            let { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('email')
-                .eq('phone', cleanIdentifier)
-                .maybeSingle();
+            let { data: foundEmail, error: rpcError } = await supabase
+                .rpc('get_email_by_phone', { check_phone: cleanIdentifier });
 
             // If not found and identifier doesn't have a prefix, try adding +91
-            if (!profile && !cleanIdentifier.startsWith('+')) {
-                const { data: profileWithPrefix } = await supabase
-                    .from('profiles')
-                    .select('email')
-                    .eq('phone', `+91${cleanIdentifier}`)
-                    .maybeSingle();
-                profile = profileWithPrefix;
+            if (!foundEmail && !cleanIdentifier.startsWith('+')) {
+                const { data: emailWithPrefix } = await supabase
+                    .rpc('get_email_by_phone', { check_phone: `+91${cleanIdentifier}` });
+
+                foundEmail = emailWithPrefix;
             }
 
-            if (!profile) {
+            if (!foundEmail) {
                 throw new Error('No account found with this mobile number.');
             }
-            email = profile.email;
+            email = foundEmail;
         }
 
         const { error } = await supabase.auth.signInWithOtp({
@@ -73,27 +77,30 @@ export const AuthProvider = ({ children }) => {
         return { email };
     };
 
-    const register = async (email, password, name, phone) => {
-        // Pre-check if email or phone already exists in our profiles table
-        const { data: existingProfile, error: checkError } = await supabase
-            .from('profiles')
-            .select('email, phone')
-            .or(`email.eq.${email},phone.eq.${phone}`)
-            .single();
+    const register = async (email, name, phone) => {
+        // Pre-check if email already exists (uses RPC to bypass RLS)
+        const { data: emailExists, error: emailCheckError } = await supabase
+            .rpc('check_email_exists', { check_email: email });
 
-        if (existingProfile) {
-            if (existingProfile.email === email) {
-                throw new Error('This email is already registered. Please log in instead.');
-            }
-            if (existingProfile.phone === phone) {
-                throw new Error('This mobile number is already registered. Please use another.');
-            }
+        if (emailCheckError) throw emailCheckError;
+        if (emailExists) {
+            throw new Error('This email is already registered. Please log in instead.');
         }
 
-        const { data, error } = await supabase.auth.signUp({
+        // Pre-check if phone already exists (uses RPC to bypass RLS)
+        const { data: phoneExists, error: phoneCheckError } = await supabase
+            .rpc('check_phone_exists', { check_phone: phone });
+
+        if (phoneCheckError) throw phoneCheckError;
+        if (phoneExists) {
+            throw new Error('This mobile number is already registered. Please use another.');
+        }
+
+        // Use OTP-based registration (passwordless)
+        const { data, error } = await supabase.auth.signInWithOtp({
             email,
-            password,
             options: {
+                shouldCreateUser: true,
                 data: {
                     name: name,
                     phone: phone,
@@ -102,29 +109,33 @@ export const AuthProvider = ({ children }) => {
         });
 
         if (error) throw error;
-
-        // Fallback for email check (if enumeration protection is on and trigger hasn't fired yet)
-        if (data?.user?.identities?.length === 0) {
-            throw new Error('This email is already registered. Please log in instead.');
-        }
-
         return data;
     };
 
-    const verifyOtp = async (email, token, type = 'signup') => {
+    const verifyOtp = async (email, token) => {
         const { data, error } = await supabase.auth.verifyOtp({
             email,
             token,
-            type,
+            type: 'email',
         });
-        if (error) throw error;
+        if (error) {
+            if (error.message.toLowerCase().includes('expired')) {
+                throw new Error('Your verification code has expired. Please resend a new code.');
+            }
+            if (error.message.toLowerCase().includes('invalid') || error.message.toLowerCase().includes('token')) {
+                throw new Error('Invalid verification code. Please check and try again.');
+            }
+            throw error;
+        }
         return data;
     };
 
-    const resendOtp = async (email, type = 'signup') => {
-        const { data, error } = await supabase.auth.resend({
+    const resendOtp = async (email) => {
+        const { data, error } = await supabase.auth.signInWithOtp({
             email,
-            type,
+            options: {
+                shouldCreateUser: false,
+            }
         });
         if (error) throw error;
         return data;

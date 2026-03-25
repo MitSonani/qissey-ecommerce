@@ -6,8 +6,8 @@ const FOOTER_LINKS = [
         links: [
             { label: "My QISSEY Account", path: "/account?tab=details" },
             { label: "Shipping Policy", path: "/shipping-policy" },
-            { label: "Payment and Invoices", path: "/" },
-            { label: "My Purchases", path: "/" },
+            { label: "Payment and Invoices", path: "/payment-policy" },
+            { label: "My Purchases", path: "/account?tab=purchases" },
             { label: "Exchanges, Returns and Refunds", path: "/" },
         ]
     },

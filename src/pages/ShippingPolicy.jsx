@@ -90,16 +90,18 @@ export default function ShippingPolicy() {
                                 <li>📞 Phone: <a href="tel:+917862930732" className="hover:text-black hover:underline transition-all">+91 78629 30732</a></li>
                             </ul>
                             <p className="mt-4">Our support team will be happy to assist you.</p>
-                            <div className="mt-8">
-                                <Link
-                                    to="/contact"
-                                    className="inline-block bg-[#1A1A1A] text-white py-3 px-8 text-[10px] uppercase font-bold tracking-widest hover:bg-black transition-colors rounded-sm"
-                                >
-                                    Contact Us
-                                </Link>
-                            </div>
+
                         </div>
                     </section>
+
+                    <div className='mt-8'>
+                        <Link
+                            to="/contact"
+                            className="inline-block px-8 bg-black text-white py-4 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] transition-colors disabled:opacity-50 flex justify-center items-center gap-3 rounded-sm"
+                        >
+                            Contact Us
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

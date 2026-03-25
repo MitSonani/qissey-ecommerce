@@ -218,14 +218,14 @@ export default function Auth() {
                                         <button
                                             type="submit"
                                             disabled={isLoading}
-                                            className="w-full bg-[#1A1A1A] text-white py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-black transition-colors disabled:opacity-50 flex justify-center items-center"
+                                            className="w-full bg-black text-white py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] transition-colors disabled:opacity-50 flex justify-center items-center"
                                         >
                                             {isLoading ? <LoadingDots /> : 'Log In'}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setAuthStep('register')}
-                                            className="w-full border border-[#1A1A1A] py-2.75 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] hover:text-white transition-all"
+                                            className="w-full border border-black py-2.75 text-[10px] uppercase font-bold tracking-widest hover:bg-black hover:text-white transition-all"
                                         >
                                             Register
                                         </button>
@@ -316,7 +316,7 @@ export default function Auth() {
                                         <button
                                             type="submit"
                                             disabled={isLoading}
-                                            className="w-52 border border-[#1A1A1A] py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] hover:text-white transition-all disabled:opacity-50 flex justify-center items-center"
+                                            className="w-52 border border-black py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-black hover:text-white transition-all disabled:opacity-50 flex justify-center items-center"
                                         >
                                             {isLoading ? <LoadingDots /> : 'Create Account'}
                                         </button>
@@ -366,7 +366,7 @@ export default function Auth() {
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="w-52 bg-[#1A1A1A] text-white py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-black transition-colors disabled:opacity-50 flex justify-center items-center"
+                                        className="w-52 bg-black text-white py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] transition-colors disabled:opacity-50 flex justify-center items-center"
                                     >
                                         {isLoading ? <LoadingDots /> : 'Verify & Log In'}
                                     </button>

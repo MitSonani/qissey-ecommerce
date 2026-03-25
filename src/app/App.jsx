@@ -15,6 +15,7 @@ const SavedProducts = lazy(() => import('../pages/SavedProducts'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 const Contact = lazy(() => import('../pages/Contact'));
 const ShippingPolicy = lazy(() => import('../pages/ShippingPolicy'));
+const PaymentPolicy = lazy(() => import('../pages/PaymentPolicy'));
 
 import Navbar from '../layouts/Navbar';
 import Footer from '../layouts/Footer';
@@ -74,6 +75,7 @@ function App() {
               <Route path="/saved-products" element={<MainLayout><SavedProducts /></MainLayout>} />
               <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
               <Route path="/shipping-policy" element={<MainLayout><ShippingPolicy /></MainLayout>} />
+              <Route path="/payment-policy" element={<MainLayout><PaymentPolicy /></MainLayout>} />
               <Route path="/auth" element={<Auth />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/account" element={<MainLayout><Account /></MainLayout>} />

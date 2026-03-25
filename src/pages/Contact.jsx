@@ -150,7 +150,7 @@ export default function Contact() {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full bg-[#1A1A1A] text-white py-4 text-[10px] uppercase font-bold tracking-widest hover:bg-black transition-colors disabled:opacity-50 flex justify-center items-center gap-3 rounded-sm"
+                                    className="w-full bg-black text-white py-4 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] transition-colors disabled:opacity-50 flex justify-center items-center gap-3 rounded-sm"
                                 >
                                     <Send size={14} />
                                     {isLoading ? 'Sending...' : 'Send Message'}

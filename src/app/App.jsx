@@ -17,6 +17,7 @@ const Contact = lazy(() => import('../pages/Contact'));
 const ShippingPolicy = lazy(() => import('../pages/ShippingPolicy'));
 const PaymentPolicy = lazy(() => import('../pages/PaymentPolicy'));
 const ReturnPolicy = lazy(() => import('../pages/ReturnPolicy'));
+const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy'));
 
 import Navbar from '../layouts/Navbar';
 import Footer from '../layouts/Footer';
@@ -78,6 +79,7 @@ function App() {
               <Route path="/shipping-policy" element={<MainLayout><ShippingPolicy /></MainLayout>} />
               <Route path="/payment-policy" element={<MainLayout><PaymentPolicy /></MainLayout>} />
               <Route path="/return-policy" element={<MainLayout><ReturnPolicy /></MainLayout>} />
+              <Route path="/privacy-policy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
               <Route path="/auth" element={<Auth />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/account" element={<MainLayout><Account /></MainLayout>} />

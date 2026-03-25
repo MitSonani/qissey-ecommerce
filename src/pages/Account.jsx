@@ -10,8 +10,8 @@ const MENU_ITEMS = [
     { id: '01', label: 'PURCHASES', content: 'NO PURCHASES YET' },
     { id: '02', label: 'FAVOURITES', content: 'YOUR FAVOURITES ARE EMPTY' },
     { id: '03', label: 'MY DETAILS', content: 'USER DETAILS SECTION' },
-    { id: '04', label: 'SETTINGS', content: 'ACCOUNT SETTINGS' },
-    { id: '05', label: 'LOGOUT', content: 'LOGGING OUT...' },
+    // { id: '04', label: 'SETTINGS', content: 'ACCOUNT SETTINGS' },
+    { id: '04', label: 'LOGOUT', content: 'LOGGING OUT...' },
 ];
 
 const ORDER_STATUSES = [
@@ -56,7 +56,7 @@ export default function Account() {
                                 <div key={item.id} className="space-y-4">
                                     <button
                                         onClick={() => {
-                                            if (item.id === '05') {
+                                            if (item.label === 'LOGOUT') {
                                                 logout();
                                             } else {
                                                 setActiveTab(item.id);

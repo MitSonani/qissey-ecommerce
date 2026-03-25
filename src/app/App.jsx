@@ -33,6 +33,7 @@ function MainLayout({ children }) {
 
       <Toaster
         position="top-right"
+        duration={1000}
         expand={false}
         richColors={false}
         toastOptions={{

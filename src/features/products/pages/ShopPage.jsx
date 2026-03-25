@@ -7,7 +7,6 @@ import { cn } from '../../../components/ui/Primitives';
 export default function Shop() {
     const { products, isLoading, setCategory, setSort, category, sort, search } = useProducts();
     const [viewCols, setViewCols] = useState(4);
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const categories = ["All", "T-Shirts", "Pants", "Sweatshirts", "Outerwear"];
     const sortOptions = [
@@ -24,7 +23,6 @@ export default function Shop() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
                     <div>
-                        <h1 className="text-6xl font-black uppercase tracking-tighter mb-4">Shop</h1>
                         {search && (
                             <p className="text-sm font-bold uppercase tracking-widest text-black/60">
                                 Search Results for "{search}"
@@ -34,12 +32,7 @@ export default function Shop() {
                     </div>
 
                     <div className="flex items-center gap-8 border-t md:border-t-0 pt-8 md:pt-0 border-black/5">
-                        {/* <button
-                            onClick={() => setIsFilterOpen(!isFilterOpen)}
-                            className="flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest"
-                        >
-                            <Filter size={16} /> {isFilterOpen ? 'Close Filters' : 'Filters'}
-                        </button> */}
+
                         <div className="hidden md:flex items-center gap-4">
                             <button onClick={() => setViewCols(2)} className={cn("text-black/20", viewCols === 2 && "text-black")}><Square size={20} /></button>
                             <button onClick={() => setViewCols(4)} className={cn("text-black/20", viewCols === 4 && "text-black")}><LayoutGrid size={20} /></button>
@@ -49,8 +42,7 @@ export default function Shop() {
 
                 {/* Filters Drawer/Section */}
                 <div className={cn(
-                    "grid transition-all duration-500 overflow-hidden",
-                    isFilterOpen ? "grid-rows-[1fr] mb-12" : "grid-rows-[0fr] opacity-0"
+                    "grid transition-all duration-500 overflow-hidden", "grid-rows-[0fr] opacity-0"
                 )}>
                     <div className="min-h-0 container">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 py-12 border-y border-black/5">

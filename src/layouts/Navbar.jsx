@@ -107,12 +107,12 @@ export default function Navbar() {
                                 </Link>
                             )}
 
-                            <Link
+                            {/* <Link
                                 to="/help"
                                 className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black"
                             >
                                 Help
-                            </Link>
+                            </Link> */}
 
                             <Link
                                 to="/shopping-bag"

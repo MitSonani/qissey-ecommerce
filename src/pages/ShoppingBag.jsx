@@ -312,6 +312,7 @@ export default function ShoppingBag() {
                 isProcessing={isProcessing}
                 totalAmount={cartTotal}
                 initialData={initialAddressData}
+                user={user}
             />}
         </div>
     );

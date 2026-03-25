@@ -8,15 +8,14 @@ const FOOTER_LINKS = [
             { label: "Shipping Policy", path: "/shipping-policy" },
             { label: "Payment and Invoices", path: "/payment-policy" },
             { label: "My Purchases", path: "/account?tab=purchases" },
-            { label: "Exchanges, Returns and Refunds", path: "/" },
+            { label: "Exchanges, Returns and Refunds", path: "/return-policy" },
         ]
     },
     {
         title: "Follow us",
         links: [
-            { label: "Instagram", href: "#" },
-            { label: "Facebook", href: "#" },
-            { label: "Pinterest", href: "#" },
+            { label: "Instagram", href: "https://www.instagram.com/qissey.shop/", },
+            { label: "Facebook", href: "https://www.facebook.com/people/Qissey/61586697613049", },
         ]
     },
     {

@@ -13,6 +13,7 @@ const OrderDetail = lazy(() => import('../pages/OrderDetail'));
 const ShoppingBag = lazy(() => import('../pages/ShoppingBag'));
 const SavedProducts = lazy(() => import('../pages/SavedProducts'));
 const NotFound = lazy(() => import('../pages/NotFound'));
+const Contact = lazy(() => import('../pages/Contact'));
 
 import Navbar from '../layouts/Navbar';
 import Footer from '../layouts/Footer';
@@ -70,6 +71,7 @@ function App() {
               <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
               <Route path="/shopping-bag" element={<MainLayout><ShoppingBag /></MainLayout>} />
               <Route path="/saved-products" element={<MainLayout><SavedProducts /></MainLayout>} />
+              <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
               <Route path="/auth" element={<Auth />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/account" element={<MainLayout><Account /></MainLayout>} />

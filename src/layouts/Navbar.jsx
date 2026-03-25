@@ -107,12 +107,12 @@ export default function Navbar() {
                                 </Link>
                             )}
 
-                            {/* <Link
-                                to="/help"
+                            <Link
+                                to="/contact"
                                 className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap hidden sm:block text-black"
                             >
                                 Help
-                            </Link> */}
+                            </Link>
 
                             <Link
                                 to="/shopping-bag"
@@ -285,7 +285,7 @@ export default function Navbar() {
                             ) : (
                                 <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Log In</Link>
                             )}
-                            <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Contact Us</Link>
+                            <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Contact Us</Link>
                         </div>
                     </div>
                 </div>
@@ -306,7 +306,7 @@ export default function Navbar() {
                         ) : (
                             <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Log In</Link>
                         )}
-                        <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
+                        <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
                     </div>
                 </div>
             </div>

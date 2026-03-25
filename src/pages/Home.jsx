@@ -68,7 +68,7 @@ export default function Home() {
             </section>
 
             {/* New Arrivals Slider */}
-            <section className="md:px-8 overflow-hidden ">
+            <section className="md:px-8 overflow-hidden mb-30 md:mb-0 ">
                 <div className="container">
                     <div className="flex justify-between items-end mb-8">
                         <div>

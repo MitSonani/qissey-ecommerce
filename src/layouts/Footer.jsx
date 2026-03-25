@@ -28,7 +28,7 @@ const FOOTER_LINKS = [
         title: "Policies",
         links: [
             { label: "Privacy policy", path: "/privacy-policy" },
-            { label: "Purchase conditions", path: "/" },
+            { label: "Purchase conditions", path: "/purchase-conditions" },
         ]
     }
 ];

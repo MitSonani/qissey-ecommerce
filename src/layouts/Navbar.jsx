@@ -9,7 +9,7 @@ export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const { cart } = useCart();
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, logout } = useAuth();
     const location = useLocation();
     const isHome = location.pathname === '/';
     const navigate = useNavigate();
@@ -93,12 +93,19 @@ export default function Navbar() {
                         </div>
 
                         <div className="flex-none flex items-center gap-6 ml-auto">
-                            <Link
-                                to={isAuthenticated ? "/account" : "/auth"}
-                                className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black"
-                            >
-                                {isAuthenticated ? user.name : "Log In"}
-                            </Link>
+                            {isAuthenticated ? (
+                                <Link to="/account" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black h-8">
+                                    <User size={14} className="mb-0.5" />
+                                    {user?.user_metadata?.name?.split(' ')[0] || user?.name?.split(' ')[0] || "Account"}
+                                </Link>
+                            ) : (
+                                <Link
+                                    to="/auth"
+                                    className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black"
+                                >
+                                    Log In
+                                </Link>
+                            )}
 
                             <Link
                                 to="/help"
@@ -166,7 +173,13 @@ export default function Navbar() {
                     <div className={cn(
                         "flex md:hidden items-center gap-4 ml-auto transition-opacity duration-300 pointer-events-auto",
                     )}>
-                        {!isAuthenticated && <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>}
+                        {!isAuthenticated ? (
+                            <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
+                        ) : (
+                            <Link to="/account" className="p-1">
+                                <User size={18} strokeWidth={1.5} className="text-black" />
+                            </Link>
+                        )}
                         <button
                             className="p-1"
                             onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
@@ -264,7 +277,14 @@ export default function Navbar() {
 
                         {/* Bottom Links */}
                         <div className="flex flex-col gap-4 pt-12 border-t border-black/5">
-                            <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">My Account</Link>
+                            {isAuthenticated ? (
+                                <>
+                                    <Link to="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">My Account</Link>
+                                    <button onClick={() => { setIsMobileMenuOpen(false); logout(); }} className="text-left text-[10px] font-bold uppercase tracking-widest opacity-40">Log Out</button>
+                                </>
+                            ) : (
+                                <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Log In</Link>
+                            )}
                             <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Contact Us</Link>
                         </div>
                     </div>
@@ -278,7 +298,14 @@ export default function Navbar() {
                     <Link to="/shop?filter=man" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Man</Link>
 
                     <div className="mt-auto flex flex-col gap-4 pt-10 border-t border-black/5">
-                        <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">My Account</Link>
+                        {isAuthenticated ? (
+                            <>
+                                <Link to="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">My Account</Link>
+                                <button onClick={() => { setIsMobileMenuOpen(false); logout(); }} className="text-left text-[11px] font-bold uppercase tracking-widest opacity-60">Log Out</button>
+                            </>
+                        ) : (
+                            <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Log In</Link>
+                        )}
                         <Link to="/help" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
                     </div>
                 </div>

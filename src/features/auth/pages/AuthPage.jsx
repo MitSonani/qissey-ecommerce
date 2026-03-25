@@ -163,7 +163,7 @@ export default function Auth() {
                         </Link>
                     </div>
 
-                    <div className="flex items-center gap-8 opacity-40 hover:opacity-100 transition-opacity pointer-events-auto">
+                    <div className={`items-center gap-8 opacity-40 hover:opacity-100 transition-opacity pointer-events-auto ${authStep === 'verify' ? 'hidden md:flex' : 'flex'}`}>
                         <Link to="/shop" className="text-[10px] uppercase font-bold tracking-widest">
                             Back to Shop
                         </Link>

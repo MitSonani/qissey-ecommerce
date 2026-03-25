@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../features/auth';
 import { FileText, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Purchases from '../features/account/components/Purchases';
 import Favourites from '../features/account/components/Favourites';
+import MyDetails from '../features/account/components/MyDetails';
 
 const MENU_ITEMS = [
     { id: '01', label: 'PURCHASES', content: 'NO PURCHASES YET' },
@@ -25,6 +26,23 @@ export default function Account() {
     const [activeTab, setActiveTab] = useState('01');
     const [selectedStatus, setSelectedStatus] = useState('pending');
 
+    const queryParams = new URLSearchParams(location.search);
+    const tabFromUrl = queryParams.get('tab');
+
+    // Sync URL to state
+    useEffect(() => {
+        if (tabFromUrl) {
+            const tabMap = {
+                'purchases': '01',
+                'favourites': '02',
+                'details': '03',
+                'settings': '04'
+            };
+            const tabId = tabMap[tabFromUrl] || '01';
+            setActiveTab(tabId);
+        }
+    }, [tabFromUrl]);
+
     const activeItem = MENU_ITEMS.find(item => item.id === activeTab);
 
     return (
@@ -32,7 +50,7 @@ export default function Account() {
             <div className="max-w-[1400px] mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16">
                     {/* Sidebar */}
-                    <div className="md:col-span-3 pt-36">
+                    <div className="md:col-span-3 md:pt-36">
                         <nav className="flex flex-col gap-6 sticky top-32">
                             {MENU_ITEMS.map((item) => (
                                 <div key={item.id} className="space-y-4">
@@ -87,12 +105,7 @@ export default function Account() {
                                 ) : activeTab === '02' ? (
                                     <Favourites user={user} />
                                 ) : activeTab === '03' ? (
-                                    <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-6">
-                                        <FileText className="w-12 h-12 mx-auto stroke-[0.5] text-gray-300 mb-8" />
-                                        <p className="text-[11px] md:text-[12px] tracking-[0.2em] uppercase font-medium text-gray-500">
-                                            THERE ARE NO ACTIVE RETURNS AT THIS TIME.
-                                        </p>
-                                    </div>
+                                    <MyDetails user={user} />
                                 ) : (
                                     <div className="flex items-center justify-center min-h-[400px]">
                                         <p className="text-[11px] md:text-[12px] tracking-[0.2em] uppercase font-medium text-gray-500">

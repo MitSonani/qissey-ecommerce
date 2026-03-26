@@ -3,7 +3,7 @@
  * Supports interceptors, base URL handling, and common error management.
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://api.example.com';
+const BASE_URL = import.meta.env.VITE_API_URL || '';
 
 const apiClient = async (endpoint, { body, ...customConfig } = {}) => {
     const headers = { 'Content-Type': 'application/json' };

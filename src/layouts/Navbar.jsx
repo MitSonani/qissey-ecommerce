@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Search, Menu, X, ChevronRight, User } from 'lucide-react';
 import { useCart } from '../features/cart';
 import { useAuth } from '../features/auth';
+import { fetchAllCollections } from '../features/products/services/productService';
 import { cn } from '../components/ui/Primitives';
 
 export default function Navbar() {
@@ -11,9 +12,24 @@ export default function Navbar() {
     const { cart } = useCart();
     const { user, isAuthenticated, logout } = useAuth();
     const location = useLocation();
-    const isHome = location.pathname === '/';
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
+    const [collections, setCollections] = useState([]);
+    const [newArrivalsCollection, setNewArrivalsCollection] = useState(null);
+
+    useEffect(() => {
+        const loadCollections = async () => {
+            try {
+                const data = await fetchAllCollections();
+                const newArrivals = data.find(c => c.name.toLowerCase() !== 'new arrivals');
+                setNewArrivalsCollection(newArrivals);
+                setCollections(data.filter(c => c.name.toLowerCase() !== 'new arrivals'));
+            } catch (error) {
+                console.error('Error fetching collections for navbar:', error);
+            }
+        };
+        loadCollections();
+    }, []);
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
@@ -222,65 +238,62 @@ export default function Navbar() {
 
                 {/* Mobile Menu Content (Scrollable - zara style for mobile) */}
                 <div className="flex-grow overflow-y-auto no-scrollbar md:hidden">
-                    {/* Category Row (Horizontal Scroll) */}
-                    <div className="flex overflow-x-auto no-scrollbar px-6 mb-12 border-b border-black/5">
-                        {['WOMAN', 'MAN', 'KIDS', 'PERFUMES', 'TRAVEL MODE'].map((cat, i) => (
-                            <button key={cat} className={cn(
-                                "flex-none py-4 text-[11px] font-bold tracking-widest uppercase mr-6 transition-opacity",
-                                i === 0 ? "opacity-100 border-b-2 border-black" : "opacity-40"
-                            )}>
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
 
-                    <div className="px-6 pb-20">
+
+                    <div className="px-6 pb-20 mt-10">
                         {/* Featured Section */}
                         <div className="mb-12">
-                            <div className="flex items-center justify-between mb-8">
-                                <span className="text-[11px] font-bold uppercase tracking-widest">New Collection</span>
-                                <div className="w-4 h-px bg-black opacity-20" />
-                            </div>
-
-                            {/* Promo Grid */}
-                            <div className="grid grid-cols-3 gap-3 mb-12">
-                                {[
-                                    { name: 'THE ITEM', img: 'https://images.unsplash.com/photo-1539109132314-34a77bc70fe2?q=80&w=400&auto=format&fit=crop' },
-                                    { name: 'THE NEW', img: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=400&auto=format&fit=crop' },
-                                    { name: 'KNITWEAR', img: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=400&auto=format&fit=crop' }
-                                ].map((item) => (
-                                    <Link key={item.name} to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="flex flex-col gap-2">
-                                        <div className="aspect-[3/4] overflow-hidden bg-gray-100">
-                                            <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                            {/* Horizontal Banner: New Arrivals (Dynamic) */}
+                            <div className="flex flex-col gap-8">
+                                {newArrivalsCollection && (
+                                    <Link
+                                        to={`/collection/${newArrivalsCollection.id}`}
+                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        className="group relative w-full aspect-[16/7] overflow-hidden bg-gray-100"
+                                    >
+                                        <img
+                                            src={Array.isArray(newArrivalsCollection.image_url) ? newArrivalsCollection.image_url[0] : (newArrivalsCollection.image_url?.includes(',') ? newArrivalsCollection.image_url.split(',')[0] : newArrivalsCollection.image_url)}
+                                            alt={newArrivalsCollection.name}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        />
+                                        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-500" />
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <h3 className="text-2xl font-display font-black text-white tracking-[0.2em] uppercase drop-shadow-lg">{newArrivalsCollection.name}</h3>
                                         </div>
-                                        <span className="text-[8px] font-bold uppercase tracking-tight opacity-60">{item.name}</span>
                                     </Link>
-                                ))}
-                            </div>
+                                )}
 
-                            {/* Dense List Links */}
-                            <div className="flex flex-col gap-2 mb-12">
-                                <Link to="/new-arrivals" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">The New</Link>
-                                <Link to="/shop?filter=essentials" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">The Item</Link>
-                                <Link to="/shop?filter=ski" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">Ski Collection</Link>
+                                {/* 2-2 Vertical Banner Grid: Collections (Dynamic) */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    {collections?.map((cat) => (
+                                        <Link
+                                            key={cat.id}
+                                            to={`/collection/${cat.id}`}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="group relative aspect-[9/14] overflow-hidden bg-gray-50"
+                                        >
+                                            <img
+                                                src={Array.isArray(cat.image_url) ? cat.image_url[0] : (cat.image_url?.includes(',') ? cat.image_url.split(',')[0] : cat.image_url)}
+                                                alt={cat.name}
+                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                            />
+                                            <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
+                                            <div className="absolute inset-0 flex items-center justify-center p-2 text-center">
+                                                <h4 className="text-[10px] font-display font-black text-white tracking-widest uppercase drop-shadow-md">{cat.name}</h4>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
-                        {/* Category List */}
-                        <div className="flex flex-col gap-4 mb-12">
-                            {['JACKETS', 'COATS', 'BLAZERS', 'KNITWEAR', 'CARDIGANS | JUMPERS', 'T-SHIRTS', 'TOPS', 'SHIRTS', 'JEANS', 'TROUSERS', 'DRESSES', 'LEATHER'].map((cat) => (
-                                <Link key={cat} to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity">
-                                    {cat}
-                                </Link>
-                            ))}
-                        </div>
 
                         {/* Bottom Links */}
                         <div className="flex flex-col gap-4 pt-12 border-t border-black/5">
+                            <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">View All</Link>
                             {isAuthenticated ? (
                                 <>
-                                    <Link to="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">My Account</Link>
-                                    <button onClick={() => { setIsMobileMenuOpen(false); logout(); }} className="text-left text-[10px] font-bold uppercase tracking-widest opacity-40">Log Out</button>
+
                                 </>
                             ) : (
                                 <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Log In</Link>
@@ -290,23 +303,59 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                {/* Desktop Menu Content (Original Minimalist Style) */}
-                <div className="hidden md:flex flex-col gap-6 p-12 pt-48 flex-grow overflow-y-auto">
-                    <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Shop All</Link>
-                    <Link to="/new-arrivals" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">New</Link>
-                    <Link to="/shop?filter=woman" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Woman</Link>
-                    <Link to="/shop?filter=man" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Man</Link>
-
-                    <div className="mt-auto flex flex-col gap-4 pt-10 border-t border-black/5">
-                        {isAuthenticated ? (
-                            <>
-                                <Link to="/account" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">My Account</Link>
-                                <button onClick={() => { setIsMobileMenuOpen(false); logout(); }} className="text-left text-[11px] font-bold uppercase tracking-widest opacity-60">Log Out</button>
-                            </>
-                        ) : (
-                            <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Log In</Link>
+                {/* Desktop Menu Content (Bannered Style) */}
+                <div className="hidden md:flex flex-col gap-8 p-12 pt-48 flex-grow overflow-y-auto no-scrollbar">
+                    {/* Horizontal Banner: New Arrivals (Dynamic) */}
+                    <div className="flex flex-col gap-8">
+                        {newArrivalsCollection && (
+                            <Link
+                                to={`/collection/${newArrivalsCollection.id}`}
+                                onClick={() => setIsMobileMenuOpen(false)}
+                                className="group relative w-full aspect-[16/4.5] overflow-hidden bg-gray-100"
+                            >
+                                <img
+                                    src={Array.isArray(newArrivalsCollection.image_url) ? newArrivalsCollection.image_url[0] : (newArrivalsCollection.image_url?.includes(',') ? newArrivalsCollection.image_url.split(',')[0] : newArrivalsCollection.image_url)}
+                                    alt={newArrivalsCollection.name}
+                                    className="w-full h-full  object-cover transition-transform duration-700 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-500" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <h3 className="text-4xl font-display font-black text-white tracking-[0.2em] uppercase drop-shadow-lg">{newArrivalsCollection.name}</h3>
+                                </div>
+                            </Link>
                         )}
-                        <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
+
+                        {/* 2-2 Vertical Banner Grid: Collections (Dynamic) */}
+                        <div className="grid grid-cols-2 gap-3">
+                            {collections?.map((cat) => (
+                                <Link
+                                    key={cat.id}
+                                    to={`/collection/${cat.id}`}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="group relative aspect-[3/3.5] overflow-hidden bg-gray-50"
+                                >
+                                    <img
+                                        src={Array.isArray(cat.image_url) ? cat.image_url[0] : (cat.image_url?.includes(',') ? cat.image_url.split(',')[0] : cat.image_url)}
+                                        alt={cat.name}
+                                        className="w-full h-full max-h-[80px] object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
+                                    <div className="absolute inset-0 flex items-center justify-center p-2 text-center">
+                                        <h4 className="text-[12px] font-display font-black text-white tracking-widest uppercase drop-shadow-md">{cat.name}</h4>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+
+                        <div className="mt-8 flex flex-col gap-4 pt-10 border-t border-black/5">
+                            <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60 hover:opacity-100 transition-opacity">View All</Link>
+                            {isAuthenticated ? (
+                                <></>
+                            ) : (
+                                <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Log In</Link>
+                            )}
+                            <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -59,12 +59,12 @@ export default function NewArrivalsPage() {
     };
 
     return (
-        <div className="pt-20 md:pt-32 pb-20 px-8 md:px-12 min-h-screen">
+        <div className="pt-24 md:pt-32 pb-20 px-8 md:px-12 min-h-screen">
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 relative">
                 <aside className="lg:w-48 lg:shrink-0 lg:sticky lg:top-36 lg:h-fit">
                     <div className="flex flex-col gap-8">
                         <div>
-                            <p className="text-3xl lg:text-5xl font-black uppercase tracking-tighter mb-4 leading-none">
+                            <p className="text-3xl lg:text-5xl font-black uppercase tracking-tighter mb-0 md:mb-4 leading-none">
                                 NEW ARRIVALS
                             </p>
                         </div>

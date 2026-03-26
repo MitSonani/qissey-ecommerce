@@ -23,6 +23,7 @@ const FOOTER_LINKS = [
         links: [
             { label: "About us", path: "/about" },
             { label: "Contact us", path: "/contact" },
+            { label: "New Arrivals", path: "/new-arrivals" },
         ]
     },
     {
@@ -39,7 +40,7 @@ export default function Footer() {
         <footer className="bg-white text-black pt-16 md:pt-24 pb-12 px-6 md:px-20 md:mx-30">
             <div className="container-fluid">
                 {/* Main Link Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-32">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-24">
                     {FOOTER_LINKS.map((group, groupIdx) => (
                         <div key={groupIdx} className="space-y-6">
                             <p className="text-[14px] uppercase mb-4 font-bold">{group.title}</p>

@@ -48,15 +48,24 @@ export const fetchNewArrivalProducts = async (userId) => {
     try {
         let query = supabase
             .from('products')
-            .select(`id,
-                    name,
-                    price,
-                    product_variants(
-                       id,
-                       image_urls
+            .select(`
+                id,
+                name,
+                price,
+                product_variants(
+                    *,
+                    id,
+                    image_urls,
+                    is_primary,
+                    size,
+                    color_id (
+                        id,
+                        name,
+                        hex
                     )
-                    ${userId ? ', saved_products:saved_products!left(id)' : ''}
-                    `)
+                )
+                ${userId ? ', saved_products:saved_products!left(id)' : ''}
+            `)
             .eq('product_variants.is_primary', true)
             .eq('new_arrival', true);
 
@@ -73,7 +82,7 @@ export const fetchNewArrivalProducts = async (userId) => {
             is_saved: product.saved_products?.length > 0
         })) || [];
     } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching new arrival products:', error);
         throw error;
     }
 };

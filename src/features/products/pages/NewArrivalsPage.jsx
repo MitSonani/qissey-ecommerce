@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { fetchCollectionById, fetchProductsByCollectionId } from '../services/productService';
+import { useNavigate, Link } from 'react-router-dom';
+import { fetchNewArrivalProducts } from '../services/productService';
 import ProductCard from '../components/ProductCard';
 import PageLoader from '../../../components/ui/PageLoader';
 import { useAuth } from '../../auth';
 
-export default function CollectionPage() {
-    const { id } = useParams();
+export default function NewArrivalsPage() {
     const navigate = useNavigate();
-    const [collection, setCollection] = useState(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
@@ -17,28 +15,20 @@ export default function CollectionPage() {
         const loadData = async () => {
             setLoading(true);
             try {
-                const [collectionData, productsData] = await Promise.all([
-                    fetchCollectionById(id),
-                    fetchProductsByCollectionId(id, user?.id)
-                ]);
-                setCollection(collectionData);
+                const productsData = await fetchNewArrivalProducts(user?.id);
                 setProducts(productsData);
             } catch (error) {
-                console.error('Error loading collection page:', error);
+                console.error('Error loading new arrivals page:', error);
             } finally {
                 setLoading(false);
             }
         };
 
         loadData();
-    }, [id, navigate, user?.id]);
+    }, [user?.id]);
 
     if (loading) {
         return <PageLoader />;
-    }
-
-    if (!collection) {
-        return null; // or a 404 component
     }
 
     const renderProductGroups = () => {
@@ -75,9 +65,8 @@ export default function CollectionPage() {
                     <div className="flex flex-col gap-8">
                         <div>
                             <p className="text-3xl lg:text-5xl font-black uppercase tracking-tighter mb-4 leading-none">
-                                {collection.name}
+                                NEW ARRIVALS
                             </p>
-
                         </div>
 
                         <div className="hidden lg:block pt-8 border-t border-black/5">
@@ -95,7 +84,7 @@ export default function CollectionPage() {
                     ) : (
                         <div className="py-20 text-center border-y border-black/5">
                             <p className="text-xs uppercase font-bold tracking-widest text-black/40">
-                                No products found in this collection
+                                No new arrivals found
                             </p>
                         </div>
                     )}
@@ -106,12 +95,14 @@ export default function CollectionPage() {
 }
 
 function ProductCardHero({ product }) {
+    if (!product) return null;
+
     return (
         <div className="relative group">
             <Link to={`/product/${product.id}`}>
                 <div className="aspect-[4/5] md:aspect-[16/10] overflow-hidden bg-brand-gray">
                     <img
-                        src={product?.product_variants[0]?.image_urls[0]}
+                        src={product?.product_variants?.[0]?.image_urls?.[0]}
                         alt={product.name}
                         className="w-full h-full object-cover transition-transform duration-[2s] scale-100 group-hover:scale-105"
                     />

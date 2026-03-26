@@ -31,8 +31,33 @@ export default function Home() {
         <div className="relative overflow-hidden mx-2 md:mx-24 mt-20 md:my-34">
             <Hero />
 
+            {/* New Arrivals Slider */}
+            <section className="md:px-8 overflow-hidden mt-20">
+                <div className="container">
+                    <div className="mb-12">
+                        <p className="text-[10px] uppercase font-bold tracking-[0.4em] mb-4 text-black/40">The Latest Drops</p>
+                        <div className="flex justify-between  gap-4">
+                            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter drop-shadow-lg">New Arrivals</h2>
+                            <div className='flex justify-center items-center'>  <Link
+                                to="/new-arrivals"
+                                className="text-[10px] font-bold uppercase tracking-widest border-b border-black pb-1 hover:pb-2 transition-all whitespace-nowrap"
+                            >
+                                View All
+                            </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-8 ">
+                        {productsS.map(product => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* Featured Collections Tiles */}
-            <section className="py-16 md:px-8 bg-white">
+            <section className="py-16 md:px-8 bg-white mt-8 md:mt-16">
                 <div className="container">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-2">
                         {[...collections].map((collection) => (
@@ -62,25 +87,6 @@ export default function Home() {
                                     </div>
                                 </div>
                             </Link>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* New Arrivals Slider */}
-            <section className="md:px-8 overflow-hidden mb-30 md:mb-0 ">
-                <div className="container">
-                    <div className="flex justify-between items-end mb-8">
-                        <div>
-                            <p className="text-[10px] uppercase font-bold tracking-[0.4em] mb-4 text-black/40">The Latest Drops</p>
-                            <h2 className="text-5xl font-black uppercase tracking-tighter mb-4 drop-shadow-lg ">New Arrivals</h2>
-                        </div>
-
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-8 ">
-                        {productsS.map(product => (
-                            <ProductCard key={product.id} product={product} />
                         ))}
                     </div>
                 </div>

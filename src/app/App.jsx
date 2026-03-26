@@ -7,6 +7,7 @@ const Home = lazy(() => import('../pages/Home'));
 const Shop = lazy(() => import('../pages/Shop'));
 const ProductDetail = lazy(() => import('../pages/ProductDetail'));
 const CollectionPage = lazy(() => import('../features/products/pages/CollectionPage'));
+const NewArrivalsPage = lazy(() => import('../features/products/pages/NewArrivalsPage'));
 const Auth = lazy(() => import('../pages/Auth'));
 const Account = lazy(() => import('../pages/Account'));
 const OrderDetail = lazy(() => import('../pages/OrderDetail'));
@@ -73,6 +74,7 @@ function App() {
             <Routes>
               <Route path="/" element={<MainLayout><Home /></MainLayout>} />
               <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
+              <Route path="/new-arrivals" element={<MainLayout><NewArrivalsPage /></MainLayout>} />
               <Route path="/collection/:id" element={<MainLayout><CollectionPage /></MainLayout>} />
               <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
               <Route path="/shopping-bag" element={<MainLayout><ShoppingBag /></MainLayout>} />

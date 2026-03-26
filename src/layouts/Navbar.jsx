@@ -260,7 +260,7 @@ export default function Navbar() {
 
                             {/* Dense List Links */}
                             <div className="flex flex-col gap-2 mb-12">
-                                <Link to="/shop?filter=new" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">The New</Link>
+                                <Link to="/new-arrivals" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">The New</Link>
                                 <Link to="/shop?filter=essentials" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">The Item</Link>
                                 <Link to="/shop?filter=ski" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest">Ski Collection</Link>
                             </div>
@@ -293,7 +293,7 @@ export default function Navbar() {
                 {/* Desktop Menu Content (Original Minimalist Style) */}
                 <div className="hidden md:flex flex-col gap-6 p-12 pt-48 flex-grow overflow-y-auto">
                     <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Shop All</Link>
-                    <Link to="/shop?filter=new" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">New</Link>
+                    <Link to="/new-arrivals" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">New</Link>
                     <Link to="/shop?filter=woman" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Woman</Link>
                     <Link to="/shop?filter=man" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-display font-black tracking-tighter uppercase opacity-80 hover:opacity-100 transition-opacity">Man</Link>
 

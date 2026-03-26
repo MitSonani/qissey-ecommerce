@@ -16,7 +16,7 @@ export default function ReturnPolicy() {
 
                 <div className="space-y-12">
                     <section>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>
                                 At Qissey, we strive to deliver products that you love. However, if something isn't right, we're here to help.
                             </p>
@@ -24,8 +24,8 @@ export default function ReturnPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Order Cancellation</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Order Cancellation</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>Orders can be cancelled within 1 hours of placing the order.</li>
                                 <li>Once the order has been processed or shipped, cancellation requests will not be accepted.</li>
@@ -34,8 +34,8 @@ export default function ReturnPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Returns & Exchanges</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Returns & Exchanges</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>We offer exchange / return under limited conditions:</p>
                             <p>You can request a return or exchange within 7 days of delivery if:</p>
                             <ul className="list-disc pl-5 space-y-2">
@@ -52,8 +52,8 @@ export default function ReturnPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Conditions for Return & Exchange</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Conditions for Return & Exchange</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>To be eligible:</p>
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>Item must be unused, unwashed, and in original condition</li>
@@ -65,8 +65,8 @@ export default function ReturnPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Non-Returnable Items</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Non-Returnable Items</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>Items purchased on sale or discount (unless defective)</li>
                                 <li>Custom-made or personalized products</li>
@@ -76,8 +76,8 @@ export default function ReturnPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Custom Orders Policy</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Custom Orders Policy</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>All custom-made products are created specifically for you. Therefore:</p>
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>No return, exchange, or cancellation is allowed</li>
@@ -88,8 +88,8 @@ export default function ReturnPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Refund Policy</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Refund Policy</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>Once your return is approved and inspected, refunds will be processed within 3–5 business days</li>
                                 <li>Refunds will be credited to your original payment method</li>
@@ -99,8 +99,8 @@ export default function ReturnPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Failed Deliveries</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Failed Deliveries</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>If delivery fails due to:</p>
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>Incorrect address</li>
@@ -111,8 +111,8 @@ export default function ReturnPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Important Notes</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Important Notes</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>We are not responsible for delays caused by courier partners or unforeseen circumstances</li>
                                 <li>By placing an order, you agree to our policies and terms governed under Indian laws</li>
@@ -121,8 +121,8 @@ export default function ReturnPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Need Help?</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Need Help?</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <ul className="space-y-2 mt-2">
                                 <li>📧 Email: <a href="mailto:support@qissey.com" className="hover:text-black hover:underline transition-all">support@qissey.com</a></li>
                                 <li>📞 Phone: <a href="tel:+917862930732" className="hover:text-black hover:underline transition-all">+91 78629 30732</a></li>
@@ -134,7 +134,7 @@ export default function ReturnPolicy() {
                 <div className='mt-16'>
                     <Link
                         to="/contact"
-                        className="inline-block px-8 bg-black text-white py-4 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] transition-colors flex justify-center items-center gap-3 rounded-sm"
+                        className="inline-block px-8 bg-black text-white py-4 text-[12px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] transition-colors flex justify-center items-center gap-3 rounded-sm"
                     >
                         Contact Us
                     </Link>

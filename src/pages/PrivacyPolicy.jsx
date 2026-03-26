@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
 
                 <div className="space-y-12">
                     <section>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>
                                 At Qissey, your privacy is of utmost importance to us. This Privacy Policy explains how we collect, use, and protect your personal information when you visit our website or make a purchase.
                             </p>
@@ -23,8 +23,8 @@ export default function PrivacyPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Information We Collect</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Information We Collect</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>When you interact with our website, we may collect the following types of information:</p>
                             <ul className="list-disc pl-5 space-y-2">
                                 <li><strong>Personal Information:</strong> Name, email address, phone number, shipping and billing address.</li>
@@ -35,8 +35,8 @@ export default function PrivacyPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">How We Use Your Information</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">How We Use Your Information</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>We use the collected data for the following purposes:</p>
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>To process and fulfill your orders, including sending order confirmations and shipping updates.</li>
@@ -48,8 +48,8 @@ export default function PrivacyPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Information Sharing</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Information Sharing</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>We do not sell or rent your personal information to third parties. However, we do share your data with trusted service providers to run our business, including:</p>
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>Shipping and logistics partners to deliver your orders.</li>
@@ -61,8 +61,8 @@ export default function PrivacyPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Data Security</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Data Security</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>
                                 We implement industry-standard security measures to protect your personal data against unauthorized access, alteration, disclosure, or destruction. All sensitive information (like payment details) is encrypted during transmission.
                             </p>
@@ -70,8 +70,8 @@ export default function PrivacyPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Cookies</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Cookies</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>
                                 Our website uses cookies to enhance your browsing experience, remember your preferences, and analyze site traffic. You can choose to disable cookies through your browser settings, though some parts of our site may not function properly without them.
                             </p>
@@ -79,8 +79,8 @@ export default function PrivacyPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Your Rights</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Your Rights</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>You have the right to:</p>
                             <ul className="list-disc pl-5 space-y-2">
                                 <li>Access and update the personal information we hold about you.</li>
@@ -91,8 +91,8 @@ export default function PrivacyPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Changes to This Policy</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Changes to This Policy</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>
                                 We may update this Privacy Policy from time to time to reflect changes in our practices or for legal reasons. Any updates will be posted on this page.
                             </p>
@@ -100,8 +100,8 @@ export default function PrivacyPolicy() {
                     </section>
 
                     <section>
-                        <p className="text-[14px] uppercase font-bold tracking-[0.1em] mb-4">Contact Us</p>
-                        <div className="text-[13px] opacity-80 space-y-4 leading-relaxed font-medium">
+                        <p className="text-[16px] uppercase font-bold tracking-[0.1em] mb-4">Contact Us</p>
+                        <div className="text-[15px] opacity-80 space-y-4 leading-relaxed font-medium">
                             <p>If you have any questions or concerns about this Privacy Policy, please reach out to us:</p>
                             <ul className="space-y-2 mt-2">
                                 <li>📧 Email: <a href="mailto:support@qissey.com" className="hover:text-black hover:underline transition-all">support@qissey.com</a></li>
@@ -113,7 +113,7 @@ export default function PrivacyPolicy() {
                     <div className='mt-16'>
                         <Link
                             to="/contact"
-                            className="inline-block px-8 bg-black text-white py-4 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] transition-colors flex justify-center items-center gap-3 rounded-sm w-fit"
+                            className="inline-block px-8 bg-black text-white py-4 text-[12px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] transition-colors flex justify-center items-center gap-3 rounded-sm w-fit"
                         >
                             Contact Us
                         </Link>

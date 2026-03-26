@@ -19,6 +19,7 @@ const PaymentPolicy = lazy(() => import('../pages/PaymentPolicy'));
 const ReturnPolicy = lazy(() => import('../pages/ReturnPolicy'));
 const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy'));
 const PurchaseConditions = lazy(() => import('../pages/PurchaseConditions'));
+const AboutUs = lazy(() => import('../pages/AboutUs'));
 
 import Navbar from '../layouts/Navbar';
 import Footer from '../layouts/Footer';
@@ -82,6 +83,7 @@ function App() {
               <Route path="/return-policy" element={<MainLayout><ReturnPolicy /></MainLayout>} />
               <Route path="/privacy-policy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
               <Route path="/purchase-conditions" element={<MainLayout><PurchaseConditions /></MainLayout>} />
+              <Route path="/about" element={<MainLayout><AboutUs /></MainLayout>} />
               <Route path="/auth" element={<Auth />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/account" element={<MainLayout><Account /></MainLayout>} />

@@ -21,6 +21,7 @@ const FOOTER_LINKS = [
     {
         title: "Company",
         links: [
+            { label: "About us", path: "/about" },
             { label: "Contact us", path: "/contact" },
         ]
     },

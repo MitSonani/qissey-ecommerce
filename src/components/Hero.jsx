@@ -46,22 +46,21 @@ export default function Hero() {
     }, []);
 
     return (
-        <section className="relative mx-auto max-w-[1080px] h-[79vh] md:h-screen w-full flex flex-col items-center md:justify-center overflow-hidden bg-white">
-            <div className="absolute inset-0 z-0">
-                <AnimatePresence mode="wait">
-                    <motion.img
-                        key={`${currentIndex}-${isMobile}`}
-                        src={isMobile ? heroSlides[currentIndex].mobileImage : heroSlides[currentIndex].image}
-                        alt="Hero"
-                        className="absolute inset-0 w-full h-full object-cover"
-                        initial={{ opacity: 0, scale: 1.1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ duration: 1.5, ease: "easeInOut" }}
-                    />
-                </AnimatePresence>
-                <div className="absolute inset-0 bg-white/10" />
-            </div>
+        <section className="relative mx-auto max-w-[1080px] h-[79vh] md:h-[calc(100vh-8.6rem)] w-full flex flex-col items-center md:justify-center overflow-hidden bg-white">            <div className="absolute inset-0 z-0">
+            <AnimatePresence mode="wait">
+                <motion.img
+                    key={`${currentIndex}-${isMobile}`}
+                    src={isMobile ? heroSlides[currentIndex].mobileImage : heroSlides[currentIndex].image}
+                    alt="Hero"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    initial={{ opacity: 0, scale: 1.1 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 1.5, ease: "easeInOut" }}
+                />
+            </AnimatePresence>
+            <div className="absolute inset-0 bg-white/10" />
+        </div>
 
 
 

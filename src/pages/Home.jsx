@@ -17,7 +17,8 @@ export default function Home() {
                     fetchAllCollections()
                 ]);
                 setProducts(productsRes);
-                setCollections(collectionsRes);
+                const filterCollection = collectionsRes.filter(c => c.name.toLowerCase() !== 'new arrival');
+                setCollections(filterCollection);
             } catch (error) {
                 console.error('Error loading home data:', error);
             }
@@ -32,7 +33,7 @@ export default function Home() {
             <Hero />
 
             {/* New Arrivals Slider */}
-            <section className="md:px-8 overflow-hidden mt-20">
+            {!!productsS?.length && <section className="md:px-8 overflow-hidden mt-20">
                 <div className="container">
                     <div className="mb-12">
                         <p className="text-[10px] uppercase font-bold tracking-[0.4em] mb-4 text-black/40">The Latest Drops</p>
@@ -54,7 +55,7 @@ export default function Home() {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section>}
 
             {/* Featured Collections Tiles */}
             <section className="py-16 md:px-8 bg-white mt-8 md:mt-16">

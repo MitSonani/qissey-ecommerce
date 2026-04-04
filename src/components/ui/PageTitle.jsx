@@ -17,7 +17,7 @@ const PageTitle = () => {
         const path = location.pathname;
 
         if (path === "/") {
-            pageTitle = "Refined Minimalist Fashion & Design Studio";
+            pageTitle = "Qissey | Minimal, Feminine, Everyday Wear";
         } else if (path === "/shop") {
             pageTitle = "Shop All";
         } else if (path === "/new-arrivals") {

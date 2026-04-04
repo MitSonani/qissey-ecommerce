@@ -92,7 +92,7 @@ export default function ShoppingBag() {
                     toast.success('Order Placed Successfully (COD)!');
                     clearCart();
                     setIsAddressModalOpen(false);
-                    navigate('/account/orders');
+                    navigate('/account');
                 } else {
                     toast.error(res.error || 'Failed to place COD order');
                 }
@@ -145,7 +145,7 @@ export default function ShoppingBag() {
                                 toast.success('Payment Successful!');
                                 clearCart();
                                 setIsAddressModalOpen(false);
-                                navigate('/account/orders');
+                                navigate('/account');
                             } else {
                                 toast.error('Payment verification failed');
                             }

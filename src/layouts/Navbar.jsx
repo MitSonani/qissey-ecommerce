@@ -21,9 +21,9 @@ export default function Navbar() {
         const loadCollections = async () => {
             try {
                 const data = await fetchAllCollections();
-                const newArrivals = data.find(c => c.name.toLowerCase() !== 'new arrivals');
+                const newArrivals = data.find(c => c.name.toLowerCase() == 'new arrival');
                 setNewArrivalsCollection(newArrivals);
-                setCollections(data.filter(c => c.name.toLowerCase() !== 'new arrivals'));
+                setCollections(data.filter(c => c.name.toLowerCase() !== 'new arrival'));
             } catch (error) {
                 console.error('Error fetching collections for navbar:', error);
             }
@@ -337,11 +337,11 @@ export default function Navbar() {
                                     <img
                                         src={Array.isArray(cat.image_url) ? cat.image_url[0] : (cat.image_url?.includes(',') ? cat.image_url.split(',')[0] : cat.image_url)}
                                         alt={cat.name}
-                                        className="w-full h-full max-h-[80px] object-cover transition-transform duration-700 group-hover:scale-105"
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                     <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
                                     <div className="absolute inset-0 flex items-center justify-center p-2 text-center">
-                                        <h4 className="text-[12px] font-display font-black text-white tracking-widest uppercase drop-shadow-md">{cat.name}</h4>
+                                        <h4 className="text-[16px] font-display font-black text-white tracking-widest uppercase drop-shadow-md">{cat.name}</h4>
                                     </div>
                                 </Link>
                             ))}

@@ -79,10 +79,6 @@ export default function ProductDetail() {
         }
     }, [showSizes, activeDrawer, showCustomSizeModal]);
 
-    useEffect(() => {
-        window.scroll(0, 0)
-    }, [])
-
 
     useEffect(() => {
         if (activeDrawer) {

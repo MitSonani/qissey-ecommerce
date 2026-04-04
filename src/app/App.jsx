@@ -28,6 +28,7 @@ import { CartProvider } from '../features/cart';
 import { AuthProvider, ProtectedRoute } from '../features/auth';
 import PageLoader from '../components/ui/PageLoader';
 import PageTitle from '../components/ui/PageTitle';
+import ScrollToTop from '../components/ui/ScrollToTop';
 import './styles/App.css';
 
 function MainLayout({ children }) {
@@ -69,6 +70,7 @@ function App() {
     <AuthProvider>
       <Router>
         <CartProvider>
+          <ScrollToTop />
           <PageTitle />
           <Suspense fallback={<PageLoader />}>
             <Routes>

@@ -59,7 +59,7 @@ export default function Favourites({ user }) {
             {savedProducts.map((product) => (
                 <Link
                     key={product.id}
-                    to={`/product/${product.id}`}
+                    to={`/product/${product.slug || product.id}`}
                     className="group"
                 >
                     <div className="space-y-4">

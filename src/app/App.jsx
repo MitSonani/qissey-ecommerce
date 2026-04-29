@@ -78,7 +78,7 @@ function App() {
               <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
               <Route path="/new-arrivals" element={<MainLayout><NewArrivalsPage /></MainLayout>} />
               <Route path="/collection/:id" element={<MainLayout><CollectionPage /></MainLayout>} />
-              <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
+              <Route path="/product/:slug" element={<MainLayout><ProductDetail /></MainLayout>} />
               <Route path="/shopping-bag" element={<MainLayout><ShoppingBag /></MainLayout>} />
               <Route path="/saved-products" element={<MainLayout><SavedProducts /></MainLayout>} />
               <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />

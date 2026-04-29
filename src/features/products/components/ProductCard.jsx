@@ -110,7 +110,7 @@ export default function ProductCard({ product, isCompleteTheLook = false, isCart
                     setShowSizes(false);
                 }}
             >
-                <Link to={`/product/${product.id}`}>
+                <Link to={`/product/${product.slug || product.id}`}>
                     <div className="relative aspect-[3/4] overflow-hidden bg-brand-gray group">
                         <img
                             src={product?.product_variants[0]?.image_urls[0]}
@@ -169,7 +169,7 @@ export default function ProductCard({ product, isCompleteTheLook = false, isCart
                 {!isCompleteTheLook && <div className="mt-4 flex flex-col gap-1.5 px-0.5">
                     <div className="flex justify-between items-start relative">
                         <Link
-                            to={`/product/${product.id}`}
+                            to={`/product/${product.slug || product.id}`}
                             className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black max-w-[85%] leading-relaxed"
                         >
                             {product.name}

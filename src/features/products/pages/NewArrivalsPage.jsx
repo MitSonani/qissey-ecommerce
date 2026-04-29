@@ -99,7 +99,7 @@ function ProductCardHero({ product }) {
 
     return (
         <div className="relative group">
-            <Link to={`/product/${product.id}`}>
+            <Link to={`/product/${product.slug || product.id}`}>
                 <div className="aspect-[4/5] md:aspect-[16/10] overflow-hidden bg-brand-gray">
                     <img
                         src={product?.product_variants?.[0]?.image_urls?.[0]}

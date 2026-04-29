@@ -12,6 +12,7 @@ export const fetchProducts = async (userId) => {
             .from('products')
             .select(`id,
                     name,
+                    slug,
                     price,
                     product_variants(
                        id,
@@ -51,6 +52,7 @@ export const fetchNewArrivalProducts = async (userId) => {
             .select(`
                 id,
                 name,
+                slug,
                 price,
                 product_variants(
                     *,
@@ -122,6 +124,41 @@ export const fetchProductById = async (id, userId) => {
     }
 };
 
+/**
+ * Fetch a single product by slug
+ * @param {string} slug - Product slug
+ * @param {string} [userId] - Optional user UUID to check saved status
+ * @returns {Promise<Object|null>} Product object or null
+ */
+export const fetchProductBySlug = async (slug, userId) => {
+    try {
+        let query = supabase
+            .from('products')
+            .select(`*, 
+                    product_variants(*, color_id(*)), 
+                    complete_the_look
+                    ${userId ? ', saved_products:saved_products!left(id)' : ''}
+                    `)
+            .eq('slug', slug);
+
+        if (userId) {
+            query = query.eq('saved_products.user_id', userId);
+        }
+
+        const { data, error } = await query.single();
+
+        if (error) throw error;
+
+        return {
+            ...data,
+            is_saved: data.saved_products?.length > 0
+        };
+    } catch (error) {
+        console.error('Error fetching product by slug:', error);
+        return null;
+    }
+};
+
 
 
 /**
@@ -138,6 +175,7 @@ export const fetchRelatedProducts = async (collectionId, productId, userId) => {
             .select(`
                 id,
                 name,
+                slug,
                 price,
                 product_variants(
                     id,
@@ -184,6 +222,7 @@ export const fetchCompleteTheLookProducts = async (productIds, userId) => {
             .select(`
                 id,
                 name,
+                slug,
                 price,
                 product_variants(
                     id,
@@ -304,6 +343,7 @@ export const fetchProductsByCollectionId = async (collectionId, userId) => {
             .select(`
                 id,
                 name,
+                slug,
                 price,
                 product_variants(
                     *,
@@ -369,6 +409,7 @@ export const fetchSavedProducts = async (userId) => {
                 products (
                     id,
                     name,
+                    slug,
                     price,
                     product_variants (
                         id,

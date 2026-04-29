@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { fetchProductById, saveProduct, unsaveProduct } from '../services/productService';
+import { fetchProductBySlug, saveProduct, unsaveProduct } from '../services/productService';
 import { useAuth } from '../../../features/auth';
 import { useCart } from '../../../features/cart';
 import { toast } from 'sonner';
@@ -24,7 +24,7 @@ const measurementData = [
 ];
 
 export default function ProductDetail() {
-    const { id } = useParams();
+    const { slug } = useParams();
     const [product, setProduct] = useState(null);
     const [primaryProduct, setPrimaryProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -108,7 +108,7 @@ export default function ProductDetail() {
                 setLoading(true);
                 setError(null);
 
-                const productData = await fetchProductById(id, user?.id);
+                const productData = await fetchProductBySlug(slug, user?.id);
 
                 if (!productData) {
                     setError('Product not found');
@@ -140,7 +140,7 @@ export default function ProductDetail() {
         };
 
         loadProductData();
-    }, [id, user?.id]);
+    }, [slug, user?.id]);
 
 
     const handleToggleSave = async (e) => {

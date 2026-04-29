@@ -217,7 +217,7 @@ export default function ShoppingBag() {
                                     <div key={item.cartItemId} className="flex flex-row md:flex-col gap-4 md:gap-0 group relative border-b border-black/5 pb-8 md:border-none md:pb-0">
                                         {/* Product Image */}
                                         <div className="w-[100px] md:w-full aspect-[3/4] bg-[#f5f5f5] max-w-[100px] md:max-w-[150px] md:max-h-[200px] mb-0 md:mb-4 overflow-hidden relative flex-shrink-0">
-                                            <Link to={`/product/${item.id}`}>
+                                            <Link to={`/product/${item.slug || item.id}`}>
                                                 <img
                                                     src={item.variant?.image_urls?.[0] || item.product_variants?.[0]?.image_urls?.[0] || item.images?.[0]}
                                                     alt={item.name}
@@ -229,7 +229,7 @@ export default function ShoppingBag() {
                                         {/* Product Details */}
                                         <div className="flex flex-col items-start gap-1 flex-grow">
                                             <div className="flex flex-col w-full">
-                                                <Link to={`/product/${item.id}`} className="text-[11px] font-bold uppercase tracking-widest text-black hover:underline decoration-1 underline-offset-4 leading-normal">
+                                                <Link to={`/product/${item.slug || item.id}`} className="text-[11px] font-bold uppercase tracking-widest text-black hover:underline decoration-1 underline-offset-4 leading-normal">
                                                     {item.name}
                                                 </Link>
                                                 <p className="text-[10px] uppercase tracking-widest text-black/60 mt-0.5">

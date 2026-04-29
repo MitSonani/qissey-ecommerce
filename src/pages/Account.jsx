@@ -15,9 +15,9 @@ const MENU_ITEMS = [
 ];
 
 const ORDER_STATUSES = [
-    { id: 'pending', label: 'PROCESSING' },
+    { id: 'processing', label: 'PROCESSING' },
     { id: 'shipped', label: 'SHIPPED' },
-    { id: 'processing', label: 'INTRANSIT' },
+    { id: 'intransit', label: 'INTRANSIT' },
     { id: 'delivered', label: 'DELIVERED' },
 ];
 

@@ -109,6 +109,13 @@ export default function Addresses({ user, onBack }) {
             }
         });
 
+        if (formData.postal_code && formData.postal_code.length !== 6) {
+            newErrors.postal_code = true;
+            if (!Object.keys(newErrors).some(k => k !== 'postal_code' && newErrors[k])) {
+                toast.error('Pincode must be exactly 6 digits');
+            }
+        }
+
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;

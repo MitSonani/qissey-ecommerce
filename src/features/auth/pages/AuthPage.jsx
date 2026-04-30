@@ -240,8 +240,8 @@ export default function Auth() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 1.5 }}
-                                src="/qissey-auth.png"
-                                className="w-full h-full object-cover grayscale contrast-125"
+                                src="/qissey-auth.jpg"
+                                className="w-full h-[100vh] object-cover grayscale contrast-125"
                                 alt="QISSEY Editorial"
                             />
                         </div>

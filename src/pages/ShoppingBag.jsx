@@ -71,6 +71,11 @@ export default function ShoppingBag() {
             return;
         }
 
+        if (shippingData.postal_code && shippingData.postal_code.length !== 6) {
+            toast.error('Pincode must be exactly 6 digits');
+            return;
+        }
+
         setIsProcessing(true);
         try {
             // Get session token for RLS

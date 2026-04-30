@@ -79,7 +79,12 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        let newValue = value;
+        if (name === 'postal_code') {
+            newValue = value.replace(/[^0-9]/g, '');
+            if (newValue.length > 6) return;
+        }
+        setFormData(prev => ({ ...prev, [name]: newValue }));
     };
 
     const [paymentMethod, setPaymentMethod] = useState('online');
@@ -109,6 +114,11 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
 
             if (missingFields.length > 0) {
                 toast.error(`Please fill in all required address fields`);
+                return;
+            }
+
+            if (formData.postal_code.length !== 6) {
+                toast.error('Pincode must be exactly 6 digits');
                 return;
             }
 

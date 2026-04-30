@@ -247,7 +247,7 @@ export default function Navbar() {
                             <div className="flex flex-col gap-8">
                                 {newArrivalsCollection && (
                                     <Link
-                                        to={`/collection/${newArrivalsCollection.id}`}
+                                        to={`/new-arrivals`}
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className="group relative w-full aspect-[16/7] overflow-hidden bg-gray-100"
                                     >
@@ -309,7 +309,7 @@ export default function Navbar() {
                     <div className="flex flex-col gap-8">
                         {newArrivalsCollection && (
                             <Link
-                                to={`/collection/${newArrivalsCollection.id}`}
+                                to={`/new-arrivals`}
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="group relative w-full aspect-[16/4.5] overflow-hidden bg-gray-100"
                             >

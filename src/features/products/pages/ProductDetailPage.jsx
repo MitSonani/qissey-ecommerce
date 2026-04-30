@@ -330,7 +330,6 @@ export default function ProductDetail() {
                                 </div>
 
                                 <div className="border-t border-neutral-200 pt-6 hidden lg:block">
-                                    <p className="pb-3 text-[12px] uppercase tracking-wider text-black font-medium">{primaryProduct?.color_id?.name}</p>
                                     <div className="flex justify-between">
                                         <div className="flex gap-2 mb-[20px]">
                                             {colors?.map((item) => (
@@ -406,7 +405,7 @@ export default function ProductDetail() {
                                                                     "bg-white text-black border border-black hover:bg-neutral-50"
                                                                 )}
                                                             >
-                                                                Add
+                                                                Add to cart
                                                             </Button>
                                                         </div>
                                                     </motion.div>
@@ -651,7 +650,7 @@ export default function ProductDetail() {
                                 }}
                                 className="flex-grow bg-white text-black border border-black rounded-none h-11 uppercase text-[11px] tracking-[0.2em] hover:bg-neutral-50"
                             >
-                                ADD
+                                ADD TO CART
                             </Button>
 
                         </motion.div>

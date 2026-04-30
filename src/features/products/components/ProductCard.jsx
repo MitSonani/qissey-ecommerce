@@ -167,16 +167,17 @@ export default function ProductCard({ product, isCompleteTheLook = false, isCart
                 </Link>
 
                 {!isCompleteTheLook && <div className="mt-4 flex flex-col gap-1.5 px-0.5">
-                    <div className="flex justify-between items-start relative">
+                    <div className="flex justify-between items-start relative gap-2">
                         <Link
                             to={`/product/${product.slug || product.id}`}
-                            className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black max-w-[85%] leading-relaxed"
+                            className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity truncate text-black leading-relaxed flex-1 min-w-0"
+                            title={product.name}
                         >
                             {product.name}
                         </Link>
 
                         {isCartProduct ? (
-                            <div className="relative">
+                            <div className="relative shrink-0">
                                 <button
                                     onClick={(e) => {
                                         e.preventDefault();
@@ -193,7 +194,7 @@ export default function ProductCard({ product, isCompleteTheLook = false, isCart
                             <button
                                 onClick={handleToggleSave}
                                 className={cn(
-                                    "transition-all duration-300 cursor-pointer",
+                                    "transition-all duration-300 cursor-pointer shrink-0",
                                     isSaved ? "text-black" : "text-brand-charcoal hover:opacity-50"
                                 )}
                                 aria-label={isSaved ? "Remove from saved" : "Save product"}

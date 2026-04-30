@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { createShiprocketOrder } from './utils/shiprocket.js';
 
 export const handler = async function (event) {
     if (event.httpMethod !== 'POST') {
@@ -77,30 +76,7 @@ export const handler = async function (event) {
             }
         }
 
-        // 3. Trigger Shiprocket Automation
-        try {
-            console.log('Starting Shiprocket Automation for COD Order:', orderData.id);
-            const shipRes = await createShiprocketOrder(orderData, cartItems);
 
-            const shippingUpdate = {
-                shiprocket_order_id: shipRes.shiprocket_order_id,
-                shiprocket_shipment_id: shipRes.shiprocket_shipment_id,
-                shiprocket_awb: shipRes.awb_code,
-                status: 'pending',
-                label_url: shipRes.label_url,
-            };
-
-            const { error: shipUpdateError } = await supabase
-                .from('orders')
-                .update(shippingUpdate)
-                .eq('id', orderData.id);
-
-            if (shipUpdateError) {
-                console.error('Error updating order with Shiprocket details:', shipUpdateError);
-            }
-        } catch (shipError) {
-            console.error('Shiprocket Automation Failed for COD:', shipError);
-        }
 
         return {
             statusCode: 200,

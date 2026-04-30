@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
-import { createShiprocketOrder } from './utils/shiprocket.js';
 
 export const handler = async function (event) {
     if (event.httpMethod !== 'POST') {
@@ -63,48 +62,7 @@ export const handler = async function (event) {
                 console.error('Error updating order status:', updateError);
             }
 
-            try {
-                let orderQuery = supabaseAdmin.from('orders').select('*');
-                if (db_order_id) orderQuery = orderQuery.eq('id', db_order_id);
-                else orderQuery = orderQuery.eq('razorpay_order_id', razorpay_order_id);
 
-                const { data: order, error: orderFetchError } = await orderQuery.single();
-
-                if (order && !orderFetchError) {
-                    const { data: orderItems, error: itemsFetchError } = await supabaseAdmin
-                        .from('order_items')
-                        .select('*')
-                        .eq('order_id', order.id);
-
-                    if (orderItems && !itemsFetchError) {
-                        console.log('Starting Shiprocket Automation for Order:', order.id);
-
-                        const shipRes = await createShiprocketOrder(order, orderItems);
-                        console.log('Shiprocket Result:', shipRes);
-
-                        const shippingUpdate = {
-                            shiprocket_order_id: shipRes.shiprocket_order_id,
-                            shiprocket_shipment_id: shipRes.shiprocket_shipment_id,
-                            shiprocket_awb: shipRes.awb_code,
-                            status: 'pending',
-                            label_url: shipRes.label_url,
-                        };
-
-                        const { error: shipUpdateError } = await supabaseAdmin
-                            .from('orders')
-                            .update(shippingUpdate)
-                            .eq('id', order.id);
-
-                        if (shipUpdateError) {
-                            console.error('Error updating order with Shiprocket details:', shipUpdateError);
-                        } else {
-                            console.log('Successfully updated order with Shiprocket details:', shippingUpdate);
-                        }
-                    }
-                }
-            } catch (shippingError) {
-                console.error('Shiprocket Automation Failed:', shippingError);
-            }
 
             return {
                 statusCode: 200,

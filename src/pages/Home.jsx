@@ -2,12 +2,24 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ProductCard } from '../features/products';
 import Hero from '../components/Hero';
-import { fetchNewArrivalProducts, fetchAllCollections } from '../features/products/services/productService';
+import { fetchNewArrivalProducts, fetchAllCollections, productCache } from '../features/products/services/productService';
 import { useAuth } from '../features/auth';
 export default function Home() {
-    const [productsS, setProducts] = useState([]);
-    const [collections, setCollections] = useState([]);
     const { user } = useAuth();
+    
+    const [productsS, setProducts] = useState(() => {
+        if (productCache.newArrivals.data && productCache.newArrivals.userId === user?.id) {
+            return productCache.newArrivals.data;
+        }
+        return [];
+    });
+
+    const [collections, setCollections] = useState(() => {
+        if (productCache.collections.data) {
+            return productCache.collections.data.filter(c => c.name.toLowerCase() !== 'new arrival');
+        }
+        return [];
+    });
 
     useEffect(() => {
         const loadData = async () => {

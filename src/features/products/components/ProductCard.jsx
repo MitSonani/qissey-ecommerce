@@ -104,11 +104,11 @@ export default function ProductCard({ product, isCompleteTheLook = false, isCart
             />
             <div
                 className="group relative flex flex-col"
-                onMouseEnter={() => !isCompleteTheLook && setIsHovered(true)}
-                onMouseLeave={() => {
-                    if (!isCompleteTheLook) setIsHovered(false);
-                    setShowSizes(false);
-                }}
+            // onMouseEnter={() => !isCompleteTheLook && setIsHovered(true)}
+            // onMouseLeave={() => {
+            //     if (!isCompleteTheLook) setIsHovered(false);
+            //     setShowSizes(false);
+            // }}
             >
                 <Link to={`/product/${product.slug || product.id}`}>
                     <div className="relative aspect-[3/4] overflow-hidden bg-brand-gray group">

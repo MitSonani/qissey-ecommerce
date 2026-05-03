@@ -1,12 +1,35 @@
 import { supabase } from '../../../lib/supabase';
 import { toast } from 'sonner';
 
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+export const productCache = {
+    products: { data: null, timestamp: null, userId: null },
+    newArrivals: { data: null, timestamp: null, userId: null },
+    collections: { data: null, timestamp: null },
+    collectionProducts: {}
+};
+
+export const clearProductCache = () => {
+    productCache.products.data = null;
+    productCache.newArrivals.data = null;
+    productCache.collectionProducts = {};
+};
+
 /**
  * Fetch all products from Supabase
  * @param {string} [userId] - Optional user UUID to check saved status
  * @returns {Promise<Array>} Array of product objects
  */
 export const fetchProducts = async (userId) => {
+    if (
+        productCache.products.data &&
+        productCache.products.userId === userId &&
+        (Date.now() - productCache.products.timestamp < CACHE_DURATION)
+    ) {
+        return productCache.products.data;
+    }
+
     try {
         let query = supabase
             .from('products')
@@ -30,10 +53,18 @@ export const fetchProducts = async (userId) => {
 
         if (error) throw error;
 
-        return data?.map(product => ({
+        const result = data?.map(product => ({
             ...product,
             is_saved: product.saved_products?.length > 0
         })) || [];
+
+        productCache.products = {
+            data: result,
+            timestamp: Date.now(),
+            userId
+        };
+
+        return result;
     } catch (error) {
         console.error('Error fetching products:', error);
         throw error;
@@ -46,6 +77,14 @@ export const fetchProducts = async (userId) => {
  * @returns {Promise<Array>} Array of product objects
  */
 export const fetchNewArrivalProducts = async (userId) => {
+    if (
+        productCache.newArrivals.data &&
+        productCache.newArrivals.userId === userId &&
+        (Date.now() - productCache.newArrivals.timestamp < CACHE_DURATION)
+    ) {
+        return productCache.newArrivals.data;
+    }
+
     try {
         let query = supabase
             .from('products')
@@ -79,10 +118,18 @@ export const fetchNewArrivalProducts = async (userId) => {
 
         if (error) throw error;
 
-        return data?.map(product => ({
+        const result = data?.map(product => ({
             ...product,
             is_saved: product.saved_products?.length > 0
         })) || [];
+
+        productCache.newArrivals = {
+            data: result,
+            timestamp: Date.now(),
+            userId
+        };
+
+        return result;
     } catch (error) {
         console.error('Error fetching new arrival products:', error);
         throw error;
@@ -381,6 +428,13 @@ export const fetchProductsByCollectionId = async (collectionId, userId) => {
 
 
 export const fetchAllCollections = async () => {
+    if (
+        productCache.collections.data &&
+        (Date.now() - productCache.collections.timestamp < CACHE_DURATION)
+    ) {
+        return productCache.collections.data;
+    }
+
     try {
         const { data, error } = await supabase
             .from('collections')
@@ -388,6 +442,12 @@ export const fetchAllCollections = async () => {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
+
+        productCache.collections = {
+            data: data || [],
+            timestamp: Date.now()
+        };
+
         return data || [];
     } catch (error) {
         console.error('Error fetching all collections:', error);
@@ -442,6 +502,7 @@ export const saveProduct = async (userId, productId) => {
 
         if (error) throw error;
         toast.success('Product saved successfully');
+        clearProductCache();
         return true;
     } catch (error) {
         console.error('Error saving product:', error);
@@ -465,6 +526,7 @@ export const unsaveProduct = async (userId, productId) => {
 
         if (error) throw error;
         toast.success('Product removed from saved');
+        clearProductCache();
         return true;
     } catch (error) {
         console.error('Error unsaving product:', error);

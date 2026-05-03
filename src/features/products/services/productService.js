@@ -148,7 +148,8 @@ export const fetchProductById = async (id, userId) => {
             .from('products')
             .select(`*, 
                     product_variants(*, color_id(*)), 
-                    complete_the_look
+                    complete_the_look,
+                    product_collections(collection_id)
                     ${userId ? ', saved_products:saved_products!left(id)' : ''}
                     `)
             .eq('id', id);
@@ -183,7 +184,8 @@ export const fetchProductBySlug = async (slug, userId) => {
             .from('products')
             .select(`*, 
                     product_variants(*, color_id(*)), 
-                    complete_the_look
+                    complete_the_look,
+                    product_collections(collection_id)
                     ${userId ? ', saved_products:saved_products!left(id)' : ''}
                     `)
             .eq('slug', slug);
@@ -227,10 +229,11 @@ export const fetchRelatedProducts = async (collectionId, productId, userId) => {
                 product_variants(
                     id,
                     image_urls
-                )
+                ),
+                product_collections!inner(collection_id)
                 ${userId ? ', saved_products:saved_products!left(id)' : ''}
             `)
-            .eq('collection_id', collectionId)
+            .eq('product_collections.collection_id', collectionId)
             .neq('id', productId)
             .limit(8);
 
@@ -403,10 +406,11 @@ export const fetchProductsByCollectionId = async (collectionId, userId) => {
                         name,
                         hex
                     )
-                )
+                ),
+                product_collections!inner(collection_id)
                 ${userId ? ', saved_products:saved_products!left(id)' : ''}
             `)
-            .eq('collection_id', collectionId);
+            .eq('product_collections.collection_id', collectionId);
 
         if (userId) {
             query = query.eq('saved_products.user_id', userId);

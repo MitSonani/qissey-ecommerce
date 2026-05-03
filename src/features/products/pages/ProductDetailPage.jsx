@@ -543,14 +543,14 @@ export default function ProductDetail() {
 
                     <div className="lg:hidden mt-8">
                         <CompleteYourLook completeTheLookIds={product?.complete_the_look} />
-                        <RealatedProduct collectionId={product?.collection_id} productId={product?.id} />
+                        <RealatedProduct collectionId={product?.product_collections?.[0]?.collection_id} productId={product?.id} />
                     </div>
 
 
                 </div>
 
                 <div className="hidden lg:block">
-                    <RealatedProduct collectionId={product?.collection_id} productId={product?.id} />
+                    <RealatedProduct collectionId={product?.product_collections?.[0]?.collection_id} productId={product?.id} />
                 </div>
 
 

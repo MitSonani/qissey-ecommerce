@@ -14,7 +14,7 @@ const YouMayAlsoLike = ({ cartItems }) => {
                 return;
             }
 
-            const collectionIds = [...new Set(cartItems.map(item => item.collection_id).filter(Boolean))];
+            const collectionIds = [...new Set(cartItems.map(item => item.product_collections?.[0]?.collection_id || item.collection_id).filter(Boolean))];
 
             if (collectionIds.length === 0) {
                 setIsLoading(false);

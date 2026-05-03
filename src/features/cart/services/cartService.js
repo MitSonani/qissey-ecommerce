@@ -13,7 +13,7 @@ export async function getCartItems(userId) {
             .from('cart_items')
             .select(`
                 *,
-                product:products(*),
+                product:products(*, product_collections(collection_id)),
                 variant:product_variants(*, color:colors(*))
             `)
             .eq('user_id', userId)

@@ -136,6 +136,68 @@ export const fetchNewArrivalProducts = async (userId) => {
     }
 };
 
+
+export const fetchNewArrivalProductsHome = async (userId) => {
+    if (
+        productCache.newArrivals.data &&
+        productCache.newArrivals.userId === userId &&
+        (Date.now() - productCache.newArrivals.timestamp < CACHE_DURATION)
+    ) {
+        return productCache.newArrivals.data;
+    }
+
+    try {
+        let query = supabase
+            .from('products')
+            .select(`
+                id,
+                name,
+                slug,
+                price,
+                product_variants(
+                    *,
+                    id,
+                    image_urls,
+                    is_primary,
+                    size,
+                    color_id (
+                        id,
+                        name,
+                        hex
+                    )
+                )
+                ${userId ? ', saved_products:saved_products!left(id)' : ''}
+            `)
+            .eq('product_variants.is_primary', true)
+            .eq('new_arrival', true)
+            .limit(6)
+
+        if (userId) {
+            query = query.eq('saved_products.user_id', userId);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const result = data?.map(product => ({
+            ...product,
+            is_saved: product.saved_products?.length > 0
+        })) || [];
+
+        productCache.newArrivals = {
+            data: result,
+            timestamp: Date.now(),
+            userId
+        };
+
+        return result;
+    } catch (error) {
+        console.error('Error fetching new arrival products:', error);
+        throw error;
+    }
+};
+
 /**
  * Fetch a single product by ID
  * @param {string} id - Product UUID

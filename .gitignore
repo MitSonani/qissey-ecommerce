@@ -25,3 +25,8 @@ dist-ssr
 schema.sql
 # Local Netlify folder
 .netlify
+
+.env
+.env.local
+.env.production
+.env.development

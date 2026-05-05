@@ -146,6 +146,18 @@ export const AuthProvider = ({ children }) => {
         if (error) throw error;
     };
 
+    const updateProfile = async (updates) => {
+        const { data, error } = await supabase.auth.updateUser({
+            data: updates
+        });
+        if (error) throw error;
+        
+        if (data?.user) {
+            setUser(data.user);
+        }
+        return data;
+    };
+
     const value = React.useMemo(() => ({
         user,
         loading,
@@ -154,6 +166,7 @@ export const AuthProvider = ({ children }) => {
         verifyOtp,
         resendOtp,
         logout,
+        updateProfile,
         isAuthenticated: !!user
     }), [user, loading]);
 

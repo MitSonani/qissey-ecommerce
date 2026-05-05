@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ProductCard } from '../features/products';
 import Hero from '../components/Hero';
-import { fetchNewArrivalProductsHome, fetchAllCollections, productCache } from '../features/products/services/productService';
+import { fetchNewArrivalProducts, fetchAllCollections, productCache } from '../features/products/services/productService';
 import { useAuth } from '../features/auth';
 export default function Home() {
     const { user } = useAuth();
-
+    
     const [productsS, setProducts] = useState(() => {
         if (productCache.newArrivals.data && productCache.newArrivals.userId === user?.id) {
             return productCache.newArrivals.data;
@@ -25,7 +25,7 @@ export default function Home() {
         const loadData = async () => {
             try {
                 const [productsRes, collectionsRes] = await Promise.all([
-                    fetchNewArrivalProductsHome(user?.id),
+                    fetchNewArrivalProducts(user?.id),
                     fetchAllCollections()
                 ]);
                 setProducts(productsRes);

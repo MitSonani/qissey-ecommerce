@@ -25,7 +25,7 @@ export default function Home() {
         const loadData = async () => {
             try {
                 const [productsRes, collectionsRes] = await Promise.all([
-                    fetchNewArrivalProducts(user?.id),
+                    fetchNewArrivalProducts(user?.id, 6),
                     fetchAllCollections()
                 ]);
                 setProducts(productsRes);
@@ -62,7 +62,7 @@ export default function Home() {
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-8 ">
-                        {productsS.map(product => (
+                        {productsS.slice(0, 6).map(product => (
                             <ProductCard key={product.id} product={product} />
                         ))}
                     </div>

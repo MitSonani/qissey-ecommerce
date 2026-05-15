@@ -76,13 +76,13 @@ export const fetchProducts = async (userId) => {
  * @param {string} [userId] - Optional user UUID to check saved status
  * @returns {Promise<Array>} Array of product objects
  */
-export const fetchNewArrivalProducts = async (userId) => {
+export const fetchNewArrivalProducts = async (userId, limit = null) => {
     if (
         productCache.newArrivals.data &&
         productCache.newArrivals.userId === userId &&
         (Date.now() - productCache.newArrivals.timestamp < CACHE_DURATION)
     ) {
-        return productCache.newArrivals.data;
+        return limit ? productCache.newArrivals.data.slice(0, limit) : productCache.newArrivals.data;
     }
 
     try {
@@ -110,6 +110,10 @@ export const fetchNewArrivalProducts = async (userId) => {
             .eq('product_variants.is_primary', true)
             .eq('new_arrival', true);
 
+        if (limit) {
+            query = query.limit(limit);
+        }
+
         if (userId) {
             query = query.eq('saved_products.user_id', userId);
         }
@@ -123,11 +127,13 @@ export const fetchNewArrivalProducts = async (userId) => {
             is_saved: product.saved_products?.length > 0
         })) || [];
 
-        productCache.newArrivals = {
-            data: result,
-            timestamp: Date.now(),
-            userId
-        };
+        if (!limit) {
+            productCache.newArrivals = {
+                data: result,
+                timestamp: Date.now(),
+                userId
+            };
+        }
 
         return result;
     } catch (error) {

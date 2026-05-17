@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import { ProductCard } from '../features/products';
 import Hero from '../components/Hero';
 import { fetchNewArrivalProducts, fetchAllCollections, productCache } from '../features/products/services/productService';
-import { useAuth } from '../features/auth';
+
+
 export default function Home() {
-    const { user } = useAuth();
-    
+
     const [productsS, setProducts] = useState(() => {
-        if (productCache.newArrivals.data && productCache.newArrivals.userId === user?.id) {
+        if (productCache.newArrivals.data) {
             return productCache.newArrivals.data;
         }
         return [];
@@ -25,7 +25,7 @@ export default function Home() {
         const loadData = async () => {
             try {
                 const [productsRes, collectionsRes] = await Promise.all([
-                    fetchNewArrivalProducts(user?.id, 6),
+                    fetchNewArrivalProducts(6),
                     fetchAllCollections()
                 ]);
                 setProducts(productsRes);
@@ -37,7 +37,7 @@ export default function Home() {
         };
 
         loadData();
-    }, [user?.id]);
+    }, []);
 
 
     return (

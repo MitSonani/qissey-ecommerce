@@ -15,6 +15,8 @@ export const CartProvider = ({ children }) => {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+
+
     // Load cart from DB when user logs in
     useEffect(() => {
         const loadCart = async () => {
@@ -23,7 +25,7 @@ export const CartProvider = ({ children }) => {
                 // Remove any leftover guest cart
                 localStorage.removeItem('cart');
 
-                const dbItems = await getCartItems(user.id);
+                const dbItems = await getCartItems();
                 setCart(dbItems.map(item => ({
                     ...item.product,
                     cartItemId: item.id,

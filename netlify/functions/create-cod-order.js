@@ -9,7 +9,7 @@ export const handler = async function (event) {
         const { amount, currency = 'INR', cartItems, user_id, shipping_address, accessToken } = JSON.parse(event.body);
 
         const supabaseUrl = process.env.VITE_SUPABASE_URL;
-        const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+        const supabaseKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
         if (!supabaseUrl || !supabaseKey) {
             throw new Error('Supabase credentials missing');

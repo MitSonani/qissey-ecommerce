@@ -21,7 +21,7 @@ export const handler = async function (event) {
         if (isAuthentic) {
 
             const supabaseUrl = process.env.VITE_SUPABASE_URL;
-            const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+            const supabaseKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
             if (!supabaseUrl || !supabaseKey) {
                 console.error('Supabase credentials missing during verification');

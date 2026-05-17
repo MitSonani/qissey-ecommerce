@@ -1,159 +1,139 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
+import { useNavigate } from 'react-router-dom';
+
 
 const AuthContext = createContext();
+
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
+
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setUser(session?.user ?? null);
-            setLoading(false);
-        });
+        const checkSession = async () => {
+            const token = localStorage.getItem('custom_auth_token');
 
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === 'TOKEN_REFRESHED' && !session) {
-                // Token refresh failed — session expired
-                await supabase.auth.signOut();
-                setUser(null);
-            } else if (event === 'SIGNED_OUT') {
-                setUser(null);
+            if (token) {
+                try {
+                    const res = await fetch('/api/auth/verify-user', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ token }),
+                    });
+
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        throw new Error(data.error || 'Failed to verify user');
+                    }
+
+                    setUser(data.user);
+
+                } catch (err) {
+                    console.error('Session expired or invalid:', err);
+
+                    localStorage.removeItem('custom_auth_token');
+                    setUser(null);
+                }
             } else {
-                setUser(session?.user ?? null);
+                setUser(null);
             }
-            setLoading(false);
-        });
 
-        return () => subscription.unsubscribe();
+            setLoading(false);
+        };
+
+        checkSession();
     }, []);
 
     const login = async (identifier) => {
-        let email = identifier;
-
-        // Check if identifier is a phone number (not containing @)
-        if (!identifier.includes('@')) {
-            // Remove any spaces or dashes for comparison
-            const cleanIdentifier = identifier.replace(/[\s-]/g, '');
-
-            // Use RPC to bypass RLS (user is unauthenticated at this point)
-            // Try exact match first
-            let { data: foundEmail, error: rpcError } = await supabase
-                .rpc('get_email_by_phone', { check_phone: cleanIdentifier });
-
-            // If not found and identifier doesn't have a prefix, try adding +91
-            if (!foundEmail && !cleanIdentifier.startsWith('+')) {
-                const { data: emailWithPrefix } = await supabase
-                    .rpc('get_email_by_phone', { check_phone: `+91${cleanIdentifier}` });
-
-                foundEmail = emailWithPrefix;
-            }
-
-            if (!foundEmail) {
-                throw new Error('No account found with this mobile number.');
-            }
-            email = foundEmail;
-        }
-
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                // This ensures we get a token/OTP instead of a magic link if configured correctly in Supabase
-                shouldCreateUser: false,
-            }
+        // identifier is assumed to be phone number
+        const response = await fetch('/api/auth/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: identifier, action: 'login' })
         });
-
-        if (error) {
-            if (error.message === 'Signups not allowed for otp') {
-                throw new Error('This email is not registered. Please register first.');
-            }
-            throw error;
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to send OTP');
         }
-        return { email };
+        return { phone: identifier };
     };
 
     const register = async (email, name, phone) => {
-        // Pre-check if email already exists (uses RPC to bypass RLS)
-        const { data: emailExists, error: emailCheckError } = await supabase
-            .rpc('check_email_exists', { check_email: email });
-
-        if (emailCheckError) throw emailCheckError;
-        if (emailExists) {
-            throw new Error('This email is already registered. Please log in instead.');
-        }
-
-        // Pre-check if phone already exists (uses RPC to bypass RLS)
-        const { data: phoneExists, error: phoneCheckError } = await supabase
-            .rpc('check_phone_exists', { check_phone: phone });
-
-        if (phoneCheckError) throw phoneCheckError;
-        if (phoneExists) {
-            throw new Error('This mobile number is already registered. Please use another.');
-        }
-
-        // Use OTP-based registration (passwordless)
-        const { data, error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                shouldCreateUser: true,
-                data: {
-                    name: name,
-                    phone: phone,
-                }
-            }
+        // The previous component passed email, name, phone. We just use name and phone.
+        const response = await fetch('/api/auth/send-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, name, email, action: 'register' })
         });
-
-        if (error) throw error;
-        return data;
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to send OTP');
+        }
+        return { phone };
     };
 
-    const verifyOtp = async (email, token) => {
-        const { data, error } = await supabase.auth.verifyOtp({
-            email,
-            token,
-            type: 'email',
+    const verifyOtp = async (identifier, otp) => {
+        // Previous UI might pass email as identifier, but we need phone.
+        // Assuming identifier contains the phone number or the UI has been adapted
+        const phone = identifier;
+
+        const response = await fetch('/api/auth/verify-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, otp })
         });
-        if (error) {
-            if (error.message.toLowerCase().includes('expired')) {
-                throw new Error('Your verification code has expired. Please resend a new code.');
-            }
-            if (error.message.toLowerCase().includes('invalid') || error.message.toLowerCase().includes('token')) {
-                throw new Error('Invalid verification code. Please check and try again.');
-            }
-            throw error;
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to verify OTP');
+        }
+
+        // Save token
+        localStorage.setItem('custom_auth_token', data.session.access_token);
+
+        // Fetch full user details from DB
+        const { data: userProfile, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', data.session.user.id)
+            .single();
+
+        if (userProfile && !error) {
+            setUser(userProfile);
+        } else {
+            setUser(data.session.user);
         }
         return data;
     };
 
-    const resendOtp = async (email) => {
-        const { data, error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                shouldCreateUser: false,
-            }
-        });
-        if (error) throw error;
-        return data;
+    const resendOtp = async (phone) => {
+        return login(phone);
     };
 
     const logout = async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
+        localStorage.removeItem('custom_auth_token');
+        setUser(null);
+
     };
 
     const updateProfile = async (updates) => {
-        const { data, error } = await supabase.auth.updateUser({
-            data: updates
-        });
+        if (!user?.id) throw new Error('Not logged in');
+        const { data, error } = await supabase
+            .from('users')
+            .update(updates)
+            .eq('id', user.id)
+            .select()
+            .single();
+
         if (error) throw error;
-        
-        if (data?.user) {
-            setUser(data.user);
+        if (data) {
+            setUser(data);
         }
         return data;
     };

@@ -13,7 +13,7 @@ export const handler = async function (event) {
         // Initialize Supabase (Use Service Role Key for admin privileges if available, otherwise fallback)
         // For inserting into orders as another user or skipping RLS, Service Role is best.
         const supabaseUrl = process.env.VITE_SUPABASE_URL;
-        const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+        const supabaseKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 
         if (!supabaseUrl || !supabaseKey) {
             throw new Error('Supabase credentials missing');

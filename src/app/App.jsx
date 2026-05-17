@@ -1,7 +1,5 @@
 import { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'sonner';
-
+import { Routes, Route } from 'react-router-dom'; import { Toaster } from 'sonner';
 // Lazy load pages for code splitting
 const Home = lazy(() => import('../pages/Home'));
 const Shop = lazy(() => import('../pages/Shop'));
@@ -65,40 +63,44 @@ function MainLayout({ children }) {
   );
 }
 
+
+
+
+
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <CartProvider>
-          <ScrollToTop />
-          <PageTitle />
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-              <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
-              <Route path="/new-arrivals" element={<MainLayout><NewArrivalsPage /></MainLayout>} />
-              <Route path="/collection/:id" element={<MainLayout><CollectionPage /></MainLayout>} />
-              <Route path="/product/:slug" element={<MainLayout><ProductDetail /></MainLayout>} />
+      <CartProvider>
+        <ScrollToTop />
+        <PageTitle />
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+
+            <Route element={<ProtectedRoute />}>
+              <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
+              <Route path="/account/order/:id" element={<MainLayout><OrderDetail /></MainLayout>} />
               <Route path="/shopping-bag" element={<MainLayout><ShoppingBag /></MainLayout>} />
               <Route path="/saved-products" element={<MainLayout><SavedProducts /></MainLayout>} />
-              <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
-              <Route path="/shipping-policy" element={<MainLayout><ShippingPolicy /></MainLayout>} />
-              <Route path="/payment-policy" element={<MainLayout><PaymentPolicy /></MainLayout>} />
-              <Route path="/return-policy" element={<MainLayout><ReturnPolicy /></MainLayout>} />
-              <Route path="/privacy-policy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
-              <Route path="/purchase-conditions" element={<MainLayout><PurchaseConditions /></MainLayout>} />
-              <Route path="/about" element={<MainLayout><AboutUs /></MainLayout>} />
-              <Route path="/auth" element={<Auth />} />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
-                <Route path="/account/order/:id" element={<MainLayout><OrderDetail /></MainLayout>} />
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </CartProvider>
-      </Router>
-    </AuthProvider>
+            </Route>
+
+            <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+            <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
+            <Route path="/new-arrivals" element={<MainLayout><NewArrivalsPage /></MainLayout>} />
+            <Route path="/collection/:id" element={<MainLayout><CollectionPage /></MainLayout>} />
+            <Route path="/product/:slug" element={<MainLayout><ProductDetail /></MainLayout>} />
+            <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
+            <Route path="/shipping-policy" element={<MainLayout><ShippingPolicy /></MainLayout>} />
+            <Route path="/payment-policy" element={<MainLayout><PaymentPolicy /></MainLayout>} />
+            <Route path="/return-policy" element={<MainLayout><ReturnPolicy /></MainLayout>} />
+            <Route path="/privacy-policy" element={<MainLayout><PrivacyPolicy /></MainLayout>} />
+            <Route path="/purchase-conditions" element={<MainLayout><PurchaseConditions /></MainLayout>} />
+            <Route path="/about" element={<MainLayout><AboutUs /></MainLayout>} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </CartProvider>
+    </AuthProvider >
   );
 }
 

@@ -109,8 +109,8 @@ export default function Auth() {
 
         try {
             if (authStep === 'login') {
-                const { email } = await login(formData.email);
-                setFormData(prev => ({ ...prev, email }));
+                const { phone } = await login(formData.phone);
+                setFormData(prev => ({ ...prev, phone }));
                 setPreviousStep('login');
                 setAuthStep('verify');
             } else if (authStep === 'register') {
@@ -122,7 +122,7 @@ export default function Auth() {
                 setPreviousStep('register');
                 setAuthStep('verify');
             } else if (authStep === 'verify') {
-                await verifyOtp(formData.email, formData.otp);
+                await verifyOtp(formData.phone, formData.otp);
 
                 if (previousStep === 'register') {
                     toast.success('Welcome to Qissey! Your account has been created.');
@@ -202,12 +202,12 @@ export default function Auth() {
                                 <h2 className="text-[16px] uppercase font-bold tracking-[0.1em] mb-10">Log In</h2>
                                 <form onSubmit={handleSubmit} className="space-y-12">
                                     <FloatingInput
-                                        label="Email or Mobile Number"
+                                        label="Mobile Number"
                                         type="text"
                                         className={"mb-8"}
                                         required
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                     />
                                     {error && (
                                         <div className="text-red-500 text-[10px] uppercase font-bold tracking-tight bg-red-50 p-3">
@@ -371,14 +371,14 @@ export default function Auth() {
                                         {isLoading ? <LoadingDots /> : 'Verify & Log In'}
                                     </button>
 
-                                    <button
+                                    {authStep === 'login' && <button
                                         type="button"
                                         onClick={handleResendOtp}
                                         disabled={isLoading}
                                         className="text-[10px] uppercase font-bold tracking-widest border-b border-black/10 hover:border-black transition-colors disabled:opacity-50"
                                     >
                                         Resend Code
-                                    </button>
+                                    </button>}
                                 </div>
                             </form>
                         </div>

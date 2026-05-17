@@ -49,3 +49,18 @@ CREATE POLICY "Admins can view all profiles" ON profiles
 
 
 
+CREATE TABLE IF NOT EXISTS public.users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    phone TEXT UNIQUE NOT NULL,
+    name TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
+);
+-- 2. Enable RLS on public.users
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+-- 3. Policy: Users can view and update their own record
+CREATE POLICY "Anyone can view users" ON public.users
+    FOR SELECT USING (true);
+CREATE POLICY "Users can update own record" ON public.users
+    FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "Anyone can insert users" ON public.users
+    FOR INSERT WITH CHECK (true);

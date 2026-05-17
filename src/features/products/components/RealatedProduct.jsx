@@ -22,7 +22,7 @@ const RelatedProduct = ({ collectionId, productId }) => {
         relatedProducts?.length > 0 ? (
             <section className="mt-12 md:mt-24 border-t border-neutral-100 pt-10 md:pt-20">
                 <p className="pb-10 text-[14px] sm:text-[15px] uppercase tracking-[0.2em] transition-all whitespace-nowrap">
-                    You may intrested in
+                    You may be interested in
                 </p>
 
                 <div className="grid grid-cols-3 md:grid-cols-4 gap-8 ">

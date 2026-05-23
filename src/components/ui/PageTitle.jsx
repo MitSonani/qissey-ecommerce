@@ -50,6 +50,8 @@ const PageTitle = () => {
             pageTitle = "My Account";
         } else if (path.startsWith("/account/order/")) {
             pageTitle = "Order Details";
+        } else if (path.startsWith("/sitemap")) {
+            pageTitle = "Sitemap";
         } else {
             pageTitle = "404 Not Found";
         }

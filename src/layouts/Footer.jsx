@@ -14,7 +14,7 @@ const FOOTER_LINKS = [
     {
         title: "Follow us",
         links: [
-            { label: "Instagram", href: "https://www.instagram.com/qissey.shop/", },
+            { label: "Instagram", href: "https://www.instagram.com/qissey._/", },
             { label: "Facebook", href: "https://www.facebook.com/people/Qissey/61586697613049", },
         ]
     },

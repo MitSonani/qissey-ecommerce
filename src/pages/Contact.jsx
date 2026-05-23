@@ -80,7 +80,7 @@ export default function Contact() {
                                 </div>
                                 <div>
                                     <p className="text-[11px] font-bold uppercase tracking-widest mb-1">Follow Us</p>
-                                    <a href="https://www.instagram.com/qissey.shop/" target="_blank" className="text-[12px] opacity-60 font-medium">@qissey.shop</a>
+                                    <a href="https://www.instagram.com/qissey._/" target="_blank" className="text-[12px] opacity-60 font-medium">@qissey.shop</a>
                                 </div>
                             </div>
                         </div>

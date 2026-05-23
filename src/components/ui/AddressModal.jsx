@@ -242,7 +242,7 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
                                         name="email"
                                         type="email"
                                         placeholder="email@example.com"
-                                        disabled={true}
+                                        disabled={false}
                                         formData={formData}
                                         onChange={handleInputChange}
                                         isProcessing={isGlobalProcessing}

@@ -65,12 +65,12 @@ export const AuthProvider = ({ children }) => {
         return { phone: identifier };
     };
 
-    const register = async (email, name, phone) => {
+    const register = async (name, phone) => {
         // The previous component passed email, name, phone. We just use name and phone.
         const response = await fetch('/api/auth/send-otp', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, name, email, action: 'register' })
+            body: JSON.stringify({ phone, name, action: 'register' })
         });
         const data = await response.json();
         if (!response.ok) {

@@ -12,7 +12,6 @@ export default function MyDetails({ user }) {
     const [activeView, setActiveView] = useState('details'); // 'details' | 'addresses'
 
     const userName = user?.user_metadata?.name || '';
-    const userEmail = user?.email || '';
     const userPhone = user?.user_metadata?.phone || '';
 
     const handleEditClick = (field, currentValue) => {
@@ -83,18 +82,6 @@ export default function MyDetails({ user }) {
                 </p>
 
                 <div className="border-t border-black/5">
-                    {/* Email */}
-                    <DetailRow
-                        label="EMAIL"
-                        value={userEmail}
-                        isEditing={editingField === 'email'}
-                        editValue={editValue}
-                        onEditChange={setEditValue}
-                        onCancel={handleCancel}
-                        onSave={handleSave}
-                        isSaving={isSaving}
-                        isReadOnly
-                    />
 
                     {/* Phone */}
                     <DetailRow

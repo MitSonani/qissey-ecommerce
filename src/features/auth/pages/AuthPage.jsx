@@ -85,12 +85,10 @@ export default function Auth() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
-        email: '',
         name: '',
         phonePrefix: '+91',
         phone: '',
         otp: '',
-        acceptNews: false,
         acceptPrivacy: false
     });
     const { login, register, verifyOtp, resendOtp } = useAuth();
@@ -118,7 +116,7 @@ export default function Auth() {
                     throw new Error('Please accept the privacy statement');
                 }
                 const fullPhone = `${formData.phonePrefix}${formData.phone}`;
-                await register(formData.email, formData.name, fullPhone);
+                await register(formData.name, fullPhone);
                 setPreviousStep('register');
                 setAuthStep('verify');
             } else if (authStep === 'verify') {
@@ -144,8 +142,9 @@ export default function Auth() {
         setError(null);
         setIsLoading(true);
         try {
-            await resendOtp(formData.email);
-            toast.success('OTP resent to your email');
+            const fullPhone = `${formData.phonePrefix}${formData.phone}`;
+            await resendOtp(fullPhone);
+            toast.success('OTP resent to your phone via WhatsApp');
         } catch (err) {
             setError(err.message);
         } finally {
@@ -260,13 +259,6 @@ export default function Auth() {
                                 <h2 className="text-[14px] uppercase font-black tracking-[0.2em] mb-12">Personal Details</h2>
                                 <form onSubmit={handleSubmit} className="space-y-10">
                                     <FloatingInput
-                                        label="E-mail"
-                                        type="email"
-                                        required
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    />
-                                    <FloatingInput
                                         label="Name"
                                         required
                                         value={formData.name}
@@ -290,15 +282,10 @@ export default function Auth() {
 
                                     <div className="pt-4 space-y-6">
                                         <p className="text-[9px] text-[#1A1A1A]/40 uppercase font-bold tracking-tight">
-                                            We will send you a verification code to your email
+                                            We will send you a verification code to your mobile number via WhatsApp
                                         </p>
-
+ 
                                         <div className="space-y-4">
-                                            <CustomCheckbox
-                                                label="I wish to receive Qissey news on my e-mail"
-                                                checked={formData.acceptNews}
-                                                onChange={() => setFormData({ ...formData, acceptNews: !formData.acceptNews })}
-                                            />
                                             <CustomCheckbox
                                                 label={<span>I accept the <span className="underline">privacy statement</span></span>}
                                                 checked={formData.acceptPrivacy}
@@ -338,7 +325,7 @@ export default function Auth() {
                             <div>
                                 <h2 className="text-[16px] uppercase font-bold tracking-[0.2em] mb-4">Verify Your Account</h2>
                                 <p className="text-[11px] text-[#1A1A1A]/60 uppercase font-medium tracking-wide">
-                                    We've sent a 6-digit verification code to <span className="text-[#1A1A1A] font-bold">{formData.email}</span>
+                                    We've sent a 6-digit verification code to <span className="text-[#1A1A1A] font-bold">{formData.phonePrefix} {formData.phone}</span>
                                 </p>
                             </div>
 
@@ -371,14 +358,14 @@ export default function Auth() {
                                         {isLoading ? <LoadingDots /> : 'Verify & Log In'}
                                     </button>
 
-                                    {authStep === 'login' && <button
+                                    <button
                                         type="button"
                                         onClick={handleResendOtp}
                                         disabled={isLoading}
                                         className="text-[10px] uppercase font-bold tracking-widest border-b border-black/10 hover:border-black transition-colors disabled:opacity-50"
                                     >
                                         Resend Code
-                                    </button>}
+                                    </button>
                                 </div>
                             </form>
                         </div>

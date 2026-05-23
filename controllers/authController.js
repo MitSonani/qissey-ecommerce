@@ -6,7 +6,7 @@ export const otpStore = new Map();
 
 export const sendOtp = async (req, res) => {
     try {
-        let { phone, name, email, action } = req.body;
+        let { phone, name, action } = req.body;
         if (!phone) {
             return res.status(400).json({ error: 'Phone number is required' });
         }
@@ -62,8 +62,7 @@ export const sendOtp = async (req, res) => {
             expiresAt: Date.now() + 5 * 60 * 1000,
             userId: currentUserId,
             action: action,
-            name: name,
-            email: email
+            name: name
         });
 
         // Send OTP via MSG91 WhatsApp API
@@ -180,7 +179,7 @@ export const verifyOtp = async (req, res) => {
         if (storedData.action === 'register') {
             const { data: newUser, error: insertError } = await supabaseAdmin
                 .from('users')
-                .insert([{ phone: standardizedPhone, name: storedData.name || 'User', email: storedData.email }])
+                .insert([{ phone: standardizedPhone, name: storedData.name || 'User' }])
                 .select()
                 .single();
 

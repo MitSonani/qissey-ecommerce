@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../features/auth';
 import { fetchSavedProducts } from '../features/products/services/productService';
 import ProductCard from '../features/products/components/ProductCard';
@@ -9,14 +9,15 @@ import ShoppingBagSkeleton from '../features/cart/components/ShoppingBagSkeleton
 export default function SavedProducts() {
     const { user, isLoading: authLoading } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [savedProducts, setSavedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!authLoading && !user) {
-            navigate('/auth');
+            navigate('/auth', { state: { from: location } });
         }
-    }, [user, authLoading, navigate]);
+    }, [user, authLoading, navigate, location]);
 
     useEffect(() => {
         async function loadSavedProducts() {

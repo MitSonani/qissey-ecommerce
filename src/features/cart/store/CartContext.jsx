@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../auth';
 import { getCartItems, addToCartDB, updateCartQuantityDB, removeFromCartDB, clearCartDB } from '../services/cartService';
 import { toast } from 'sonner';
@@ -11,6 +11,7 @@ export const useCart = () => useContext(CartContext);
 export const CartProvider = ({ children }) => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [cart, setCart] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -49,7 +50,7 @@ export const CartProvider = ({ children }) => {
     const addToCart = React.useCallback(async (product, size, variantId, openDrawer = true, customMeasurements = null, notes = null) => {
         if (!user) {
             toast.error('Please login to add items to bag');
-            navigate('/auth');
+            navigate('/auth', { state: { from: location } });
             return;
         }
 
@@ -74,7 +75,7 @@ export const CartProvider = ({ children }) => {
             //     setIsCartOpen(true);
             // }
         }
-    }, [user, navigate]);
+    }, [user, navigate, location]);
 
     const removeFromCart = React.useCallback(async (uniqueId) => {
         if (!user) return;

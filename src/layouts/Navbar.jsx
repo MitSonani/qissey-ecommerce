@@ -117,6 +117,7 @@ export default function Navbar() {
                             ) : (
                                 <Link
                                     to="/auth"
+                                    state={{ from: location }}
                                     className="text-[10px] font-bold uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black"
                                 >
                                     Log In
@@ -190,7 +191,7 @@ export default function Navbar() {
                         "flex md:hidden items-center gap-4 ml-auto transition-opacity duration-300 pointer-events-auto",
                     )}>
                         {!isAuthenticated ? (
-                            <Link to="/auth" className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
+                            <Link to="/auth" state={{ from: location }} className="text-[10px] font-bold uppercase tracking-widest text-black">Log In</Link>
                         ) : (
                             <Link to="/account" className="p-1">
                                 <User size={18} strokeWidth={1.5} className="text-black" />
@@ -296,7 +297,7 @@ export default function Navbar() {
 
                                 </>
                             ) : (
-                                <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Log In</Link>
+                                <Link to="/auth" state={{ from: location }} onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Log In</Link>
                             )}
                             <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-[10px] font-bold uppercase tracking-widest opacity-40">Contact Us</Link>
                         </div>
@@ -352,7 +353,7 @@ export default function Navbar() {
                             {isAuthenticated ? (
                                 <></>
                             ) : (
-                                <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Log In</Link>
+                                <Link to="/auth" state={{ from: location }} onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Log In</Link>
                             )}
                             <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-[11px] font-bold uppercase tracking-widest opacity-60">Contact Us</Link>
                         </div>

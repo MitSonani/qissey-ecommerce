@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { fetchProductBySlug, saveProduct, unsaveProduct } from '../services/productService';
 import { useAuth } from '../../../features/auth';
@@ -41,6 +41,7 @@ export default function ProductDetail() {
     const { user } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
+    const location = useLocation();
     const sizeSelectorRef = useRef(null);
 
     useEffect(() => {
@@ -148,6 +149,7 @@ export default function ProductDetail() {
         e.preventDefault();
         if (!user) {
             toast.error('Please login to save products');
+            navigate('/auth', { state: { from: location } });
             return;
         }
 
@@ -170,6 +172,11 @@ export default function ProductDetail() {
 
     const handleAddToCart = async (size, variantId, customMeasurements = null) => {
         if (!size || !variantId) return;
+
+        if (!user) {
+            navigate('/auth', { state: { from: location } });
+            return;
+        }
 
         await addToCart(product, size, variantId, false, customMeasurements);
         navigate('/shopping-bag');
@@ -315,7 +322,7 @@ export default function ProductDetail() {
 
     return (
         <div className="pt-20 md:pt-30 bg-white pb-24 md:pb-0">
-            <SEO 
+            <SEO
                 title={product.name}
                 description={product.description?.substring(0, 160) || `Buy ${product.name} at QISSEY. Premium sustainable clothing, crafted with care.`}
                 image={primaryProduct?.image_urls?.[0]}

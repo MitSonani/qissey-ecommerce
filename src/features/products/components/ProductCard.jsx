@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingCart, Bookmark, Plus } from 'lucide-react';
 import { useCart } from '../../../features/cart';
 import { Badge, cn } from '../../../components/ui/Primitives';
@@ -11,6 +11,8 @@ import CustomSizeModal from './CustomSizeModal';
 export default function ProductCard({ product, isCompleteTheLook = false, isCartProduct = false, onToggleSave }) {
     const { addToCart } = useCart();
     const { user } = useAuth();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const [showSizes, setShowSizes] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
@@ -25,6 +27,7 @@ export default function ProductCard({ product, isCompleteTheLook = false, isCart
         e.preventDefault();
         if (!user) {
             toast.error('Please login to save products');
+            navigate('/auth', { state: { from: location } });
             return;
         }
 

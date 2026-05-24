@@ -1,4 +1,4 @@
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { ShoppingBag as BagIcon, Plus, Minus, X, ArrowRight, ShieldCheck, Truck } from 'lucide-react';
 import { useAuth } from '../features/auth';
 import { useCart } from '../features/cart';
@@ -16,6 +16,7 @@ export default function ShoppingBag() {
     const { cart, updateQuantity, removeFromCart, cartTotal, isLoading, clearCart } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [isProcessing, setIsProcessing] = useState(false);
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
@@ -24,7 +25,7 @@ export default function ShoppingBag() {
 
     useEffect(() => {
         if (!isLoading && !user) {
-            navigate('/auth');
+            navigate('/auth', { state: { from: location } });
         } else if (user) {
             setInitialAddressData({
                 name: user?.name || '',
@@ -32,7 +33,7 @@ export default function ShoppingBag() {
                 country: 'IN'
             });
         }
-    }, [user, isLoading, navigate]);
+    }, [user, isLoading, navigate, location]);
 
     useEffect(() => {
         if (isAddressModalOpen) {

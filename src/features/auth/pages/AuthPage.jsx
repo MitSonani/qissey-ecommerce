@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../store/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 
 
@@ -93,12 +93,16 @@ export default function Auth() {
     });
     const { login, register, verifyOtp, resendOtp } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Clear error when switching steps
     useEffect(() => {
-        if (user) navigate('/');
+        if (user) {
+            const from = location.state?.from || '/';
+            navigate(from, { replace: true });
+        }
         setError(null);
-    }, [authStep]);
+    }, [authStep, user, location.state, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -128,7 +132,8 @@ export default function Auth() {
                     toast.success('Welcome back!');
                 }
 
-                navigate('/');
+                const from = location.state?.from || '/';
+                navigate(from, { replace: true });
             }
         } catch (err) {
             console.error('Auth error:', err);

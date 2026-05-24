@@ -155,10 +155,10 @@ export default function Auth() {
     return (
         <div className="min-h-screen bg-white flex flex-col font-sans text-[#1A1A1A]">
             {authStep !== 'login' && (
-                <header className="fixed top-0 w-full z-50 px-6 md:px-12 h-20 flex items-center justify-between pointer-events-none">
-                    <div className="flex items-center gap-8 pointer-events-auto mt-[10px]">
+                <header className="fixed top-0 mt-3 md:mt-0 w-full z-50 px-6 md:px-12 h-12 md:h-20 flex items-center justify-between pointer-events-none">
+                    <div className="flex items-center gap-8 pointer-events-auto mt-0 md:mt-[10px]">
                         <Link to="/" className="block">
-                            <img src="/logo.PNG" alt="QISSEY" className="h-20 w-auto brightness-0" />
+                            <img src="/logo.PNG" alt="QISSEY" className="h-12 md:h-20 w-auto brightness-0" />
                         </Link>
                     </div>
 
@@ -252,7 +252,7 @@ export default function Auth() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="flex-grow flex flex-col items-center justify-start pt-40 px-6 overflow-y-auto pb-20"
+                        className="flex-grow flex flex-col items-center justify-start pt-24 md:pt-40 px-6 overflow-y-auto pb-20"
                     >
                         <div className="max-w-md w-full space-y-16">
                             <div>
@@ -284,7 +284,7 @@ export default function Auth() {
                                         <p className="text-[9px] text-[#1A1A1A]/40 uppercase font-bold tracking-tight">
                                             We will send you a verification code to your mobile number via WhatsApp
                                         </p>
- 
+
                                         <div className="space-y-4">
                                             <CustomCheckbox
                                                 label={<span>I accept the <span className="underline">privacy statement</span></span>}

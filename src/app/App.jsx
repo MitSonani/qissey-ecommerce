@@ -20,6 +20,7 @@ const PrivacyPolicy = lazy(() => import('../pages/PrivacyPolicy'));
 const PurchaseConditions = lazy(() => import('../pages/PurchaseConditions'));
 const AboutUs = lazy(() => import('../pages/AboutUs'));
 const Sitemap = lazy(() => import('../pages/Sitemap'));
+const FAQ = lazy(() => import('../pages/FAQ'));
 
 
 import Navbar from '../layouts/Navbar';
@@ -98,6 +99,7 @@ function App() {
             <Route path="/purchase-conditions" element={<MainLayout><PurchaseConditions /></MainLayout>} />
             <Route path="/about" element={<MainLayout><AboutUs /></MainLayout>} />
             <Route path="/sitemap" element={<MainLayout><Sitemap /></MainLayout>} />
+            <Route path="/faq" element={<MainLayout><FAQ /></MainLayout>} />
             <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

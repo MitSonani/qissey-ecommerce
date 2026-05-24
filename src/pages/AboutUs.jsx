@@ -1,8 +1,19 @@
 import React from 'react';
+import SEO from '../components/ui/SEO';
+
+const aboutBreadcrumbs = [
+    { name: 'Home', path: '/' },
+    { name: 'About Us', path: '/about' }
+];
 
 export default function AboutUs() {
     return (
         <div className="min-h-screen bg-white text-[#1A1A1A] font-sans pt-24 md:pt-32 pb-20 px-6 md:px-12 lg:px-24">
+            <SEO 
+                title="About Us | Our Story & Sizing Philosophy"
+                description="Welcome to QISSEY — a premium women's western wear brand designed for modern elegance. Read about our journey, collections, and custom sizing tailormade for you."
+                breadcrumbs={aboutBreadcrumbs}
+            />
             <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-12 md:mb-16">
                     <p className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">About Us</p>

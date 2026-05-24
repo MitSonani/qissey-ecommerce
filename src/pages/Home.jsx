@@ -3,7 +3,36 @@ import { Link } from 'react-router-dom';
 import { ProductCard } from '../features/products';
 import Hero from '../components/Hero';
 import { fetchNewArrivalProducts, fetchAllCollections, productCache } from '../features/products/services/productService';
+import SEO from '../components/ui/SEO';
 
+const homeSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': 'https://qissey.com/#organization',
+    'name': 'QISSEY',
+    'alternateName': 'QISSEY Creative Studio',
+    'url': 'https://qissey.com',
+    'logo': 'https://qissey.com/logo.PNG',
+    'description': 'Refined minimalist fashion studio based in India, specializing in sustainable luxury clothing for women.',
+    'foundingDate': '2024',
+    'sameAs': [
+        'https://www.instagram.com/qissey._/',
+        'https://www.facebook.com/people/Qissey/61586697613049/'
+    ]
+};
+
+const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': 'https://qissey.com/#website',
+    'name': 'QISSEY',
+    'url': 'https://qissey.com',
+    'potentialAction': {
+        '@type': 'SearchAction',
+        'target': 'https://qissey.com/shop?q={search_term_string}',
+        'query-input': 'required name=search_term_string'
+    }
+};
 
 export default function Home() {
 
@@ -42,6 +71,12 @@ export default function Home() {
 
     return (
         <div className="relative overflow-hidden mx-2 md:mx-24 mt-20 md:my-34">
+            <SEO 
+                title="Refined Minimalist Fashion | Sustainable Luxury Clothing"
+                description="Discover QISSEY — a refined minimalist fashion studio in India. Sustainable luxury clothing for women. Shop elegant tops, dresses, and formal wear crafted with care."
+                schema={[homeSchema, websiteSchema]}
+            />
+            <h1 className="sr-only">Refined Minimalist Fashion for the Modern Woman — QISSEY</h1>
             <Hero />
 
             {/* New Arrivals Slider */}

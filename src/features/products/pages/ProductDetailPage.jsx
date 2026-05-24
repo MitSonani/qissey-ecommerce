@@ -12,6 +12,7 @@ import RealatedProduct from '../components/RealatedProduct';
 import CompleteYourLook from '../components/CompleteYourLook';
 import ProductDetailSkeleton from '../components/ProductDetailSkeleton';
 import CustomSizeModal from '../components/CustomSizeModal';
+import SEO from '../../../components/ui/SEO';
 
 
 const measurementData = [
@@ -283,8 +284,47 @@ export default function ProductDetail() {
         }
     };
 
+    // Dynamic Product Schema
+    const productSchema = product ? {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        '@id': `https://qissey.com/product/${product.slug}#product`,
+        'name': product.name,
+        'description': product.description?.substring(0, 200) || '',
+        'image': primaryProduct?.image_urls || [],
+        'sku': product.sku || product.id?.toString(),
+        'brand': {
+            '@type': 'Brand',
+            'name': 'QISSEY'
+        },
+        'offers': {
+            '@type': 'Offer',
+            'price': product.price,
+            'priceCurrency': 'INR',
+            'availability': 'https://schema.org/InStock',
+            'url': `https://qissey.com/product/${product.slug}`
+        }
+    } : null;
+
+    // Dynamic Breadcrumbs
+    const productBreadcrumbs = product ? [
+        { name: 'Home', path: '/' },
+        { name: 'Shop', path: '/shop' },
+        { name: product.name, path: `/product/${product.slug}` }
+    ] : [];
+
     return (
         <div className="pt-20 md:pt-30 bg-white pb-24 md:pb-0">
+            <SEO 
+                title={product.name}
+                description={product.description?.substring(0, 160) || `Buy ${product.name} at QISSEY. Premium sustainable clothing, crafted with care.`}
+                image={primaryProduct?.image_urls?.[0]}
+                type="product"
+                price={product.price?.toString()}
+                availability="InStock"
+                schema={productSchema}
+                breadcrumbs={productBreadcrumbs}
+            />
             <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-6 md:py-10">
 
                 <div className="space-y-12">

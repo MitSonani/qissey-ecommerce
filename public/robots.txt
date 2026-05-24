@@ -1,5 +1,16 @@
 User-agent: *
 Allow: /
 
-# Sitemaps
+# Sitemap
 Sitemap: https://qissey.com/sitemap.xml
+
+# Block duplicate/filtered URLs
+Disallow: /*?*
+Disallow: /*sort=*
+Disallow: /*view=*
+Disallow: /*page=*
+
+# Block private checkout/account paths
+Disallow: /account
+Disallow: /shopping-bag
+Disallow: /saved-products

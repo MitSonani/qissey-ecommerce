@@ -4,6 +4,7 @@ import { Mail, Phone, Clock, Instagram, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../features/auth';
 import { submitContactMessage } from '../services/contactService';
+import SEO from '../components/ui/SEO';
 
 export default function Contact() {
     const { user } = useAuth();
@@ -36,8 +37,18 @@ export default function Contact() {
         }
     };
 
+    const contactBreadcrumbs = [
+        { name: 'Home', path: '/' },
+        { name: 'Contact Us', path: '/contact' }
+    ];
+
     return (
         <div className="min-h-screen bg-white text-[#1A1A1A] font-sans pt-24 md:pt-32 pb-20 px-6 md:px-12 lg:px-24">
+            <SEO 
+                title="Contact Us | Premium Customer Support"
+                description="Get in touch with QISSEY. We are here to help you with questions about collections, custom order sizing, measurements, shipping, returns, and support."
+                breadcrumbs={contactBreadcrumbs}
+            />
             <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-8 md:mb-12">
                     <p className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">Get in Touch</p>
@@ -92,12 +103,15 @@ export default function Contact() {
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div>
-                                <label className="text-[10px] uppercase font-bold tracking-widest mb-2 block">
+                                <label htmlFor="contact-name" className="text-[10px] uppercase font-bold tracking-widest mb-2 block cursor-pointer">
                                     Name <span className="text-red-500">*</span>
                                 </label>
                                 <input
+                                    id="contact-name"
+                                    name="name"
                                     type="text"
                                     required
+                                    aria-required="true"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     placeholder="Your name"
@@ -106,12 +120,15 @@ export default function Contact() {
                             </div>
 
                             <div>
-                                <label className="text-[10px] uppercase font-bold tracking-widest mb-2 block">
+                                <label htmlFor="contact-email" className="text-[10px] uppercase font-bold tracking-widest mb-2 block cursor-pointer">
                                     Email <span className="text-red-500">*</span>
                                 </label>
                                 <input
+                                    id="contact-email"
+                                    name="email"
                                     type="email"
                                     required
+                                    aria-required="true"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     placeholder="your.email@example.com"
@@ -120,10 +137,12 @@ export default function Contact() {
                             </div>
 
                             <div>
-                                <label className="text-[10px] uppercase font-bold tracking-widest mb-2 block">
+                                <label htmlFor="contact-subject" className="text-[10px] uppercase font-bold tracking-widest mb-2 block cursor-pointer">
                                     Subject
                                 </label>
                                 <input
+                                    id="contact-subject"
+                                    name="subject"
                                     type="text"
                                     value={formData.subject}
                                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -133,11 +152,14 @@ export default function Contact() {
                             </div>
 
                             <div>
-                                <label className="text-[10px] uppercase font-bold tracking-widest mb-2 block">
+                                <label htmlFor="contact-message" className="text-[10px] uppercase font-bold tracking-widest mb-2 block cursor-pointer">
                                     Message <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
+                                    id="contact-message"
+                                    name="message"
                                     required
+                                    aria-required="true"
                                     rows={5}
                                     value={formData.message}
                                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}

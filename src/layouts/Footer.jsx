@@ -5,6 +5,7 @@ const FOOTER_LINKS = [
         title: "Help",
         links: [
             { label: "My QISSEY Account", path: "/account?tab=details" },
+            { label: "Frequently Asked Questions", path: "/faq" },
             { label: "Shipping Policy", path: "/shipping-policy" },
             { label: "Payment and Invoices", path: "/payment-policy" },
             { label: "My Purchases", path: "/account?tab=purchases" },
@@ -51,7 +52,7 @@ export default function Footer() {
                                         {link.path ? (
                                             <Link to={link.path} className="hover:underline">{link.label}</Link>
                                         ) : (
-                                            <a href={link.href} className="hover:underline">{link.label}</a>
+                                            <a href={link.href} target="_blank" rel="me noopener noreferrer" className="hover:underline">{link.label}</a>
                                         )}
                                     </p>
                                 ))}

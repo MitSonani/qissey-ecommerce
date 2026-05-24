@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 /**
  * PageTitle Component
- * Dynamically updates the document title based on the current route.
+ * Dynamically updates the document title based on the current route for fallback pages.
+ * Public, customer-facing pages are handled by the SEO component.
  */
 const PageTitle = () => {
     const location = useLocation();
-    const params = useParams();
 
     useEffect(() => {
         const baseTitle = "QISSEY";
@@ -16,44 +16,21 @@ const PageTitle = () => {
 
         const path = location.pathname;
 
-        if (path === "/") {
-            pageTitle = "Qissey | Minimal, Feminine, Everyday Wear";
-        } else if (path === "/shop") {
-            pageTitle = "Shop All";
-        } else if (path === "/new-arrivals") {
-            pageTitle = "New Arrivals";
-        } else if (path.startsWith("/collection/")) {
-            pageTitle = "Collection";
-        } else if (path.startsWith("/product/")) {
-            pageTitle = "Product Details";
-        } else if (path === "/shopping-bag") {
+        // Only manage internal/account routes here. 
+        // Public pages (Home, Shop, Collections, Product, Policies) are managed by <SEO />.
+        if (path === "/shopping-bag") {
             pageTitle = "Shopping Bag";
         } else if (path === "/saved-products") {
             pageTitle = "Saved Products";
-        } else if (path === "/contact") {
-            pageTitle = "Contact Us";
-        } else if (path === "/shipping-policy") {
-            pageTitle = "Shipping & Delivery";
-        } else if (path === "/payment-policy") {
-            pageTitle = "Payment & Invoices";
-        } else if (path === "/return-policy") {
-            pageTitle = "Returns & Exchanges";
-        } else if (path === "/privacy-policy") {
-            pageTitle = "Privacy Policy";
-        } else if (path === "/purchase-conditions") {
-            pageTitle = "Purchase Conditions";
-        } else if (path === "/about") {
-            pageTitle = "About Us";
         } else if (path === "/auth") {
             pageTitle = "Account Access";
         } else if (path === "/account") {
             pageTitle = "My Account";
         } else if (path.startsWith("/account/order/")) {
             pageTitle = "Order Details";
-        } else if (path.startsWith("/sitemap")) {
-            pageTitle = "Sitemap";
         } else {
-            pageTitle = "404 Not Found";
+            // Ignore public pages managed by <SEO /> to prevent race conditions
+            return;
         }
 
         document.title = `${pageTitle}${separator}${baseTitle}`;
@@ -63,3 +40,4 @@ const PageTitle = () => {
 };
 
 export default PageTitle;
+

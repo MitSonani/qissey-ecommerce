@@ -4,6 +4,7 @@ import { fetchCollectionById, fetchProductsByCollectionId } from '../services/pr
 import ProductCard from '../components/ProductCard';
 import PageLoader from '../../../components/ui/PageLoader';
 import { useAuth } from '../../auth';
+import SEO from '../../../components/ui/SEO';
 
 export default function CollectionPage() {
     const { id } = useParams();
@@ -68,8 +69,32 @@ export default function CollectionPage() {
         ));
     };
 
+    // Dynamic CollectionPage Schema
+    const collectionSchema = collection ? {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        '@id': `https://qissey.com/collection/${collection.id}#collection`,
+        'name': `${collection.name} — QISSEY`,
+        'description': `Browse our exclusive collection of ${collection.name} at QISSEY. Premium minimalist fashion for women.`,
+        'url': `https://qissey.com/collection/${collection.id}`,
+        'image': collection.image_url || ''
+    } : null;
+
+    // Dynamic Breadcrumbs
+    const collectionBreadcrumbs = collection ? [
+        { name: 'Home', path: '/' },
+        { name: collection.name, path: `/collection/${collection.id}` }
+    ] : [];
+
     return (
         <div className="pt-24 md:pt-32 pb-20 px-8 md:px-12 min-h-screen">
+            <SEO 
+                title={collection.name}
+                description={`Browse our exclusive collection of ${collection.name} at QISSEY. Premium, sustainably made minimalist fashion for women.`}
+                image={collection.image_url}
+                schema={collectionSchema}
+                breadcrumbs={collectionBreadcrumbs}
+            />
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 relative">
                 <aside className="lg:w-48 lg:shrink-0 lg:sticky lg:top-36 lg:h-fit">
                     <div className="flex flex-col gap-8">

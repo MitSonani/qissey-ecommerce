@@ -208,7 +208,7 @@ export default function ShoppingBag() {
                     {/* Left/Main Column: Cart Items Grid */}
                     <div className="flex-grow">
                         {cart.length === 0 ? (
-                            <div className="py-24 border-t border-black/5 flex flex-col items-center justify-center text-center">
+                            <div className="py-6 border-t border-black/5 flex flex-col items-center justify-center text-center">
                                 <BagIcon size={48} strokeWidth={1} className="text-black/10 mb-6" />
                                 <p className="text-sm font-bold uppercase tracking-widest text-black/40 mb-8">Your bag is currently empty</p>
                                 <Button asChild variant="outline" className="rounded-none border-black hover:bg-black hover:text-white transition-colors duration-300">

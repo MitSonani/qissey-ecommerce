@@ -27,19 +27,26 @@ export const AuthProvider = ({ children }) => {
                         body: JSON.stringify({ token }),
                     });
 
-                    const data = await res.json();
-
-                    if (!res.ok) {
-                        throw new Error(data.error || 'Failed to verify user');
+                    if (res.status === 401 || res.status === 403) {
+                        console.warn('Session expired or invalid. Logging out.');
+                        localStorage.removeItem('custom_auth_token');
+                        setUser(null);
+                        setLoading(false);
+                        return;
                     }
 
+                    if (!res.ok) {
+                        const errorData = await res.json().catch(() => ({}));
+                        console.error('Transient error during session verification:', errorData.error || res.statusText);
+                        setLoading(false);
+                        return;
+                    }
+
+                    const data = await res.json();
                     setUser(data.user);
 
                 } catch (err) {
-                    console.error('Session expired or invalid:', err);
-
-                    localStorage.removeItem('custom_auth_token');
-                    setUser(null);
+                    console.error('Network or connection error during session verification:', err);
                 }
             } else {
                 setUser(null);

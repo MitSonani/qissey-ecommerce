@@ -1,5 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config({ path: '.env.local' });
+dotenv.config({ path: '.env' });
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const serviceRoleKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error('Supabase credentials missing on the server');
+}
+
+const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
 // In-memory store for OTPs. In production, use Redis.
 export const otpStore = new Map();
@@ -18,14 +32,7 @@ export const sendOtp = async (req, res) => {
             standardizedPhone = '+' + standardizedPhone;
         }
 
-        const supabaseUrl = process.env.VITE_SUPABASE_URL;
-        const serviceRoleKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY
 
-        if (!supabaseUrl || !serviceRoleKey) {
-            throw new Error('Supabase credentials missing');
-        }
-
-        const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
         // Check if user exists in public.users
         let { data: user, error: fetchError } = await supabaseAdmin
@@ -52,6 +59,7 @@ export const sendOtp = async (req, res) => {
 
         // Generate 6 digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        console.log('Generated OTP:', otp);
 
         // Check if user variable exists (in case the DB code above is commented out)
         const currentUserId = typeof user !== 'undefined' && user ? user.id : standardizedPhone;
@@ -170,9 +178,7 @@ export const verifyOtp = async (req, res) => {
             return res.status(400).json({ error: 'Invalid OTP' });
         }
 
-        const supabaseUrl = process.env.VITE_SUPABASE_URL;
-        const serviceRoleKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY
-        const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+
 
         let finalUserId = storedData.userId;
 
@@ -228,9 +234,7 @@ export const verifyOtp = async (req, res) => {
 
 export const verifyUser = async (req, res) => {
     try {
-        const supabaseUrl = process.env.VITE_SUPABASE_URL;
-        const serviceRoleKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY
-        const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+
 
 
 
@@ -247,6 +251,7 @@ export const verifyUser = async (req, res) => {
 
 
     } catch (error) {
-
+        console.error('Verify user error:', error);
+        return res.status(401).json({ error: error.message });
     }
 }

@@ -25,7 +25,7 @@ export const CartProvider = ({ children }) => {
                 // Remove any leftover guest cart
                 localStorage.removeItem('cart');
 
-                const dbItems = await getCartItems();
+                const dbItems = await getCartItems(user.id);
                 setCart(dbItems.map(item => ({
                     ...item.product,
                     cartItemId: item.id,

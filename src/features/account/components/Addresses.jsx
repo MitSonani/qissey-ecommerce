@@ -30,7 +30,7 @@ export default function Addresses({ user, onBack }) {
     };
 
     const [formData, setFormData] = useState({
-        name: user?.user_metadata?.name || '',
+        name: user?.name || '',
         line1: '',
         landmark: '',
         locality: '',
@@ -38,7 +38,7 @@ export default function Addresses({ user, onBack }) {
         state: '',
         postal_code: '',
         country: 'India',
-        phone: getInitialPhone(user?.user_metadata?.phone),
+        phone: getInitialPhone(user?.phone),
     });
 
     useEffect(() => {
@@ -254,6 +254,7 @@ export default function Addresses({ user, onBack }) {
                                 onChange={handleInputChange}
                                 className={`flex-1 border-b py-2 text-[12px] md:text-[13px] tracking-wide bg-transparent outline-none transition-colors ${errors.phone ? 'border-red-500 text-black' : 'border-black/10 focus:border-black text-black'
                                     }`}
+                                disabled
                             />
                         </div>
 

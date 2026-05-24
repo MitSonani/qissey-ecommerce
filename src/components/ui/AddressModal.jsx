@@ -32,7 +32,6 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
 
     const [formData, setFormData] = useState({
         name: '',
-        email: '',
         phone: '',
         line1: '',
         city: '',
@@ -49,6 +48,16 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
             }));
         }
     }, [initialData]);
+
+    useEffect(() => {
+        if (user) {
+            setFormData(prev => ({
+                ...prev,
+                name: prev.name || user.name || '',
+                phone: prev.phone || user.phone || '',
+            }));
+        }
+    }, [user]);
 
     useEffect(() => {
         let isMounted = true;
@@ -95,7 +104,6 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
             if (selectedAddr) {
                 const shippingData = {
                     name: selectedAddr.name,
-                    email: initialData?.email || user?.email,
                     phone: selectedAddr.phone,
                     line1: selectedAddr.line1,
                     city: selectedAddr.city,
@@ -141,7 +149,7 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
                 console.error("Error saving address to DB:", error);
             } finally {
                 setIsSavingAddress(false);
-                onSubmit({ ...formData, paymentMethod, email: initialData?.email || user?.email });
+                onSubmit({ ...formData, paymentMethod });
             }
         }
     };
@@ -227,7 +235,7 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
                     {view === 'form' && (
                         <div className="flex flex-col gap-8">
                             {/* Personal Info */}
-                            <div className="flex flex-col gap-6">
+                            <div className="grid grid-cols-2 gap-6">
                                 <InputField
                                     label="Full Name"
                                     name="name"
@@ -236,27 +244,16 @@ export default function AddressModal({ isOpen, onClose, onSubmit, isProcessing, 
                                     onChange={handleInputChange}
                                     isProcessing={isGlobalProcessing}
                                 />
-                                <div className="grid grid-cols-2 gap-6">
-                                    <InputField
-                                        label="Email"
-                                        name="email"
-                                        type="email"
-                                        placeholder="email@example.com"
-                                        disabled={false}
-                                        formData={formData}
-                                        onChange={handleInputChange}
-                                        isProcessing={isGlobalProcessing}
-                                    />
-                                    <InputField
-                                        label="Phone"
-                                        name="phone"
-                                        type="tel"
-                                        placeholder="+91 98765 43210"
-                                        formData={formData}
-                                        onChange={handleInputChange}
-                                        isProcessing={isGlobalProcessing}
-                                    />
-                                </div>
+                                <InputField
+                                    label="Phone"
+                                    name="phone"
+                                    type="tel"
+                                    placeholder="+91 98765 43210"
+                                    disabled={!!user?.phone}
+                                    formData={formData}
+                                    onChange={handleInputChange}
+                                    isProcessing={isGlobalProcessing}
+                                />
                             </div>
 
                             {/* Address */}

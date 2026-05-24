@@ -27,9 +27,8 @@ export default function ShoppingBag() {
             navigate('/auth');
         } else if (user) {
             setInitialAddressData({
-                name: user.user_metadata?.name || '',
-                email: user.email || '',
-                phone: user.user_metadata?.phone || '',
+                name: user?.name || '',
+                phone: user?.phone || '',
                 country: 'IN'
             });
         }

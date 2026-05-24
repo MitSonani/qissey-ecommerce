@@ -3,6 +3,24 @@ import { fetchApi } from '../../../lib/api';
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
+// Cache to deduplicate concurrent in-flight GET requests
+const activeRequests = new Map();
+
+const fetchDeduplicated = (url, options = {}) => {
+    if (options?.method && options.method !== 'GET') {
+        return fetchApi(url, options);
+    }
+    const key = `${url}_${JSON.stringify(options)}`;
+    if (activeRequests.has(key)) {
+        return activeRequests.get(key);
+    }
+    const promise = fetchApi(url, options).finally(() => {
+        activeRequests.delete(key);
+    });
+    activeRequests.set(key, promise);
+    return promise;
+};
+
 export const productCache = {
     products: { data: null, timestamp: null },
     newArrivals: { data: null, timestamp: null },
@@ -25,7 +43,7 @@ export const fetchProducts = async () => {
     }
 
     try {
-        const data = await fetchApi('/api/products');
+        const data = await fetchDeduplicated('/api/products');
 
         productCache.products = {
             data,
@@ -50,7 +68,7 @@ export const fetchNewArrivalProducts = async (limit = null) => {
 
     try {
         const url = limit ? `/api/products/new-arrivals?limit=${limit}` : '/api/products/new-arrivals';
-        const data = await fetchApi(url);
+        const data = await fetchDeduplicated(url);
 
         if (!limit) {
             productCache.newArrivals = {
@@ -68,7 +86,7 @@ export const fetchNewArrivalProducts = async (limit = null) => {
 
 export const fetchProductById = async (id) => {
     try {
-        return await fetchApi(`/api/products/${id}`);
+        return await fetchDeduplicated(`/api/products/${id}`);
     } catch (error) {
         console.error('Error fetching product by ID:', error);
         return null;
@@ -77,7 +95,7 @@ export const fetchProductById = async (id) => {
 
 export const fetchProductBySlug = async (slug, userId) => {
     try {
-        return await fetchApi(`/api/products/slug/${slug}`);
+        return await fetchDeduplicated(`/api/products/slug/${slug}`);
     } catch (error) {
         console.error('Error fetching product by slug:', error);
         return null;
@@ -86,7 +104,7 @@ export const fetchProductBySlug = async (slug, userId) => {
 
 export const fetchRelatedProducts = async (collectionId, productId, userId) => {
     try {
-        return await fetchApi(`/api/products/related?collectionId=${collectionId}&productId=${productId}`);
+        return await fetchDeduplicated(`/api/products/related?collectionId=${collectionId}&productId=${productId}`);
     } catch (error) {
         console.error('Error fetching related products:', error);
         return [];
@@ -110,7 +128,7 @@ export const fetchCompleteTheLookProducts = async (productIds, userId) => {
 
 export const fetchCollectionById = async (id) => {
     try {
-        return await fetchApi(`/api/products/collections/${id}`);
+        return await fetchDeduplicated(`/api/products/collections/${id}`);
     } catch (error) {
         console.error('Error fetching collection by ID:', error);
         return null;
@@ -119,7 +137,7 @@ export const fetchCollectionById = async (id) => {
 
 export const fetchProductsByCollectionId = async (collectionId, userId) => {
     try {
-        return await fetchApi(`/api/products/collections/${collectionId}/products`);
+        return await fetchDeduplicated(`/api/products/collections/${collectionId}/products`);
     } catch (error) {
         console.error('Error fetching products by collection:', error);
         return [];
@@ -135,7 +153,7 @@ export const fetchAllCollections = async () => {
     }
 
     try {
-        const data = await fetchApi('/api/products/collections');
+        const data = await fetchDeduplicated('/api/products/collections');
 
         productCache.collections = {
             data: data || [],
@@ -151,7 +169,7 @@ export const fetchAllCollections = async () => {
 
 export const fetchSavedProducts = async (userId) => {
     try {
-        return await fetchApi('/api/products/saved/list');
+        return await fetchDeduplicated('/api/products/saved/list');
     } catch (error) {
         console.error('Error fetching saved products:', error);
         return [];

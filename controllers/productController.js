@@ -103,10 +103,6 @@ export const getNewArrivals = async (req, res) => {
             .eq('product_variants.is_primary', true)
             .eq('new_arrival', true);
 
-        if (limit) {
-            query = query.limit(limit);
-        }
-
         if (userId) {
             query = query.eq('saved_products.user_id', userId);
         }
@@ -120,15 +116,14 @@ export const getNewArrivals = async (req, res) => {
             is_saved: product.saved_products?.length > 0
         })) || [];
 
-        if (!limit) {
-            productCache.newArrivals = {
-                data: result,
-                timestamp: Date.now(),
-                userId
-            };
-        }
+        // Always cache the full results
+        productCache.newArrivals = {
+            data: result,
+            timestamp: Date.now(),
+            userId
+        };
 
-        res.json(result);
+        res.json(limit ? result.slice(0, limit) : result);
     } catch (error) {
         console.error('Error fetching new arrival products:', error);
         res.status(500).json({ error: 'Failed to fetch new arrival products' });

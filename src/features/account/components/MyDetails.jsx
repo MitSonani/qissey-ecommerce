@@ -11,8 +11,8 @@ export default function MyDetails({ user }) {
     const [isSaving, setIsSaving] = useState(false);
     const [activeView, setActiveView] = useState('details'); // 'details' | 'addresses'
 
-    const userName = user?.user_metadata?.name || '';
-    const userPhone = user?.user_metadata?.phone || '';
+    const userName = user?.name || '';
+    const userPhone = user?.phone || '';
 
     const handleEditClick = (field, currentValue) => {
         setEditingField(field);
@@ -49,13 +49,6 @@ export default function MyDetails({ user }) {
         }
     };
 
-    const handleSignOut = async () => {
-        try {
-            await logout();
-        } catch (error) {
-            toast.error('Failed to sign out');
-        }
-    };
 
     // ─── Addresses View ───
     if (activeView === 'addresses') {

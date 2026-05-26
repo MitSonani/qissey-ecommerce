@@ -3,7 +3,7 @@ import { api } from './api';
 export const paymentService = {
     createPaymentOrder: async (amount, currency = 'INR', additionalData = {}) => {
         try {
-            const response = await api.post('/api/create-payment/orders', {
+            const response = await api.post('/api/orders/create-payment', {
                 amount,
                 currency,
                 ...additionalData
@@ -17,7 +17,7 @@ export const paymentService = {
 
     verifyPayment: async (paymentDetails) => {
         try {
-            const response = await api.post('/api/verify-payment/orders', paymentDetails);
+            const response = await api.post('/api/orders/verify-payment', paymentDetails);
             return response;
         } catch (error) {
             console.error('Error verifying payment:', error);
@@ -27,7 +27,7 @@ export const paymentService = {
 
     createCodOrder: async (orderData) => {
         try {
-            const response = await api.post('/api/create-cod-order/orders', orderData);
+            const response = await api.post('/api/orders/create-cod-order', orderData);
             return response;
         } catch (error) {
             console.error('Error creating COD order:', error);

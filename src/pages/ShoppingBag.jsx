@@ -62,16 +62,22 @@ export default function ShoppingBag() {
     };
 
     const handlePayment = async (shippingData) => {
+        // Populate email from user context if not present in shippingData
+        const completedShippingData = {
+            ...shippingData,
+            email: shippingData.email || user?.email || 'support@qissey.com'
+        };
+
         // Validate Shipping Details (Double check, though Modal initiates this)
-        const requiredFields = ['name', 'email', 'phone', 'line1', 'city', 'state', 'postal_code'];
-        const missingFields = requiredFields.filter(field => !shippingData[field]);
+        const requiredFields = ['name', 'phone', 'line1', 'city', 'state', 'postal_code'];
+        const missingFields = requiredFields.filter(field => !completedShippingData[field]);
 
         if (missingFields.length > 0) {
             toast.error(`Please fill in all shipping details`);
             return;
         }
 
-        if (shippingData.postal_code && shippingData.postal_code.length !== 6) {
+        if (completedShippingData.postal_code && completedShippingData.postal_code.length !== 6) {
             toast.error('Pincode must be exactly 6 digits');
             return;
         }
@@ -82,14 +88,14 @@ export default function ShoppingBag() {
             const { data: { session } } = await supabase.auth.getSession();
             const accessToken = session?.access_token;
 
-            if (shippingData.paymentMethod === 'cod') {
+            if (completedShippingData.paymentMethod === 'cod') {
                 // COD Flow
                 const res = await paymentService.createCodOrder({
                     amount: cartTotal * 100,
                     currency: 'INR',
                     cartItems: cart,
                     user_id: user.id,
-                    shipping_address: shippingData,
+                    shipping_address: completedShippingData,
                     accessToken
                 });
 
@@ -117,7 +123,7 @@ export default function ShoppingBag() {
                     {
                         cartItems: cart,
                         user_id: user.id,
-                        shipping_address: shippingData,
+                        shipping_address: completedShippingData,
                         accessToken // Pass token to backend
                     }
                 );
@@ -160,9 +166,9 @@ export default function ShoppingBag() {
                         }
                     },
                     prefill: {
-                        name: shippingData.name,
-                        email: shippingData.email,
-                        contact: shippingData.phone,
+                        name: completedShippingData.name,
+                        email: completedShippingData.email,
+                        contact: completedShippingData.phone,
                     },
                     notes: {
                         address: "Razorpay Corporate Office",

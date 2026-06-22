@@ -93,17 +93,59 @@ function mapProductToShiprocket(product) {
 
 export const getProducts = async (req, res) => {
     try {
-        const { data, error } = await supabaseAdmin
-            .from('products')
-            .select(`
-                *,
-                product_variants(
+        const { collection_id } = req.query;
+        let productsQuery;
+
+        if (collection_id) {
+            let collectionUuid;
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(collection_id);
+
+            if (isUUID) {
+                collectionUuid = collection_id;
+            } else {
+                // Find the collection's real UUID by matching uuidToId(id) with collection_id
+                const { data: collections, error: colError } = await supabaseAdmin
+                    .from('collections')
+                    .select('id');
+
+                if (colError) throw colError;
+
+                const targetCollection = collections?.find(c => uuidToId(c.id).toString() === collection_id);
+                if (!targetCollection) {
+                    return res.status(404).json({ error: 'Collection not found' });
+                }
+
+                collectionUuid = targetCollection.id;
+            }
+
+            productsQuery = supabaseAdmin
+                .from('products')
+                .select(`
                     *,
-                    color_id(
-                        *
+                    product_variants(
+                        *,
+                        color_id(
+                            *
+                        )
+                    ),
+                    product_collections!inner(collection_id)
+                `)
+                .eq('product_collections.collection_id', collectionUuid);
+        } else {
+            productsQuery = supabaseAdmin
+                .from('products')
+                .select(`
+                    *,
+                    product_variants(
+                        *,
+                        color_id(
+                            *
+                        )
                     )
-                )
-            `);
+                `);
+        }
+
+        const { data, error } = await productsQuery;
 
         if (error) throw error;
 

@@ -157,19 +157,26 @@ export const getProductsByCollection = async (req, res) => {
     try {
         const { collectionId } = req.params;
 
-        // Step 1: Find the collection's real UUID by matching uuidToId(id) with collectionId
-        const { data: collections, error: colError } = await supabaseAdmin
-            .from('collections')
-            .select('id');
+        let collectionUuid;
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(collectionId);
 
-        if (colError) throw colError;
+        if (isUUID) {
+            collectionUuid = collectionId;
+        } else {
+            // Find the collection's real UUID by matching uuidToId(id) with collectionId
+            const { data: collections, error: colError } = await supabaseAdmin
+                .from('collections')
+                .select('id');
 
-        const targetCollection = collections?.find(c => uuidToId(c.id).toString() === collectionId);
-        if (!targetCollection) {
-            return res.status(404).json({ error: 'Collection not found' });
+            if (colError) throw colError;
+
+            const targetCollection = collections?.find(c => uuidToId(c.id).toString() === collectionId);
+            if (!targetCollection) {
+                return res.status(404).json({ error: 'Collection not found' });
+            }
+
+            collectionUuid = targetCollection.id;
         }
-
-        const collectionUuid = targetCollection.id;
 
         // Step 2: Query products associated with that collection
         const { data: products, error: prodError } = await supabaseAdmin

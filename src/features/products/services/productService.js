@@ -204,3 +204,37 @@ export const unsaveProduct = async (userId, productId) => {
         return false;
     }
 };
+
+export const fetchRecentReviews = async (limit = 10) => {
+    try {
+        return await fetchApi(`/api/reviews/recent?limit=${limit}`);
+    } catch (error) {
+        console.error('Error fetching recent reviews:', error);
+        return [];
+    }
+};
+
+export const fetchProductReviews = async (productId) => {
+    try {
+        return await fetchApi(`/api/reviews/product/${productId}`);
+    } catch (error) {
+        console.error('Error fetching product reviews:', error);
+        return [];
+    }
+};
+
+export const submitProductReview = async (productId, reviewData) => {
+    try {
+        const data = await fetchApi(`/api/reviews/product/${productId}`, {
+            method: 'POST',
+            body: JSON.stringify(reviewData)
+        });
+        toast.success('Review submitted successfully');
+        return data;
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        toast.error(error.message || 'Failed to submit review');
+        throw error;
+    }
+};
+

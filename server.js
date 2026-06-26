@@ -11,6 +11,7 @@ import heroRoutes from './routes/heroRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import shiprocketRoutes from './routes/shiprocketRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 
 const otpStore = new Map();
 
@@ -33,6 +34,7 @@ app.use('/api/hero', heroRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/shiprocket', shiprocketRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {

@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { paymentService } from '../services/paymentService';
 import { toast } from 'sonner';
 const logo = '/logo.PNG';
-import AddressModal from '../components/ui/AddressModal';
+// import AddressModal from '../components/ui/AddressModal';
 import { supabase } from '../lib/supabase';
 
 export default function ShoppingBag() {
@@ -18,179 +18,57 @@ export default function ShoppingBag() {
     const navigate = useNavigate();
     const location = useLocation();
     const [isProcessing, setIsProcessing] = useState(false);
-    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
 
-    // Initial data for the modal based on logged-in user
-    const [initialAddressData, setInitialAddressData] = useState(null);
+
 
     useEffect(() => {
-        if (!isLoading && !user) {
-            navigate('/auth', { state: { from: location } });
-        } else if (user) {
-            setInitialAddressData({
-                name: user?.name || '',
-                phone: user?.phone || '',
-                country: 'IN'
-            });
-        }
-    }, [user, isLoading, navigate, location]);
-
-    useEffect(() => {
-        if (isAddressModalOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
-        }
-    }, [isAddressModalOpen])
-
-    const loadRazorpayScript = () => {
-        return new Promise((resolve) => {
+        // Load HeadlessCheckout script
+        const scriptId = 'shiprocket-headless-checkout-script';
+        if (!document.getElementById(scriptId)) {
             const script = document.createElement('script');
-            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-            script.onload = () => {
-                resolve(true);
-            };
-            script.onerror = () => {
-                resolve(false);
-            };
+            script.id = scriptId;
+            script.src = 'https://checkout-ui.shiprocket.com/assets/js/channels/shopify.js';
+            script.async = true;
             document.body.appendChild(script);
-        });
-    };
-
-    const handleCheckoutClick = () => {
-        setIsAddressModalOpen(true);
-    };
-
-    const handlePayment = async (shippingData) => {
-        // Populate email from user context if not present in shippingData
-        const completedShippingData = {
-            ...shippingData,
-            email: shippingData.email || user?.email || 'support@qissey.com'
-        };
-
-        // Validate Shipping Details (Double check, though Modal initiates this)
-        const requiredFields = ['name', 'phone', 'line1', 'city', 'state', 'postal_code'];
-        const missingFields = requiredFields.filter(field => !completedShippingData[field]);
-
-        if (missingFields.length > 0) {
-            toast.error(`Please fill in all shipping details`);
-            return;
         }
 
-        if (completedShippingData.postal_code && completedShippingData.postal_code.length !== 6) {
-            toast.error('Pincode must be exactly 6 digits');
-            return;
+        // Load CSS stylesheet
+        const styleId = 'shiprocket-headless-checkout-style';
+        if (!document.getElementById(styleId)) {
+            const link = document.createElement('link');
+            link.id = styleId;
+            link.rel = 'stylesheet';
+            link.href = 'https://checkout-ui.shiprocket.com/assets/styles/shopify.css';
+            document.head.appendChild(link);
         }
+    }, []);
 
+    const handleCheckoutClick = async (e) => {
         setIsProcessing(true);
         try {
-            // Get session token for RLS
-            const { data: { session } } = await supabase.auth.getSession();
-            const accessToken = session?.access_token;
-
-            if (completedShippingData.paymentMethod === 'cod') {
-                // COD Flow
-                const res = await paymentService.createCodOrder({
-                    amount: cartTotal * 100,
-                    currency: 'INR',
-                    cartItems: cart,
-                    user_id: user.id,
-                    shipping_address: completedShippingData,
-                    accessToken
-                });
-
-                if (res.success) {
-                    toast.success('Order Placed Successfully (COD)!');
-                    clearCart();
-                    setIsAddressModalOpen(false);
-                    navigate('/account');
+            const res = await paymentService.createShiprocketCheckoutToken(cart, user?.id);
+            if (res.success && res.token) {
+                if (window.HeadlessCheckout) {
+                    window.HeadlessCheckout.addToCart(e, res.token, {
+                        fallbackUrl: res.checkout_url,
+                        isInitiatedFromApp: true
+                    });
                 } else {
-                    toast.error(res.error || 'Failed to place COD order');
+                    // Fallback to direct redirect if script is not fully loaded yet
+                    window.location.href = res.checkout_url;
                 }
             } else {
-                // Online Payment Flow
-                const res = await loadRazorpayScript();
-
-                if (!res) {
-                    toast.error('Razorpay SDK failed to load. Are you online?');
-                    setIsProcessing(false);
-                    return;
-                }
-
-                const orderData = await paymentService.createPaymentOrder(
-                    cartTotal * 100,
-                    'INR',
-                    {
-                        cartItems: cart,
-                        user_id: user.id,
-                        shipping_address: completedShippingData,
-                        accessToken // Pass token to backend
-                    }
-                );
-
-                if (!orderData) {
-                    toast.error('Server error. Are you online?');
-                    setIsProcessing(false);
-                    return;
-                }
-
-                const options = {
-                    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                    amount: orderData.amount,
-                    currency: orderData.currency,
-                    name: "Qissey",
-                    description: `Payment for ${cart.length} item${cart.length !== 1 ? 's' : ''}`,
-                    image: logo,
-                    order_id: orderData.id,
-                    handler: async function (response) {
-                        try {
-                            const verifyRes = await paymentService.verifyPayment({
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature,
-                                db_order_id: orderData.db_order_id,
-                                accessToken
-                            });
-
-                            if (verifyRes.success) {
-                                toast.success('Payment Successful!');
-                                clearCart();
-                                setIsAddressModalOpen(false);
-                                navigate('/account');
-                            } else {
-                                toast.error('Payment verification failed');
-                            }
-                        } catch (error) {
-                            console.error("Verification Error", error);
-                            toast.error('Payment verification failed');
-                        }
-                    },
-                    prefill: {
-                        name: completedShippingData.name,
-                        email: completedShippingData.email,
-                        contact: completedShippingData.phone,
-                    },
-                    notes: {
-                        address: "Razorpay Corporate Office",
-                    },
-                    theme: {
-                        color: "#000000",
-                    },
-                };
-
-                const paymentObject = new window.Razorpay(options);
-                paymentObject.open();
+                toast.error(res.error || 'Failed to initiate checkout session');
             }
-
         } catch (error) {
-            console.error("Checkout Error", error);
+            console.error('Checkout error:', error);
             toast.error('Something went wrong during checkout');
         } finally {
             setIsProcessing(false);
         }
     };
 
-    if (isLoading || !user) {
+    if (isLoading) {
         return <ShoppingBagSkeleton />;
     }
 
@@ -305,7 +183,7 @@ export default function ShoppingBag() {
                             </div>
 
                             <Button
-                                onClick={handleCheckoutClick}
+                                onClick={(e) => handleCheckoutClick(e)}
                                 disabled={isProcessing}
                                 className="h-12 px-8 bg-black text-white text-[11px] font-bold uppercase tracking-widest rounded-none hover:bg-black/90 transition-opacity disabled:opacity-50"
                             >
@@ -316,15 +194,7 @@ export default function ShoppingBag() {
                 )}
             </div>
 
-            {isAddressModalOpen && <AddressModal
-                isOpen={isAddressModalOpen}
-                onClose={() => setIsAddressModalOpen(false)}
-                onSubmit={handlePayment}
-                isProcessing={isProcessing}
-                totalAmount={cartTotal}
-                initialData={initialAddressData}
-                user={user}
-            />}
+
         </div>
     );
 }

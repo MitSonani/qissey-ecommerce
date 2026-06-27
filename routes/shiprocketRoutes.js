@@ -28,4 +28,9 @@ router.get('/products', shiprocketController.getProducts);
 router.get('/collections', shiprocketController.getCollections);
 router.get('/collections/:collectionId/products', shiprocketController.getProductsByCollection);
 
+// Shiprocket Checkout Integration Routes
+router.post('/checkout-token', shiprocketController.createCheckoutToken);
+router.post('/order-details', shiprocketController.getShiprocketOrderDetails);
+router.post('/webhook', shiprocketController.handleShiprocketWebhook);
+
 export default router;

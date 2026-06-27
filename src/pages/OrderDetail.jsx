@@ -205,6 +205,34 @@ export default function OrderDetail() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Shipment Tracking */}
+                        {order.tracking_number && (
+                            <div className="space-y-8">
+                                <p className="text-[12px] tracking-[0.2em] font-bold border-b border-gray-100 pb-4 uppercase">
+                                    SHIPMENT TRACKING
+                                </p>
+                                <div className="flex items-start gap-4">
+                                    <div className="w-10 h-10 bg-gray-50 flex items-center justify-center">
+                                        <Package className="w-5 h-5 stroke-[1] text-gray-400" />
+                                    </div>
+                                    <div className="text-[11px] tracking-[0.15em] uppercase space-y-1">
+                                        <p className="font-medium text-black">COURIER: {order.courier_name || 'SHIPROCKET'}</p>
+                                        <p className="text-gray-500">TRACKING ID: {order.tracking_number}</p>
+                                        {order.tracking_url && (
+                                            <a 
+                                                href={order.tracking_url} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer" 
+                                                className="inline-block mt-2 underline text-black font-medium hover:text-gray-600 cursor-pointer"
+                                            >
+                                                TRACK SHIPMENT
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

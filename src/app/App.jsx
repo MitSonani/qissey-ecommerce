@@ -21,6 +21,7 @@ const PurchaseConditions = lazy(() => import('../pages/PurchaseConditions'));
 const AboutUs = lazy(() => import('../pages/AboutUs'));
 const Sitemap = lazy(() => import('../pages/Sitemap'));
 const FAQ = lazy(() => import('../pages/FAQ'));
+const CheckoutSuccess = lazy(() => import('../pages/CheckoutSuccess'));
 
 
 import Navbar from '../layouts/Navbar';
@@ -82,7 +83,6 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
               <Route path="/account/order/:id" element={<MainLayout><OrderDetail /></MainLayout>} />
-              <Route path="/shopping-bag" element={<MainLayout><ShoppingBag /></MainLayout>} />
               <Route path="/saved-products" element={<MainLayout><SavedProducts /></MainLayout>} />
             </Route>
 
@@ -100,7 +100,9 @@ function App() {
             <Route path="/about" element={<MainLayout><AboutUs /></MainLayout>} />
             <Route path="/sitemap" element={<MainLayout><Sitemap /></MainLayout>} />
             <Route path="/faq" element={<MainLayout><FAQ /></MainLayout>} />
-            <Route path="/auth" element={<Auth />} />
+             <Route path="/auth" element={<Auth />} />
+            <Route path="/shopping-bag" element={<MainLayout><ShoppingBag /></MainLayout>} />
+            <Route path="/checkout-success" element={<MainLayout><CheckoutSuccess /></MainLayout>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

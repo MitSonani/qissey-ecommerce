@@ -34,4 +34,30 @@ export const paymentService = {
             throw error;
         }
     },
+
+    createShiprocketCheckoutToken: async (cartItems, userId) => {
+        try {
+            const response = await api.post('/api/shiprocket/checkout-token', {
+                cartItems,
+                user_id: userId
+            });
+            return response;
+        } catch (error) {
+            console.error('Error creating Shiprocket checkout token:', error);
+            throw error;
+        }
+    },
+
+    fetchShiprocketOrderDetails: async (orderId, accessToken) => {
+        try {
+            const response = await api.post('/api/shiprocket/order-details', {
+                order_id: orderId,
+                accessToken
+            });
+            return response;
+        } catch (error) {
+            console.error('Error fetching Shiprocket order details:', error);
+            throw error;
+        }
+    },
 };

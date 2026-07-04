@@ -46,31 +46,23 @@ export const sendOtp = async (req, res) => {
             throw new Error('Database error while checking user');
         }
 
-        if (action === 'login') {
-            if (!user) {
-                return res.status(404).json({ error: 'User not found. Please register first.' });
-            }
-        } else if (action === 'register') {
-            if (user) {
-                return res.status(400).json({ error: 'User already exists. Please log in.' });
-            }
-            // User will be registered during verify-otp
-        }
+        // Determine action based on whether user exists
+        const determinedAction = user ? 'login' : 'register';
 
         // Generate 6 digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         console.log('Generated OTP:', otp);
 
-        // Check if user variable exists (in case the DB code above is commented out)
-        const currentUserId = typeof user !== 'undefined' && user ? user.id : standardizedPhone;
+        // Check if user variable exists
+        const currentUserId = user ? user.id : standardizedPhone;
 
         // Store OTP in memory
         otpStore.set(standardizedPhone, {
             otp,
             expiresAt: Date.now() + 5 * 60 * 1000,
             userId: currentUserId,
-            action: action,
-            name: name
+            action: determinedAction,
+            name: name || 'User'
         });
 
         // Send OTP via MSG91 WhatsApp API

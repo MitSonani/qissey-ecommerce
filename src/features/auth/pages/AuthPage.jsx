@@ -115,14 +115,6 @@ export default function Auth() {
                 setFormData(prev => ({ ...prev, phone }));
                 setPreviousStep('login');
                 setAuthStep('verify');
-            } else if (authStep === 'register') {
-                if (!formData.acceptPrivacy) {
-                    throw new Error('Please accept the privacy statement');
-                }
-                const fullPhone = `${formData.phonePrefix}${formData.phone}`;
-                await register(formData.name, fullPhone);
-                setPreviousStep('register');
-                setAuthStep('verify');
             } else if (authStep === 'verify') {
                 await verifyOtp(formData.phone, formData.otp);
 
@@ -171,14 +163,9 @@ export default function Auth() {
                         <Link to="/shop" className="text-[10px] uppercase font-bold tracking-widest">
                             Back to Shop
                         </Link>
-                        {authStep === 'register' && (
-                            <button onClick={() => setAuthStep('login')} className="text-[14px] uppercase tracking-widest border-b border-black/10">
-                                Log In
-                            </button>
-                        )}
                         {authStep === 'verify' && (
-                            <button onClick={() => setAuthStep(previousStep === 'register' ? 'register' : 'login')} className="text-[10px] uppercase font-bold tracking-widest border-b border-black/10">
-                                {previousStep === 'register' ? 'Back to Register' : 'Back to Login'}
+                            <button onClick={() => setAuthStep('login')} className="text-[10px] uppercase font-bold tracking-widest border-b border-black/10">
+                                Back to Login
                             </button>
                         )}
                     </div>
@@ -224,14 +211,7 @@ export default function Auth() {
                                             disabled={isLoading}
                                             className="w-full bg-black text-white py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-[#1A1A1A] transition-colors disabled:opacity-50 flex justify-center items-center"
                                         >
-                                            {isLoading ? <LoadingDots /> : 'Log In'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setAuthStep('register')}
-                                            className="w-full border border-black py-2.75 text-[10px] uppercase font-bold tracking-widest hover:bg-black hover:text-white transition-all"
-                                        >
-                                            Register
+                                            {isLoading ? <LoadingDots /> : 'Continue'}
                                         </button>
                                     </div>
                                 </form>
@@ -248,73 +228,6 @@ export default function Auth() {
                                 className="w-full h-[100vh] object-cover grayscale contrast-125"
                                 alt="QISSEY Editorial"
                             />
-                        </div>
-                    </motion.div>
-                ) : authStep === 'register' ? (
-                    /* REGISTER VIEW: Single Column Center */
-                    <motion.div
-                        key="register"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="flex-grow flex flex-col items-center justify-start pt-24 md:pt-40 px-6 overflow-y-auto pb-20"
-                    >
-                        <div className="max-w-md w-full space-y-16">
-                            <div>
-                                <h2 className="text-[14px] uppercase font-black tracking-[0.2em] mb-12">Personal Details</h2>
-                                <form onSubmit={handleSubmit} className="space-y-10">
-                                    <FloatingInput
-                                        label="Name"
-                                        required
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    />
-                                    <div className="flex gap-4">
-                                        <FloatingInput
-                                            label="Prefix"
-                                            className="w-20"
-                                            value={formData.phonePrefix}
-                                            readOnly
-                                        />
-                                        <FloatingInput
-                                            label="Mobile Number"
-                                            className="flex-grow"
-                                            required
-                                            value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        />
-                                    </div>
-
-                                    <div className="pt-4 space-y-6">
-                                        <p className="text-[9px] text-[#1A1A1A]/40 uppercase font-bold tracking-tight">
-                                            We will send you a verification code to your mobile number via WhatsApp
-                                        </p>
-
-                                        <div className="space-y-4">
-                                            <CustomCheckbox
-                                                label={<span>I accept the <span className="underline">privacy statement</span></span>}
-                                                checked={formData.acceptPrivacy}
-                                                onChange={() => setFormData({ ...formData, acceptPrivacy: !formData.acceptPrivacy })}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {error && (
-                                        <div className="text-red-500 text-[10px] uppercase font-bold tracking-tight bg-red-50 p-3 max-w-sm">
-                                            {error}
-                                        </div>
-                                    )}
-                                    <div className="pt-10">
-                                        <button
-                                            type="submit"
-                                            disabled={isLoading}
-                                            className="w-52 border border-black py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-black hover:text-white transition-all disabled:opacity-50 flex justify-center items-center"
-                                        >
-                                            {isLoading ? <LoadingDots /> : 'Create Account'}
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
                         </div>
                     </motion.div>
                 ) : (

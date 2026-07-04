@@ -101,7 +101,13 @@ export default function MyDetails({ user }) {
                     <DetailRow
                         label="EMAIL"
                         value={userEmail}
-                        isReadOnly
+                        isEditing={editingField === 'email'}
+                        editValue={editValue}
+                        onEditChange={setEditValue}
+                        onClick={() => handleEditClick('email', userEmail)}
+                        onCancel={handleCancel}
+                        onSave={handleSave}
+                        isSaving={isSaving}
                     />
                 </div>
             </div>

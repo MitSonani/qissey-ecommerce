@@ -40,7 +40,8 @@ export const createPayment = async (req, res) => {
                     payment_status: 'unpaid',
                     shipping_address: shipping_address,
                     customer_name: shipping_address?.name,
-                    customer_email: shipping_address?.email
+                    customer_email: shipping_address?.email,
+                    customer_phone: shipping_address?.phone
                 }
             ])
             .select()
@@ -185,7 +186,8 @@ export const createCodOrder = async (req, res) => {
                     payment_method: 'cod',
                     shipping_address: shipping_address,
                     customer_name: shipping_address?.name,
-                    customer_email: shipping_address?.email
+                    customer_email: shipping_address?.email,
+                    customer_phone: shipping_address?.phone
                 }
             ])
             .select()

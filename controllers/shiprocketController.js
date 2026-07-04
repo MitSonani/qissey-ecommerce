@@ -400,6 +400,7 @@ async function syncShiprocketOrder(result) {
                 shipping_address: dbShippingAddress,
                 customer_name: billingName,
                 customer_email: dbShippingAddress.email,
+                customer_phone: dbShippingAddress.phone,
                 shiprocket_order_id: shiprocket_order_id
             }
         ])

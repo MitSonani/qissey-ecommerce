@@ -338,8 +338,10 @@ async function syncShiprocketOrder(result) {
 
     const shiprocket_order_id = result.order_id;
 
-    // Check if order already exists in Supabase
-    const { data: existingOrder, error: checkError } = await supabaseAdmin
+    let existingOrder = null;
+
+    // 1. Check if order already exists by shiprocket_order_id
+    const { data: orderById, error: checkError } = await supabaseAdmin
         .from('orders')
         .select('*')
         .eq('shiprocket_order_id', shiprocket_order_id)
@@ -347,6 +349,34 @@ async function syncShiprocketOrder(result) {
 
     if (checkError) {
         console.error('Error checking existing order:', checkError);
+    }
+
+    if (orderById) {
+        existingOrder = orderById;
+    }
+
+    // 2. Check by Qissey internal ID (channel_order_id) to prevent duplicate creation on race conditions
+    const channel_order_id = result.channel_order_id;
+    if (!existingOrder && channel_order_id) {
+        // Only query if channel_order_id is a valid UUID (Qissey ID)
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(channel_order_id);
+        if (isUUID) {
+            const { data: orderByChannel } = await supabaseAdmin
+                .from('orders')
+                .select('*')
+                .eq('id', channel_order_id)
+                .maybeSingle();
+
+            if (orderByChannel) {
+                existingOrder = orderByChannel;
+                // Update the original order with the new shiprocket_order_id
+                await supabaseAdmin
+                    .from('orders')
+                    .update({ shiprocket_order_id: shiprocket_order_id.toString() })
+                    .eq('id', channel_order_id);
+                existingOrder.shiprocket_order_id = shiprocket_order_id.toString();
+            }
+        }
     }
 
     if (existingOrder) {
@@ -468,7 +498,7 @@ export const getShiprocketOrderDetails = async (req, res) => {
             .select('*')
             .eq('shiprocket_order_id', order_id)
             .maybeSingle();
-            
+
         if (existingOrder) {
             return res.status(200).json({ success: true, order: existingOrder });
         }
@@ -500,12 +530,12 @@ export const getShiprocketOrderDetails = async (req, res) => {
             });
 
             data = await response.json();
-            
+
             if (response.ok && data.ok) {
                 success = true;
                 break;
             }
-            
+
             // Wait 1 second before retrying
             if (i < 2) {
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -514,14 +544,14 @@ export const getShiprocketOrderDetails = async (req, res) => {
 
         if (!success) {
             console.error('Shiprocket order details error after retries:', data);
-            
+
             // Final fallback check in case webhook processed it while we were retrying
             const { data: fallbackOrder } = await supabaseAdmin
                 .from('orders')
                 .select('*')
                 .eq('shiprocket_order_id', order_id)
                 .maybeSingle();
-                
+
             if (fallbackOrder) {
                 return res.status(200).json({ success: true, order: fallbackOrder });
             }

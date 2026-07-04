@@ -168,11 +168,13 @@ export default function CheckoutSuccess() {
 
                 {/* Bottom Actions */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button asChild variant="outline" className="rounded-none border-black hover:bg-black hover:text-white transition-colors duration-300 font-bold uppercase tracking-widest text-[11px] h-12 px-8">
-                        <Link to="/account">View Order History</Link>
-                    </Button>
+                    {user && (
+                        <Button asChild variant="outline" className="rounded-none border-black hover:bg-black hover:text-white transition-colors duration-300 font-bold uppercase tracking-widest text-[11px] h-12 px-8">
+                            <Link to="/account">View Order History</Link>
+                        </Button>
+                    )}
                     <Button asChild className="rounded-none bg-black text-white hover:bg-black/90 font-bold uppercase tracking-widest text-[11px] h-12 px-8">
-                        <Link to="/">Continue Shopping</Link>
+                        <Link to="/shop">Continue Shopping</Link>
                     </Button>
                 </div>
             </div>

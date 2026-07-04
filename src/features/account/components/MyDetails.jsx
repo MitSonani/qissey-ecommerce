@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { ChevronRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../../auth';
 import { toast } from 'sonner';
-import Addresses from './Addresses';
 
 export default function MyDetails({ user }) {
     const { updateProfile, logout } = useAuth();
@@ -13,6 +12,7 @@ export default function MyDetails({ user }) {
 
     const userName = user?.name || '';
     const userPhone = user?.phone || '';
+    const userEmail = user?.email || '';
 
     const handleEditClick = (field, currentValue) => {
         setEditingField(field);
@@ -36,6 +36,7 @@ export default function MyDetails({ user }) {
             const updateData = {
                 name: userName,
                 phone: userPhone,
+                email: userEmail,
             };
             updateData[editingField] = trimmed;
             await updateProfile(updateData);
@@ -50,10 +51,7 @@ export default function MyDetails({ user }) {
     };
 
 
-    // ─── Addresses View ───
-    if (activeView === 'addresses') {
-        return <Addresses user={user} onBack={() => setActiveView('details')} />;
-    }
+
 
     // ─── Details View ───
     return (
@@ -63,10 +61,6 @@ export default function MyDetails({ user }) {
                 {userName || 'USER'}
             </p>
 
-            {/* Navigation Rows */}
-            <div className="border-t border-black/5">
-                <LinkRow label="ADDRESSES" onClick={() => setActiveView('addresses')} />
-            </div>
 
             {/* Personal Details Section */}
             <div className="mt-12">
@@ -101,6 +95,13 @@ export default function MyDetails({ user }) {
                         onCancel={handleCancel}
                         onSave={handleSave}
                         isSaving={isSaving}
+                    />
+
+                    {/* Email */}
+                    <DetailRow
+                        label="EMAIL"
+                        value={userEmail}
+                        isReadOnly
                     />
                 </div>
             </div>

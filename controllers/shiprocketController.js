@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import { supabaseAdmin } from '../config/supabase.js';
 
 // Helper to convert UUID to 32-bit positive integer
@@ -562,9 +563,123 @@ export const getShiprocketOrderDetails = async (req, res) => {
         // Sync order to database
         const dbOrder = await syncShiprocketOrder(data.result);
 
+        // --- Auto-Login / Auto-Register logic ---
+        let sessionToken = null;
+        let authUser = null;
+
+        try {
+            const phone = dbOrder.customer_phone;
+            if (phone) {
+                let standardizedPhone = phone;
+                if (standardizedPhone.length === 10) {
+                    standardizedPhone = '+91' + standardizedPhone;
+                } else if (!standardizedPhone.startsWith('+')) {
+                    standardizedPhone = '+' + standardizedPhone;
+                }
+
+                // Check if user exists
+                let { data: user, error: fetchError } = await supabaseAdmin
+                    .from('users')
+                    .select('*')
+                    .eq('phone', standardizedPhone)
+                    .single();
+
+                if (fetchError && fetchError.code !== 'PGRST116') {
+                    console.error('Error fetching user for auto-login:', fetchError);
+                }
+
+                let finalUserId = user?.id;
+
+                if (!user) {
+                    // Auto-register
+                    const name = dbOrder.customer_name || 'Customer';
+                    const email = dbOrder.customer_email || null;
+                    const { data: newUser, error: insertError } = await supabaseAdmin
+                        .from('users')
+                        .insert([{ phone: standardizedPhone, name, email }])
+                        .select()
+                        .maybeSingle();
+
+                    if (insertError) {
+                        if (insertError.code === '23505') {
+                            // Race condition: User was created concurrently
+                            const { data: existingUser } = await supabaseAdmin
+                                .from('users')
+                                .select('*')
+                                .eq('phone', standardizedPhone)
+                                .maybeSingle();
+                                
+                            if (existingUser) {
+                                finalUserId = existingUser.id;
+                                user = existingUser;
+                                
+                                if (!dbOrder.customer_id) {
+                                    await supabaseAdmin.from('orders')
+                                        .update({ customer_id: finalUserId })
+                                        .eq('id', dbOrder.id);
+                                    dbOrder.customer_id = finalUserId;
+                                }
+                            }
+                        } else {
+                            console.error('Error auto-registering user:', insertError);
+                        }
+                    } else if (newUser) {
+                        finalUserId = newUser.id;
+                        user = newUser;
+
+                        // Link order to the new user if it wasn't already linked
+                        if (!dbOrder.customer_id) {
+                            await supabaseAdmin.from('orders')
+                                .update({ customer_id: finalUserId })
+                                .eq('id', dbOrder.id);
+                            dbOrder.customer_id = finalUserId;
+                        }
+                    }
+                } else {
+                    // Even if user existed, check if order is missing customer_id
+                    if (!dbOrder.customer_id) {
+                        await supabaseAdmin.from('orders')
+                            .update({ customer_id: finalUserId })
+                            .eq('id', dbOrder.id);
+                        dbOrder.customer_id = finalUserId;
+                    }
+                    
+                    // Update user's email if they didn't have one but provided one in order
+                    if (!user.email && dbOrder.customer_email) {
+                        await supabaseAdmin.from('users')
+                            .update({ email: dbOrder.customer_email })
+                            .eq('id', finalUserId);
+                        user.email = dbOrder.customer_email;
+                    }
+                }
+
+                if (finalUserId) {
+                    const jwtSecret = process.env.SUPABASE_JWT_SECRET;
+                    if (jwtSecret) {
+                        sessionToken = jwt.sign(
+                            {
+                                role: 'user',
+                                sub: finalUserId,
+                                phone: standardizedPhone
+                            },
+                            jwtSecret,
+                            { expiresIn: '30d' }
+                        );
+                        authUser = user;
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Error in auto-login/register:', e);
+        }
+
         res.status(200).json({
             success: true,
-            order: dbOrder
+            order: dbOrder,
+            session: sessionToken ? {
+                access_token: sessionToken,
+                user: authUser
+            } : undefined
         });
     } catch (error) {
         console.error('Error fetching Shiprocket order details:', error);

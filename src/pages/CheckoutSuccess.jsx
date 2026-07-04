@@ -10,7 +10,7 @@ import { supabase } from '../lib/supabase';
 export default function CheckoutSuccess() {
     const [searchParams] = useSearchParams();
     const { clearCart } = useCart();
-    const { user } = useAuth();
+    const { user, setSession } = useAuth();
     
     const orderId = searchParams.get('oid');
     const status = searchParams.get('ost');
@@ -40,6 +40,11 @@ export default function CheckoutSuccess() {
                 if (response.success && response.order) {
                     setDbOrder(response.order);
                     clearCart(); // clear cart locally upon success
+                    
+                    // Auto-login user if session is returned
+                    if (response.session && response.session.access_token) {
+                        setSession(response.session.access_token, response.session.user);
+                    }
                 } else {
                     setError(response.error || 'Failed to sync your order details');
                 }

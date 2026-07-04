@@ -145,6 +145,16 @@ export const AuthProvider = ({ children }) => {
         return data;
     };
 
+    const setSession = (token, userData) => {
+        localStorage.setItem('custom_auth_token', token);
+        if (userData) {
+            setUser(userData);
+        } else {
+            // Re-run checkSession or decode manually, here we just set token and let checkSession handle it on next load,
+            // or we could dispatch a check session. For now we assume userData is provided by backend.
+        }
+    };
+
     const value = React.useMemo(() => ({
         user,
         loading,
@@ -154,6 +164,7 @@ export const AuthProvider = ({ children }) => {
         resendOtp,
         logout,
         updateProfile,
+        setSession,
         isAuthenticated: !!user
     }), [user, loading]);
 

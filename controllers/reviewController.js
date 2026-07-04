@@ -22,6 +22,7 @@ export const getRecentReviews = async (req, res) => {
                 )
             `)
             .order('created_at', { ascending: false })
+            .eq('status', 'approved')
             .limit(limit);
 
         if (error) throw error;
@@ -44,6 +45,7 @@ export const getProductReviews = async (req, res) => {
             .from('product_reviews')
             .select('*')
             .eq('product_id', productId)
+            .eq('status', 'approved')
             .order('created_at', { ascending: false });
 
         if (error) throw error;

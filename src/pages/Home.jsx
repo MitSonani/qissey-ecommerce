@@ -53,7 +53,7 @@ export default function Home() {
     const [loadingProducts, setLoadingProducts] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [searchProductQuery, setSearchProductQuery] = useState('');
-    
+
     // Review form state
     const [rating, setRating] = useState(5);
     const [hoverRating, setHoverRating] = useState(0);
@@ -113,9 +113,9 @@ export default function Home() {
                 comment: comment.trim(),
                 user_name: reviewerName || 'Anonymous'
             });
-            
+
             // Reload reviews to show the new one
-            const updatedReviews = await fetchRecentReviews(5);
+            const updatedReviews = await fetchRecentReviews(6);
             setTestimonials(updatedReviews || []);
             setActiveTestimonial(0);
 
@@ -132,7 +132,7 @@ export default function Home() {
         }
     };
 
-    const filteredProducts = allProducts.filter(p => 
+    const filteredProducts = allProducts.filter(p =>
         p.name?.toLowerCase().includes(searchProductQuery.toLowerCase())
     );
 
@@ -140,7 +140,7 @@ export default function Home() {
     useEffect(() => {
         const loadReviews = async () => {
             try {
-                const reviews = await fetchRecentReviews(5);
+                const reviews = await fetchRecentReviews(6);
                 setTestimonials(reviews || []);
             } catch (err) {
                 console.error("Failed to load homepage reviews:", err);
@@ -386,7 +386,7 @@ export default function Home() {
                         <label className="block text-[10px] uppercase font-bold tracking-[0.2em] mb-3 text-neutral-400">
                             Select Product to Review
                         </label>
-                        
+
                         {selectedProduct ? (
                             <div className="flex items-center justify-between p-4 border border-black/10 bg-neutral-50/50">
                                 <div className="flex items-center gap-4">
@@ -427,7 +427,7 @@ export default function Home() {
                                     onChange={(e) => setSearchProductQuery(e.target.value)}
                                     className="w-full px-4 py-3 border border-black/15 bg-white text-[11px] uppercase tracking-widest focus:outline-none focus:border-black transition-colors"
                                 />
-                                
+
                                 {loadingProducts ? (
                                     <div className="flex justify-center items-center py-6">
                                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black" />

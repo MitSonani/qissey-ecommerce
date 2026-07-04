@@ -461,6 +461,17 @@ export const getShiprocketOrderDetails = async (req, res) => {
             throw new Error('Shiprocket Checkout keys missing in environment');
         }
 
+        // 1. Check local DB first to avoid Shiprocket API race conditions
+        const { data: existingOrder } = await supabaseAdmin
+            .from('orders')
+            .select('*')
+            .eq('shiprocket_order_id', order_id)
+            .maybeSingle();
+            
+        if (existingOrder) {
+            return res.status(200).json({ success: true, order: existingOrder });
+        }
+
         const timestamp = new Date().toISOString();
         const payload = {
             order_id,
@@ -471,20 +482,50 @@ export const getShiprocketOrderDetails = async (req, res) => {
         hmac.update(JSON.stringify(payload));
         const signature = hmac.digest('base64');
 
-        const response = await fetch('https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Api-Key': apiKey,
-                'X-Api-HMAC-SHA256': signature
-            },
-            body: JSON.stringify(payload)
-        });
+        let data;
+        let response;
+        let success = false;
 
-        const data = await response.json();
-        if (!response.ok || !data.ok) {
-            console.error('Shiprocket order details error:', data);
-            return res.status(response.status).json({ success: false, error: data.error || 'Failed to fetch order details' });
+        // Retry logic: Shiprocket sometimes throws 500 (StaleStateException) if polled instantly after checkout
+        for (let i = 0; i < 3; i++) {
+            response = await fetch('https://checkout-api.shiprocket.com/api/v1/custom-platform-order/details', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Api-Key': apiKey,
+                    'X-Api-HMAC-SHA256': signature
+                },
+                body: JSON.stringify(payload)
+            });
+
+            data = await response.json();
+            
+            if (response.ok && data.ok) {
+                success = true;
+                break;
+            }
+            
+            // Wait 1 second before retrying
+            if (i < 2) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
+        if (!success) {
+            console.error('Shiprocket order details error after retries:', data);
+            
+            // Final fallback check in case webhook processed it while we were retrying
+            const { data: fallbackOrder } = await supabaseAdmin
+                .from('orders')
+                .select('*')
+                .eq('shiprocket_order_id', order_id)
+                .maybeSingle();
+                
+            if (fallbackOrder) {
+                return res.status(200).json({ success: true, order: fallbackOrder });
+            }
+
+            return res.status(response?.status || 500).json({ success: false, error: data?.error || 'Failed to fetch order details' });
         }
 
         // Sync order to database

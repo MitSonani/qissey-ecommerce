@@ -3,6 +3,10 @@ ALTER TABLE public.orders
 ADD COLUMN IF NOT EXISTS shiprocket_order_id TEXT UNIQUE;
 
 -- Add shipping tracking columns for customer self-service
+
+ALTER TABLE public.orders
+ADD COLUMN IF NOT EXISTS shiprocket_label_url TEXT;
+
 ALTER TABLE public.orders 
 ADD COLUMN IF NOT EXISTS tracking_number TEXT,
 ADD COLUMN IF NOT EXISTS courier_name TEXT,

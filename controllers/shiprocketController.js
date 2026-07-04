@@ -332,13 +332,31 @@ export const createCheckoutToken = async (req, res) => {
 };
 
 // Helper function to sync Shiprocket order in Supabase
+const orderSyncLocks = new Map();
+
 async function syncShiprocketOrder(result) {
     if (!result || !result.order_id) {
         throw new Error('Invalid order details');
     }
 
-    const shiprocket_order_id = result.order_id;
+    const shiprocket_order_id = result.order_id.toString();
 
+    // Lock to prevent race condition across concurrent webhook/API requests in same process
+    if (orderSyncLocks.has(shiprocket_order_id)) {
+        return await orderSyncLocks.get(shiprocket_order_id);
+    }
+
+    const syncPromise = _syncShiprocketOrderLogic(result, shiprocket_order_id);
+    orderSyncLocks.set(shiprocket_order_id, syncPromise);
+
+    try {
+        return await syncPromise;
+    } finally {
+        setTimeout(() => orderSyncLocks.delete(shiprocket_order_id), 5000);
+    }
+}
+
+async function _syncShiprocketOrderLogic(result, shiprocket_order_id) {
     let existingOrder = null;
 
     // 1. Check if order already exists by shiprocket_order_id
@@ -373,9 +391,9 @@ async function syncShiprocketOrder(result) {
                 // Update the original order with the new shiprocket_order_id
                 await supabaseAdmin
                     .from('orders')
-                    .update({ shiprocket_order_id: shiprocket_order_id.toString() })
+                    .update({ shiprocket_order_id: shiprocket_order_id })
                     .eq('id', channel_order_id);
-                existingOrder.shiprocket_order_id = shiprocket_order_id.toString();
+                existingOrder.shiprocket_order_id = shiprocket_order_id;
             }
         }
     }
@@ -436,9 +454,19 @@ async function syncShiprocketOrder(result) {
             }
         ])
         .select()
-        .single();
+        .maybeSingle();
 
     if (orderError) {
+        // Fallback for unique constraint violation (in case lock was bypassed across multiple processes)
+        if (orderError.code === '23505') {
+            const { data: recoveredOrder } = await supabaseAdmin
+                .from('orders')
+                .select('*')
+                .eq('shiprocket_order_id', shiprocket_order_id)
+                .maybeSingle();
+            if (recoveredOrder) return recoveredOrder;
+        }
+
         console.error('Error syncing order in Supabase:', orderError);
         throw new Error('Supabase order creation failed: ' + orderError.message);
     }

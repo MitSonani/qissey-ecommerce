@@ -252,11 +252,6 @@ export default function ProductDetail() {
     const handleAddToCart = async (size, variantId, customMeasurements = null) => {
         if (!size || !variantId) return;
 
-        if (!user) {
-            navigate('/auth', { state: { from: location } });
-            return;
-        }
-
         await addToCart(product, size, variantId, false, customMeasurements);
         navigate('/shopping-bag');
     };

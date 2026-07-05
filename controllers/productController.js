@@ -173,7 +173,8 @@ export const getProductBySlug = async (req, res) => {
             .select(`*, 
                     product_variants(*, color_id(*)), 
                     complete_the_look,
-                    product_collections(collection_id)
+                    product_collections(collection_id),
+                    product_measurements(size_chart)
                     ${userId ? ', saved_products:saved_products!left(id)' : ''}
                     `)
             .eq('slug', slug);

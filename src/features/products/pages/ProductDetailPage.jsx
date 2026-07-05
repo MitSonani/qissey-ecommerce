@@ -271,40 +271,71 @@ export default function ProductDetail() {
     }
 
     const drawerContent = {
-        measurement: {
-            title: "Product Measurements",
-            content: (
-                <div className="space-y-6">
-                    <p className="text-[11px] font-light uppercase">
-                        This guide provides the exact measurements for this product in each size.
-                    </p>
+        measurement: (() => {
+            const measurements = product?.product_measurements;
+            const sizeChartObj = (Array.isArray(measurements) ? measurements[0] : measurements)?.size_chart;
+            
+            if (!sizeChartObj || !sizeChartObj.inches) {
+                return {
+                    title: "Product Measurements",
+                    content: (
+                        <div className="space-y-6 text-center py-8">
+                            <p className="text-[11px] font-light uppercase text-neutral-500">
+                                No measurements available for this product.
+                            </p>
+                        </div>
+                    )
+                };
+            }
 
-                    <table className="w-full text-left text-[11px] uppercase tracking-wider">
-                        <thead className="border-b border-neutral-100">
-                            <tr>
-                                <th className="py-4  font-bold">SIZE</th>
-                                <th className="py-4  font-bold">BUST <br />(inch/ cm)</th>
-                                <th className="py-4  font-bold">WAIST <br />(inch/ cm)</th>
-                                <th className="py-4  font-bold">HIPS <br />(inch/ cm)</th>
-                                <th className="py-4  font-bold">SHOULDER <br />(inch/ cm)</th>
-                            </tr>
-                        </thead>
+            const columns = sizeChartObj.columns || ['chest', 'waist', 'hips'];
+            const inchesChart = sizeChartObj.inches || [];
+            const cmChart = sizeChartObj.cm || [];
 
-                        <tbody className="divide-y divide-neutral-50 text-neutral-500">
-                            {measurementData.map((item) => (
-                                <tr key={item.size}>
-                                    <td className="py-4 text-black font-bold">{item.size}</td>
-                                    <td className="py-4">{item.bust}</td>
-                                    <td className="py-4">{item.waist}</td>
-                                    <td className="py-4">{item.hips}</td>
-                                    <td className="py-4">{item.shoulder}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )
-        },
+            return {
+                title: "Product Measurements",
+                content: (
+                    <div className="space-y-6">
+                        <p className="text-[11px] font-light uppercase">
+                            This guide provides the exact measurements for this product in each size.
+                        </p>
+
+                        <div className="overflow-x-auto w-full">
+                            <table className="w-full text-left text-[11px] uppercase tracking-wider min-w-max">
+                                <thead className="border-b border-neutral-100">
+                                    <tr>
+                                        <th className="py-4 px-2 font-bold">SIZE</th>
+                                        {columns.map(col => (
+                                            <th key={col} className="py-4 px-2 font-bold">{col} <br />(inch/ cm)</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+
+                                <tbody className="divide-y divide-neutral-50 text-neutral-500">
+                                    {inchesChart.map((inchRow, idx) => {
+                                        const cmRow = cmChart[idx] || {};
+                                        return (
+                                            <tr key={inchRow.size || idx}>
+                                                <td className="py-4 px-2 text-black font-bold">{inchRow.size}</td>
+                                                {columns.map(col => {
+                                                    const inchVal = inchRow[col] || '-';
+                                                    const cmVal = cmRow[col] || '-';
+                                                    return (
+                                                        <td key={col} className="py-4 px-2 whitespace-nowrap">
+                                                            {inchVal === '-' && cmVal === '-' ? '-' : `${inchVal}″ / ${cmVal} cm`}
+                                                        </td>
+                                                    );
+                                                })}
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )
+            };
+        })(),
         composition: {
             title: "Composition & Care",
             content: (

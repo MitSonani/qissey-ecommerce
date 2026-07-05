@@ -23,7 +23,7 @@ export default function Shop() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
                     <div>
-                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">All of Qissey</h2>
+                        <p className="text-4xl md:text-5xl font-black uppercase tracking-tighter">All of Qissey</p>
                         {search && (
                             <p className="text-sm font-bold uppercase tracking-widest text-black/60">
                                 Search Results for "{search}"
@@ -31,13 +31,13 @@ export default function Shop() {
                         )}
                     </div>
 
-                    <div className="flex items-center gap-8 border-t md:border-t-0 pt-8 md:pt-0 border-black/5">
+                    {/* <div className="flex items-center gap-8 border-t md:border-t-0 pt-8 md:pt-0 border-black/5"> */}
 
-                        <div className="hidden md:flex items-center gap-4">
-                            <button onClick={() => setViewCols(2)} className={cn("text-black/20", viewCols === 2 && "text-black")}><Square size={20} /></button>
-                            <button onClick={() => setViewCols(4)} className={cn("text-black/20", viewCols === 4 && "text-black")}><LayoutGrid size={20} /></button>
-                        </div>
+                    <div className="hidden md:flex items-center gap-4">
+                        <button onClick={() => setViewCols(2)} className={cn("text-black/20", viewCols === 2 && "text-black")}><Square size={20} /></button>
+                        <button onClick={() => setViewCols(4)} className={cn("text-black/20", viewCols === 4 && "text-black")}><LayoutGrid size={20} /></button>
                     </div>
+                    {/* </div> */}
                 </div>
 
                 {/* Filters Drawer/Section */}

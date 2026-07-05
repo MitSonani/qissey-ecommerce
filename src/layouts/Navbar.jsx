@@ -280,7 +280,7 @@ export default function Navbar() {
                                             />
                                             <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
                                             <div className="absolute inset-0 flex items-center justify-center p-2 text-center">
-                                                <h4 className="text-[10px] font-display font-black text-white tracking-widest uppercase drop-shadow-md">{cat.name}</h4>
+                                                <h4 className="text-[14px] font-display font-black text-white tracking-widest uppercase drop-shadow-md">{cat.name}</h4>
                                             </div>
                                         </Link>
                                     ))}
@@ -321,7 +321,7 @@ export default function Navbar() {
                                 />
                                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/5 transition-colors duration-500" />
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <h3 className="text-4xl font-display font-black text-white tracking-[0.2em] uppercase drop-shadow-lg">{newArrivalsCollection.name}</h3>
+                                    <p className="text-4xl font-display font-black text-white uppercase drop-shadow-lg">{newArrivalsCollection.name}</p>
                                 </div>
                             </Link>
                         )}
@@ -342,7 +342,7 @@ export default function Navbar() {
                                     />
                                     <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors duration-500" />
                                     <div className="absolute inset-0 flex items-center justify-center p-2 text-center">
-                                        <h4 className="text-[16px] font-display font-black text-white tracking-widest uppercase drop-shadow-md">{cat.name}</h4>
+                                        <p className="text-[16px] font-display font-black text-white tracking-widest uppercase drop-shadow-md">{cat.name}</p>
                                     </div>
                                 </Link>
                             ))}

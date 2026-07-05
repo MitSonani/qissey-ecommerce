@@ -23,12 +23,12 @@ export default function Shop() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
                     <div>
+                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-4">All of Qissey</h2>
                         {search && (
                             <p className="text-sm font-bold uppercase tracking-widest text-black/60">
                                 Search Results for "{search}"
                             </p>
                         )}
-
                     </div>
 
                     <div className="flex items-center gap-8 border-t md:border-t-0 pt-8 md:pt-0 border-black/5">

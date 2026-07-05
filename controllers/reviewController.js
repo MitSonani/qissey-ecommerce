@@ -64,7 +64,7 @@ export const createProductReview = async (req, res) => {
     try {
         const { productId } = req.params;
         const { rating, comment, user_name } = req.body;
-        const userId = req.user.id;
+        const userId = req.user?.id || null;
 
         if (!rating || rating < 1 || rating > 5) {
             return res.status(400).json({ error: 'Rating must be an integer between 1 and 5' });
@@ -77,16 +77,20 @@ export const createProductReview = async (req, res) => {
         // Get user's name if user_name is not provided
         let finalName = user_name;
         if (!finalName || finalName.trim() === '') {
-            const { data: user, error: userError } = await supabaseAdmin
-                .from('users')
-                .select('name')
-                .eq('id', userId)
-                .single();
+            if (userId) {
+                const { data: user, error: userError } = await supabaseAdmin
+                    .from('users')
+                    .select('name')
+                    .eq('id', userId)
+                    .single();
 
-            if (userError) {
-                console.error('Error fetching user for review name:', userError);
+                if (userError) {
+                    console.error('Error fetching user for review name:', userError);
+                }
+                finalName = user?.name || 'Verified User';
+            } else {
+                finalName = 'Anonymous';
             }
-            finalName = user?.name || 'Verified User';
         }
 
         const { data, error } = await supabaseAdmin

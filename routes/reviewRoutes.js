@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/recent', reviewController.getRecentReviews);
 router.get('/product/:productId', reviewController.getProductReviews);
 
-// Protected routes
-router.post('/product/:productId', authMiddleware, reviewController.createProductReview);
+// Create review
+router.post('/product/:productId', reviewController.createProductReview);
 
 export default router;

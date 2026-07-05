@@ -48,7 +48,7 @@ export default function ProductDetail() {
     const [reviews, setReviews] = useState([]);
     const [reviewsLoading, setReviewsLoading] = useState(true);
     const [showReviewDrawer, setShowReviewDrawer] = useState(false);
-    
+
     // Review Form State
     const [rating, setRating] = useState(5);
     const [hoverRating, setHoverRating] = useState(0);
@@ -98,7 +98,7 @@ export default function ProductDetail() {
                 comment: comment.trim(),
                 user_name: reviewerName || 'Anonymous'
             });
-            
+
             setReviews(prev => [newReview, ...prev]);
             setShowReviewDrawer(false);
             setComment('');
@@ -110,8 +110,8 @@ export default function ProductDetail() {
         }
     };
 
-    const averageRating = reviews.length > 0 
-        ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1) 
+    const averageRating = reviews.length > 0
+        ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
         : null;
 
     const handleWriteReviewClick = () => {
@@ -274,7 +274,7 @@ export default function ProductDetail() {
         measurement: (() => {
             const measurements = product?.product_measurements;
             const sizeChartObj = (Array.isArray(measurements) ? measurements[0] : measurements)?.size_chart;
-            
+
             if (!sizeChartObj || !sizeChartObj.inches) {
                 return {
                     title: "Product Measurements",
@@ -476,7 +476,7 @@ export default function ProductDetail() {
                                     <p className="text-[15px] font-bold tracking-wide opacity-60 hover:opacity-100 mb-1">
                                         ₹ {product?.price.toLocaleString()}
                                     </p>
-                                    {averageRating && (
+                                    {/* {averageRating && (
                                         <div 
                                             onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
                                             className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-neutral-500 mb-2 cursor-pointer hover:text-black transition-colors"
@@ -495,7 +495,7 @@ export default function ProductDetail() {
                                             <span className="font-bold text-black">{averageRating}</span>
                                             <span className="opacity-60">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
                                         </div>
-                                    )}
+                                    )} */}
                                     <p className="text-[10px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-6">
                                         MRP incl. of all taxes
                                     </p>
@@ -936,8 +936,8 @@ export default function ProductDetail() {
                                         <motion.p layoutId="product-price" className="text-[15px] font-bold tracking-wide opacity-60 hover:opacity-100 mb-1">
                                             ₹ {product?.price.toLocaleString()}
                                         </motion.p>
-                                        {averageRating && (
-                                            <div 
+                                        {/* {averageRating && (
+                                            <div
                                                 onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
                                                 className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-neutral-500 mb-2 cursor-pointer hover:text-black transition-colors"
                                             >
@@ -955,7 +955,7 @@ export default function ProductDetail() {
                                                 <span className="font-bold text-black">{averageRating}</span>
                                                 <span className="opacity-60">({reviews.length})</span>
                                             </div>
-                                        )}
+                                        )} */}
                                         <p className="text-[10px] pt-1 font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-6">
                                             MRP incl. of all taxes
                                         </p>

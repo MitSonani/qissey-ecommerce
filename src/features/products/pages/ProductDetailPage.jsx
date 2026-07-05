@@ -678,7 +678,7 @@ export default function ProductDetail() {
                             <div className="max-w-[500px] lg:ml-auto px-4 lg:px-0 text-center lg:text-left">
                                 {
                                     product?.fabrics?.map((fabric, index) => (
-                                        <p key={index} className="text-[13px] font-light uppercase">
+                                        <p key={index} className="text-[16px] font-light uppercase">
                                             {fabric}
                                         </p>
                                     ))
@@ -713,96 +713,6 @@ export default function ProductDetail() {
                         </div>
                     )}
 
-                    {/* Reviews Section */}
-                    <div id="reviews-section" className="border-t border-neutral-100 pt-16 mt-16 scroll-mt-24">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                            <div>
-                                <p className="text-[10px] uppercase font-bold tracking-[0.4em] mb-3 text-black/40">Customer Feedback</p>
-                                <div className="flex items-baseline gap-4">
-                                    <h2 className="text-3xl font-black uppercase tracking-tighter">Reviews</h2>
-                                    {averageRating && (
-                                        <div className="flex items-center gap-2 text-sm">
-                                            <span className="font-bold text-black">{averageRating}</span>
-                                            <div className="flex text-yellow-500">
-                                                {Array.from({ length: 5 }).map((_, i) => (
-                                                    <Star
-                                                        key={i}
-                                                        size={14}
-                                                        fill={i < Math.round(parseFloat(averageRating)) ? "currentColor" : "none"}
-                                                        strokeWidth={1.5}
-                                                        className={i < Math.round(parseFloat(averageRating)) ? "text-yellow-500" : "text-neutral-300"}
-                                                    />
-                                                ))}
-                                            </div>
-                                            <span className="text-neutral-400">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <Button
-                                onClick={handleWriteReviewClick}
-                                className="bg-black text-white hover:bg-neutral-900 border border-black px-6 py-3 rounded-none uppercase text-[10px] tracking-[0.2em] font-medium transition-all self-start md:self-auto cursor-pointer"
-                            >
-                                Write A Review
-                            </Button>
-                        </div>
-
-                        {reviewsLoading ? (
-                            <div className="flex justify-center items-center py-12">
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-black" />
-                            </div>
-                        ) : reviews.length === 0 ? (
-                            <div className="text-center py-16 border border-neutral-100 bg-neutral-50/50">
-                                <p className="text-xs uppercase tracking-widest text-neutral-400 font-light mb-4">No reviews yet for this product</p>
-                                <button
-                                    onClick={handleWriteReviewClick}
-                                    className="text-[11px] uppercase tracking-widest font-bold border-b border-black pb-0.5 hover:pb-1 transition-all cursor-pointer"
-                                >
-                                    Be the first to write a review
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="relative overflow-hidden">
-                                {/* Review Cards Slider */}
-                                <div className="flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory scroll-smooth no-scrollbar">
-                                    {reviews.map((rev) => (
-                                        <div
-                                            key={rev.id}
-                                            className="min-w-full sm:min-w-[calc(50%-12px)] lg:min-w-[calc(33.333%-16px)] bg-neutral-50 p-8 border border-neutral-100/50 snap-start flex flex-col justify-between"
-                                        >
-                                            <div>
-                                                <div className="flex gap-1 mb-4 text-yellow-500">
-                                                    {Array.from({ length: 5 }).map((_, i) => (
-                                                        <Star
-                                                            key={i}
-                                                            size={14}
-                                                            fill={i < rev.rating ? "currentColor" : "none"}
-                                                            strokeWidth={1.5}
-                                                            className={i < rev.rating ? "text-yellow-500" : "text-neutral-300"}
-                                                        />
-                                                    ))}
-                                                </div>
-                                                <p className="text-xs text-neutral-800 font-light leading-relaxed mb-6 italic">
-                                                    "{rev.comment}"
-                                                </p>
-                                            </div>
-                                            <div className="flex justify-between items-center mt-auto border-t border-neutral-100 pt-4">
-                                                <span className="text-[10px] uppercase font-bold tracking-wider text-black">{rev.user_name}</span>
-                                                <span className="text-[9px] uppercase tracking-widest text-neutral-400">
-                                                    {new Date(rev.created_at).toLocaleDateString('en-US', {
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                        year: 'numeric'
-                                                    })}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
 
                     <div className="lg:hidden mt-8">
                         <CompleteYourLook completeTheLookIds={product?.complete_the_look} />

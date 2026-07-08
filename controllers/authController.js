@@ -226,10 +226,6 @@ export const verifyOtp = async (req, res) => {
 
 export const verifyUser = async (req, res) => {
     try {
-
-
-
-
         const { token } = req.body;
         const decodedToken = jwt.verify(token, process.env.SUPABASE_JWT_SECRET);
 
@@ -240,10 +236,27 @@ export const verifyUser = async (req, res) => {
         }
 
         res.status(200).json({ user });
-
-
     } catch (error) {
         console.error('Verify user error:', error);
         return res.status(401).json({ error: error.message });
     }
-}
+};
+
+export const updateProfile = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const updates = req.body;
+        const { data, error } = await supabaseAdmin
+            .from('users')
+            .update(updates)
+            .eq('id', userId)
+            .select()
+            .single();
+
+        if (error) throw error;
+        res.json(data);
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ error: 'Failed to update profile' });
+    }
+};

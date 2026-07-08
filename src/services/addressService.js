@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { fetchApi } from '../lib/apiClient';
 
 /**
  * Fetches all addresses for a given user
@@ -6,17 +6,14 @@ import { supabase } from '../lib/supabase';
  * @returns {Promise<Array>} Array of address objects
  */
 export async function fetchUserAddresses(userId) {
-    const { data, error } = await supabase
-        .from('user_addresses')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-    if (error) {
+    if (!userId) return [];
+    try {
+        const data = await fetchApi('/addresses');
+        return data || [];
+    } catch (error) {
         console.error('Error fetching addresses:', error);
         return [];
     }
-    return data || [];
 }
 
 /**
@@ -25,14 +22,10 @@ export async function fetchUserAddresses(userId) {
  * @returns {Promise<Object>} The created address
  */
 export async function createAddress(addressData) {
-    const { data, error } = await supabase
-        .from('user_addresses')
-        .insert(addressData)
-        .select()
-        .single();
-
-    if (error) throw error;
-    return data;
+    return await fetchApi('/addresses', {
+        method: 'POST',
+        body: JSON.stringify(addressData)
+    });
 }
 
 /**
@@ -41,10 +34,7 @@ export async function createAddress(addressData) {
  * @returns {Promise<void>}
  */
 export async function deleteAddress(addressId) {
-    const { error } = await supabase
-        .from('user_addresses')
-        .delete()
-        .eq('id', addressId);
-
-    if (error) throw error;
+    await fetchApi(`/addresses/${addressId}`, {
+        method: 'DELETE'
+    });
 }

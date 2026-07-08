@@ -5,7 +5,6 @@ import { paymentService } from '../services/paymentService';
 import { useCart } from '../features/cart';
 import { useAuth } from '../features/auth';
 import { Button } from '../components/ui/Primitives';
-import { supabase } from '../lib/supabase';
 
 export default function CheckoutSuccess() {
     const [searchParams] = useSearchParams();
@@ -33,8 +32,7 @@ export default function CheckoutSuccess() {
 
             try {
                 // Get access token for auth/RLS if needed
-                const { data: { session } } = await supabase.auth.getSession();
-                const accessToken = session?.access_token;
+                const accessToken = localStorage.getItem('custom_auth_token');
                 
                 const response = await paymentService.fetchShiprocketOrderDetails(orderId, accessToken);
                 if (response.success && response.order) {

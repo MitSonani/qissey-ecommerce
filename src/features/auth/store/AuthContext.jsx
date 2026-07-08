@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -104,14 +103,23 @@ export const AuthProvider = ({ children }) => {
         // Save token
         localStorage.setItem('custom_auth_token', data.session.access_token);
 
-        // Fetch full user details from DB
-        const { data: userProfile, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('id', data.session.user.id)
-            .single();
+        // Fetch full user details from DB via API
+        let userProfile = null;
+        try {
+            const res = await fetch('/api/auth/verify-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: data.session.access_token }),
+            });
+            if (res.ok) {
+                const profileData = await res.json();
+                userProfile = profileData.user;
+            }
+        } catch (err) {
+            console.error('Error fetching user profile:', err);
+        }
 
-        if (userProfile && !error) {
+        if (userProfile) {
             setUser(userProfile);
         } else {
             setUser(data.session.user);
@@ -131,14 +139,25 @@ export const AuthProvider = ({ children }) => {
 
     const updateProfile = async (updates) => {
         if (!user?.id) throw new Error('Not logged in');
-        const { data, error } = await supabase
-            .from('users')
-            .update(updates)
-            .eq('id', user.id)
-            .select()
-            .single();
+        
+        // Dynamic import to avoid circular dependency issues if any, or just import at the top
+        // But since we can use fetch directly with the token:
+        const token = localStorage.getItem('custom_auth_token');
+        const res = await fetch('/api/auth/profile', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(updates)
+        });
 
-        if (error) throw error;
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || 'Failed to update profile');
+        }
+
+        const data = await res.json();
         if (data) {
             setUser(data);
         }

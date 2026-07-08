@@ -230,3 +230,60 @@ export const createCodOrder = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const getUserOrders = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { data, error } = await supabaseAdmin
+            .from('orders')
+            .select(`
+                *,
+                order_items (
+                    *,
+                    variant:product_variants (
+                        image_urls
+                    )
+                )
+            `)
+            .eq('customer_id', userId)
+            .neq("payment_method", null)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        res.json(data || []);
+    } catch (error) {
+        console.error('Error fetching user orders:', error);
+        res.status(500).json({ error: 'Failed to fetch user orders' });
+    }
+};
+
+export const getOrderById = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const userId = req.user.id;
+        const { data, error } = await supabaseAdmin
+            .from('orders')
+            .select(`
+                *,
+                order_items (
+                    *,
+                    variant:product_variants (
+                        image_urls,
+                        id,
+                        color:colors (
+                            name
+                        )
+                    )
+                )
+            `)
+            .eq('id', orderId)
+            .eq('customer_id', userId) // Security check
+            .single();
+
+        if (error) throw error;
+        res.json(data);
+    } catch (error) {
+        console.error('Error fetching order by ID:', error);
+        res.status(500).json({ error: 'Failed to fetch order details' });
+    }
+};

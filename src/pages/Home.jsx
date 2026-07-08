@@ -87,11 +87,6 @@ export default function Home() {
     }, [showReviewDrawer]);
 
     const handleWriteReviewClick = () => {
-        if (!user) {
-            toast.error('Please log in to write a review');
-            navigate('/auth', { state: { from: location } });
-            return;
-        }
         setShowReviewDrawer(true);
     };
 

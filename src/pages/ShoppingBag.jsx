@@ -10,7 +10,6 @@ import { paymentService } from '../services/paymentService';
 import { toast } from 'sonner';
 const logo = '/logo.PNG';
 // import AddressModal from '../components/ui/AddressModal';
-import { supabase } from '../lib/supabase';
 
 export default function ShoppingBag() {
     const { cart, updateQuantity, removeFromCart, cartTotal, isLoading, clearCart } = useCart();

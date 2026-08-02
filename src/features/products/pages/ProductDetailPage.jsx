@@ -38,6 +38,14 @@ export default function ProductDetail() {
     const [activeTab, setActiveTab] = useState('DESCRIPTION');
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [reviews, setReviews] = useState([]);
+    const [averageRating, setAverageRating] = useState(null);
+    const [newRating, setNewRating] = useState(5);
+    const [newComment, setNewComment] = useState('');
+    const [newName, setNewName] = useState('');
+    const [submittingReview, setSubmittingReview] = useState(false);
+    const [activeTestimonial, setActiveTestimonial] = useState(0);
+    const [showReviewDrawer, setShowReviewDrawer] = useState(false);
     const { user } = useAuth();
     const { addToCart } = useCart();
     const navigate = useNavigate();
@@ -133,6 +141,16 @@ export default function ProductDetail() {
                 setProduct(productData);
                 setIsSaved(productData.is_saved || false);
 
+                // Fetch product reviews
+                const reviewsData = await fetchProductReviews(productData.id);
+                setReviews(reviewsData || []);
+                if (reviewsData && reviewsData.length > 0) {
+                    const avg = reviewsData.reduce((acc, r) => acc + r.rating, 0) / reviewsData.length;
+                    setAverageRating(avg.toFixed(1));
+                } else {
+                    setAverageRating(null);
+                }
+
                 setLoading(false);
             } catch (err) {
                 console.error('Error loading product:', err);
@@ -143,6 +161,59 @@ export default function ProductDetail() {
 
         loadProductData();
     }, [slug, user?.id]);
+
+    // Auto rotate reviews every 7 seconds
+    useEffect(() => {
+        if (reviews.length <= 1) return;
+        const timer = setInterval(() => {
+            setActiveTestimonial((prev) => (prev + 1) % reviews.length);
+        }, 7000);
+        return () => clearInterval(timer);
+    }, [reviews.length]);
+
+    const handlePrevTestimonial = () => {
+        setActiveTestimonial((prev) => (prev - 1 + reviews.length) % reviews.length);
+    };
+
+    const handleNextTestimonial = () => {
+        setActiveTestimonial((prev) => (prev + 1) % reviews.length);
+    };
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        if (!newComment.trim()) {
+            toast.error('Please enter a comment');
+            return;
+        }
+
+        try {
+            setSubmittingReview(true);
+            const reviewData = {
+                rating: newRating,
+                comment: newComment,
+                user_name: newName || (user?.name) || 'Anonymous'
+            };
+
+            const submitted = await submitProductReview(product.id, reviewData);
+            if (submitted) {
+                const updatedReviews = [submitted, ...reviews];
+                setReviews(updatedReviews);
+                const avg = updatedReviews.reduce((acc, r) => acc + r.rating, 0) / updatedReviews.length;
+                setAverageRating(avg.toFixed(1));
+                setActiveTestimonial(0);
+
+                // Reset form state
+                setShowReviewDrawer(false);
+                setNewComment('');
+                setNewName('');
+                setNewRating(5);
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        } finally {
+            setSubmittingReview(false);
+        }
+    };
 
 
     const handleToggleSave = async (e) => {
@@ -397,7 +468,7 @@ export default function ProductDetail() {
                                     <p className="text-[15px] font-bold tracking-wide opacity-60 hover:opacity-100 mb-1">
                                         ₹ {product?.price.toLocaleString()}
                                     </p>
-                                    {/* {averageRating && (
+                                    {averageRating && (
                                         <div 
                                             onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
                                             className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-neutral-500 mb-2 cursor-pointer hover:text-black transition-colors"
@@ -416,7 +487,7 @@ export default function ProductDetail() {
                                             <span className="font-bold text-black">{averageRating}</span>
                                             <span className="opacity-60">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
                                         </div>
-                                    )} */}
+                                    )}
                                     <p className="text-[10px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-6">
                                         MRP incl. of all taxes
                                     </p>
@@ -586,6 +657,26 @@ export default function ProductDetail() {
                                                 <ArrowRight size={14} />
                                             </button>
                                         </div>
+                                        
+                                        {/* Quiet Trust Cues Section */}
+                                        <div className="border-t border-neutral-100 mt-10 pt-8 grid grid-cols-2 gap-4 text-[9px] uppercase tracking-wider text-neutral-500 font-light">
+                                            <div className="space-y-1">
+                                                <p className="text-black font-semibold">✦ Free Shipping</p>
+                                                <p className="opacity-75">7-10 Days Delivery</p>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-black font-semibold">✦ Easy Exchanges</p>
+                                                <p className="opacity-75">10-Day Policy</p>
+                                            </div>
+                                            <div className="space-y-1 mt-2">
+                                                <p className="text-black font-semibold">✦ Secure Payments</p>
+                                                <p className="opacity-75">UPI, Cards, COD</p>
+                                            </div>
+                                            <div className="space-y-1 mt-2">
+                                                <p className="text-black font-semibold">✦ Customer Support</p>
+                                                <p className="opacity-75">Instagram & email</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -647,6 +738,165 @@ export default function ProductDetail() {
                     <RealatedProduct collectionId={product?.product_collections?.[0]?.collection_id} productId={product?.id} />
                 </div>
 
+                {/* Testimonials Section */}
+                <section id="reviews-section" className="py-16 md:py-24 md:px-8 bg-neutral-50/50 border-t border-neutral-100/60 mt-8 md:mt-16">
+                    <div className="container max-w-4xl mx-auto px-4 text-center">
+                        <p className="text-[10px] uppercase font-bold tracking-[0.4em] mb-4 text-black/40">Product Journal</p>
+                        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter drop-shadow-md mb-12">Customer Journal</h2>
+
+                        {reviews.length > 0 ? (
+                            <>
+                                <div className="relative min-h-[200px] flex items-center justify-center">
+                                    <AnimatePresence mode="wait">
+                                        <motion.div
+                                            key={activeTestimonial}
+                                            initial={{ opacity: 0, y: 15 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -15 }}
+                                            transition={{ duration: 0.5, ease: "easeInOut" }}
+                                            className="w-full flex flex-col items-center"
+                                        >
+                                            {/* Stars */}
+                                            <div className="flex gap-1 mb-6 text-yellow-500">
+                                                {Array.from({ length: 5 }).map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        size={16}
+                                                        fill={i < reviews[activeTestimonial].rating ? "currentColor" : "none"}
+                                                        strokeWidth={1.5}
+                                                        className={i < reviews[activeTestimonial].rating ? "text-yellow-500" : "text-neutral-300"}
+                                                    />
+                                                ))}
+                                            </div>
+
+                                            {/* Comment */}
+                                            <p className="text-base md:text-lg font-light text-neutral-800 italic leading-relaxed max-w-2xl mb-6">
+                                                "{reviews[activeTestimonial].comment}"
+                                            </p>
+
+                                            {/* Author */}
+                                            <p className="text-xs uppercase font-bold tracking-widest text-black">
+                                                — {reviews[activeTestimonial].user_name}
+                                            </p>
+                                        </motion.div>
+                                    </AnimatePresence>
+                                </div>
+
+                                {/* Navigation Dots & Arrows */}
+                                {reviews.length > 1 && (
+                                    <div className="flex items-center justify-center gap-6 mt-10">
+                                        <button
+                                            onClick={handlePrevTestimonial}
+                                            className="p-2 border border-black/5 hover:border-black/20 hover:bg-white text-black transition-all rounded-full cursor-pointer"
+                                        >
+                                            <ChevronLeft size={16} />
+                                        </button>
+                                        <div className="flex gap-2">
+                                            {reviews.map((_, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => setActiveTestimonial(idx)}
+                                                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${activeTestimonial === idx ? 'bg-black w-4' : 'bg-black/20'}`}
+                                                />
+                                            ))}
+                                        </div>
+                                        <button
+                                            onClick={handleNextTestimonial}
+                                            className="p-2 border border-black/5 hover:border-black/20 hover:bg-white text-black transition-all rounded-full cursor-pointer"
+                                        >
+                                            <ChevronRight size={16} />
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="py-12 text-center">
+                                <p className="text-sm font-light text-neutral-500 uppercase tracking-widest mb-6">No reviews yet. Share your experience with us!</p>
+                            </div>
+                        )}
+
+                        <div className="mt-8 flex justify-center">
+                            <button
+                                onClick={() => setShowReviewDrawer(true)}
+                                className="bg-black text-white hover:bg-neutral-900 border border-black px-6 py-3 rounded-none uppercase text-[10px] tracking-[0.2em] font-medium transition-all cursor-pointer"
+                            >
+                                Write A Review
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Review Submission Drawer */}
+                <SideDrawer
+                    isOpen={showReviewDrawer}
+                    onClose={() => {
+                        setShowReviewDrawer(false);
+                        setNewComment('');
+                        setNewName('');
+                        setNewRating(5);
+                    }}
+                    title="Write A Review"
+                >
+                    <form onSubmit={handleReviewSubmit} className="space-y-6">
+                        <div>
+                            <label className="block text-[10px] uppercase font-bold tracking-[0.2em] mb-3 text-neutral-400">
+                                Rating
+                            </label>
+                            <div className="flex gap-1.5">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <button
+                                        key={star}
+                                        type="button"
+                                        onClick={() => setNewRating(star)}
+                                        className="text-yellow-500 hover:scale-110 transition-transform cursor-pointer"
+                                    >
+                                        <Star
+                                            size={20}
+                                            fill={star <= newRating ? "currentColor" : "none"}
+                                            strokeWidth={1.5}
+                                            className={star <= newRating ? "text-yellow-500" : "text-neutral-300"}
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-[10px] uppercase font-bold tracking-[0.2em] mb-3 text-neutral-400">
+                                Your Name
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="ENTER YOUR NAME..."
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                className="w-full px-4 py-3 border border-black/15 bg-white text-[11px] uppercase tracking-widest focus:outline-none focus:border-black transition-colors"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-[10px] uppercase font-bold tracking-[0.2em] mb-3 text-neutral-400">
+                                Comment
+                            </label>
+                            <textarea
+                                placeholder="SHARE YOUR EXPERIENCE..."
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                rows={5}
+                                className="w-full px-4 py-3 border border-black/15 bg-white text-[11px] focus:outline-none focus:border-black transition-colors resize-none"
+                            />
+                        </div>
+
+                        <Button
+                            type="submit"
+                            disabled={submittingReview}
+                            className="w-full bg-black text-white hover:bg-neutral-900 border border-black h-12 rounded-none uppercase text-[10px] tracking-[0.2em] font-medium transition-all"
+                        >
+                            {submittingReview ? 'Submitting...' : 'Submit Review'}
+                        </Button>
+                    </form>
+                </SideDrawer>
+
 
                 <SideDrawer
                     isOpen={!!activeDrawer}
@@ -693,7 +943,7 @@ export default function ProductDetail() {
                                         <motion.p layoutId="product-price" className="text-[15px] font-bold tracking-wide opacity-60 hover:opacity-100 mb-1">
                                             ₹ {product?.price.toLocaleString()}
                                         </motion.p>
-                                        {/* {averageRating && (
+                                        {averageRating && (
                                             <div
                                                 onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
                                                 className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-neutral-500 mb-2 cursor-pointer hover:text-black transition-colors"
@@ -712,7 +962,7 @@ export default function ProductDetail() {
                                                 <span className="font-bold text-black">{averageRating}</span>
                                                 <span className="opacity-60">({reviews.length})</span>
                                             </div>
-                                        )} */}
+                                        )}
                                         <p className="text-[10px] pt-1 font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-6">
                                             MRP incl. of all taxes
                                         </p>

@@ -29,6 +29,17 @@ const PORT = process.env.PORT || 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Canonical Redirect (www.qissey.com to qissey.com)
+app.use((req, res, next) => {
+    const host = req.headers.host;
+    if (host && host.startsWith('www.')) {
+        const newHost = host.slice(4);
+        const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+        return res.redirect(301, `${protocol}://${newHost}${req.originalUrl}`);
+    }
+    next();
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());

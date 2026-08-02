@@ -132,10 +132,17 @@ export default async function seoMiddleware(req, res, next) {
         `;
 
         if (isHomepage) {
+            // Fetch hero slides
+            const { data: heroSlides } = await supabaseAdmin
+                .from('hero_slides')
+                .select('*')
+                .eq('is_active', true)
+                .order('order_index', { ascending: true });
+
             // Fetch products (new arrivals)
             const { data: newArrivals } = await supabaseAdmin
                 .from('products')
-                .select(`id, name, slug, price, product_variants(id, image_urls, is_primary)`)
+                .select(`id, name, slug, price, description, product_variants(id, image_urls, is_primary)`)
                 .eq('product_variants.is_primary', true)
                 .eq('new_arrival', true)
                 .order('created_at', { ascending: false })
@@ -166,6 +173,25 @@ export default async function seoMiddleware(req, res, next) {
                     <main id="main-content">
                         <h1>Refined Minimalist Fashion for the Modern Woman — QISSEY</h1>
                         
+                        ${heroSlides && heroSlides.length > 0 ? `
+                        <section class="hero-section">
+                            <div class="hero-slider">
+                                ${heroSlides.map((slide, idx) => `
+                                    <div class="hero-slide ${idx === 0 ? 'active' : ''}">
+                                        <a href="${slide.link_url || '/shop'}">
+                                            <img src="${slide.desktop_image_url}" alt="QISSEY Creative Studio — ${slide.title || 'Sustainable minimalist luxury clothing'} — ${slide.subtitle || 'Shop the collection'}" loading="${idx === 0 ? 'eager' : 'lazy'}" />
+                                            ${(slide.title || slide.subtitle) ? `
+                                                <div class="slide-caption">
+                                                    <h2>${slide.title || ''}</h2>
+                                                    <p>${slide.subtitle || ''}</p>
+                                                </div>
+                                            ` : ''}
+                                        </a>
+                                    </div>
+                                `).join('\n')}
+                            </div>
+                        </section>
+                        ` : `
                         <section class="hero-section">
                             <div class="hero-content">
                                 <h2>QISSEY CREATIVE STUDIO</h2>
@@ -173,6 +199,7 @@ export default async function seoMiddleware(req, res, next) {
                                 <a href="/shop" class="cta-button">Shop the Collection</a>
                             </div>
                         </section>
+                        `}
 
                         ${newArrivals && newArrivals.length > 0 ? `
                         <section class="new-arrivals-section">
@@ -184,10 +211,11 @@ export default async function seoMiddleware(req, res, next) {
                             <div class="product-grid">
                                 ${newArrivals.map(prod => {
                                     const image = prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG';
+                                    const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
                                     return `
                                         <article class="product-card">
                                             <a href="/product/${prod.slug || prod.id}">
-                                                <img src="${image}" alt="QISSEY ${prod.name} — front view" loading="lazy" />
+                                                <img src="${image}" alt="${altText}" loading="lazy" />
                                                 <h3>${prod.name}</h3>
                                                 <p class="price">₹ ${prod.price ? prod.price.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</p>
                                             </a>
@@ -205,7 +233,7 @@ export default async function seoMiddleware(req, res, next) {
                                 ${filteredCollections.map(coll => `
                                     <div class="collection-tile">
                                         <a href="/collection/${coll.id}">
-                                            <img src="${coll.image_url || '/logo.PNG'}" alt="${coll.name} collection by QISSEY" loading="lazy" />
+                                            <img src="${coll.image_url || '/logo.PNG'}" alt="${coll.name} collection by QISSEY — ${coll.description ? coll.description.substring(0, 100).replace(/"/g, '&quot;') : 'sustainable designer clothing curation'}" loading="lazy" />
                                             <div class="tile-overlay">
                                                 <h3>${coll.name}</h3>
                                                 <span>View Collection</span>
@@ -303,9 +331,10 @@ export default async function seoMiddleware(req, res, next) {
                             
                             <article class="product-details-layout">
                                 <div class="product-gallery">
-                                    ${primaryVariant?.image_urls?.map((url, idx) => `
-                                        <img src="${url}" alt="QISSEY ${product.name} — view ${idx + 1}" ${idx > 0 ? 'loading="lazy"' : ''} />
-                                    `).join('\n') || `<img src="/logo.PNG" alt="${product.name}" />`}
+                                    ${primaryVariant?.image_urls?.map((url, idx) => {
+                                        const altText = `QISSEY ${product.name} — view ${idx + 1} — ${product.description ? product.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium sustainable minimalist luxury designer fashion clothing'}`;
+                                        return `<img src="${url}" alt="${altText}" ${idx > 0 ? 'loading="lazy"' : ''} />`;
+                                    }).join('\n') || `<img src="/logo.PNG" alt="${product.name} — sustainable minimalist luxury designer fashion clothing" />`}
                                 </div>
                                 
                                 <div class="product-meta-panel">
@@ -368,7 +397,7 @@ export default async function seoMiddleware(req, res, next) {
 
                 const { data: products } = await supabaseAdmin
                     .from('products')
-                    .select(`id, name, slug, price, product_variants(id, image_urls, is_primary), product_collections!inner(collection_id)`)
+                    .select(`id, name, slug, price, description, product_variants(id, image_urls, is_primary), product_collections!inner(collection_id)`)
                     .eq('product_collections.collection_id', id)
                     .eq('product_variants.is_primary', true)
                     .order('created_at', { ascending: false });
@@ -387,15 +416,18 @@ export default async function seoMiddleware(req, res, next) {
                             </div>
                             
                             <div class="products-grid">
-                                ${products && products.length > 0 ? products.map(prod => `
-                                    <article class="product-card">
-                                        <a href="/product/${prod.slug || prod.id}">
-                                            <img src="${prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG'}" alt="QISSEY ${prod.name}" loading="lazy" />
-                                            <h3>${prod.name}</h3>
-                                            <p class="price">₹ ${prod.price ? prod.price.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</p>
-                                        </a>
-                                    </article>
-                                `).join('\n') : '<p class="no-products">No products found in this collection.</p>'}
+                                ${products && products.length > 0 ? products.map(prod => {
+                                    const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
+                                    return `
+                                        <article class="product-card">
+                                            <a href="/product/${prod.slug || prod.id}">
+                                                <img src="${prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG'}" alt="${altText}" loading="lazy" />
+                                                <h3>${prod.name}</h3>
+                                                <p class="price">₹ ${prod.price ? prod.price.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</p>
+                                            </a>
+                                        </article>
+                                    `;
+                                }).join('\n') : '<p class="no-products">No products found in this collection.</p>'}
                             </div>
                         </main>
                         ${footerHtml}
@@ -413,7 +445,7 @@ export default async function seoMiddleware(req, res, next) {
 
             const { data: products } = await supabaseAdmin
                 .from('products')
-                .select(`id, name, slug, price, product_variants(id, image_urls, is_primary)`)
+                .select(`id, name, slug, price, description, product_variants(id, image_urls, is_primary)`)
                 .eq('product_variants.is_primary', true)
                 .eq('new_arrival', true)
                 .order('created_at', { ascending: false });
@@ -432,15 +464,18 @@ export default async function seoMiddleware(req, res, next) {
                         </div>
                         
                         <div class="products-grid">
-                            ${products && products.length > 0 ? products.map(prod => `
-                                <article class="product-card">
-                                    <a href="/product/${prod.slug || prod.id}">
-                                        <img src="${prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG'}" alt="QISSEY ${prod.name}" loading="lazy" />
-                                        <h3>${prod.name}</h3>
-                                        <p class="price">₹ ${prod.price ? prod.price.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</p>
-                                    </a>
-                                </article>
-                            `).join('\n') : '<p class="no-products">No new arrivals found.</p>'}
+                            ${products && products.length > 0 ? products.map(prod => {
+                                const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
+                                return `
+                                    <article class="product-card">
+                                        <a href="/product/${prod.slug || prod.id}">
+                                            <img src="${prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG'}" alt="${altText}" loading="lazy" />
+                                            <h3>${prod.name}</h3>
+                                            <p class="price">₹ ${prod.price ? prod.price.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</p>
+                                        </a>
+                                    </article>
+                                  `;
+                            }).join('\n') : '<p class="no-products">No new arrivals found.</p>'}
                         </div>
                     </main>
                     ${footerHtml}
@@ -457,7 +492,7 @@ export default async function seoMiddleware(req, res, next) {
 
             const { data: products } = await supabaseAdmin
                 .from('products')
-                .select(`id, name, slug, price, product_variants(id, image_urls, is_primary)`)
+                .select(`id, name, slug, price, description, product_variants(id, image_urls, is_primary)`)
                 .eq('product_variants.is_primary', true)
                 .order('created_at', { ascending: false });
 
@@ -475,15 +510,18 @@ export default async function seoMiddleware(req, res, next) {
                         </div>
                         
                         <div class="products-grid">
-                            ${products && products.length > 0 ? products.map(prod => `
-                                <article class="product-card">
-                                    <a href="/product/${prod.slug || prod.id}">
-                                        <img src="${prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG'}" alt="QISSEY ${prod.name}" loading="lazy" />
-                                        <h3>${prod.name}</h3>
-                                        <p class="price">₹ ${prod.price ? prod.price.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</p>
-                                    </a>
-                                </article>
-                            `).join('\n') : '<p class="no-products">No products found.</p>'}
+                            ${products && products.length > 0 ? products.map(prod => {
+                                const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
+                                return `
+                                    <article class="product-card">
+                                        <a href="/product/${prod.slug || prod.id}">
+                                            <img src="${prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG'}" alt="${altText}" loading="lazy" />
+                                            <h3>${prod.name}</h3>
+                                            <p class="price">₹ ${prod.price ? prod.price.toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</p>
+                                        </a>
+                                    </article>
+                                `;
+                            }).join('\n') : '<p class="no-products">No products found.</p>'}
                         </div>
                     </main>
                     ${footerHtml}

@@ -5,6 +5,7 @@ const CACHE_DURATION = 5 * 60 * 1000;
 export const productCache = {
     products: { data: null, timestamp: null, userId: null },
     newArrivals: { data: null, timestamp: null, userId: null },
+    homeProducts: { data: null, timestamp: null, userId: null },
     collections: { data: null, timestamp: null },
     collectionProducts: {}
 };
@@ -12,6 +13,7 @@ export const productCache = {
 export const clearProductCache = () => {
     productCache.products.data = null;
     productCache.newArrivals.data = null;
+    productCache.homeProducts.data = null;
     productCache.collectionProducts = {};
 };
 
@@ -127,6 +129,75 @@ export const getNewArrivals = async (req, res) => {
     } catch (error) {
         console.error('Error fetching new arrival products:', error);
         res.status(500).json({ error: 'Failed to fetch new arrival products' });
+    }
+};
+
+/**
+ * GET /api/products/home
+ * Returns products flagged with show_on_home = true.
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ */
+export const getHomeProducts = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const limit = req.query.limit ? parseInt(req.query.limit) : null;
+
+        if (
+            productCache.homeProducts.data &&
+            productCache.homeProducts.userId === userId &&
+            (Date.now() - productCache.homeProducts.timestamp < CACHE_DURATION)
+        ) {
+            return res.json(limit ? productCache.homeProducts.data.slice(0, limit) : productCache.homeProducts.data);
+        }
+
+        let query = supabaseAdmin
+            .from('products')
+            .select(`
+                id,
+                name,
+                slug,
+                price,
+                product_variants(
+                    *,
+                    id,
+                    image_urls,
+                    is_primary,
+                    size,
+                    color_id (
+                        id,
+                        name,
+                        hex
+                    )
+                )
+                ${userId ? ', saved_products:saved_products!left(id)' : ''}
+            `)
+            .eq('product_variants.is_primary', true)
+            .eq('show_on_home', true);
+
+        if (userId) {
+            query = query.eq('saved_products.user_id', userId);
+        }
+
+        const { data, error } = await query.order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const result = data?.map(product => ({
+            ...product,
+            is_saved: product.saved_products?.length > 0
+        })) || [];
+
+        productCache.homeProducts = {
+            data: result,
+            timestamp: Date.now(),
+            userId
+        };
+
+        res.json(limit ? result.slice(0, limit) : result);
+    } catch (error) {
+        console.error('Error fetching home products:', error);
+        res.status(500).json({ error: 'Failed to fetch home products' });
     }
 };
 

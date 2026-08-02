@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ProductCard } from '../features/products';
 import Hero from '../components/Hero';
-import { fetchNewArrivalProducts, fetchAllCollections, fetchRecentReviews, productCache, fetchProducts, submitProductReview } from '../features/products/services/productService';
+import { fetchHomeProducts, fetchAllCollections, fetchRecentReviews, productCache, fetchProducts, submitProductReview } from '../features/products/services/productService';
 import SEO from '../components/ui/SEO';
 import { useAuth } from '../features/auth';
 import SideDrawer from '../components/ui/SideDrawer';
@@ -162,8 +162,8 @@ export default function Home() {
     };
 
     const [productsS, setProducts] = useState(() => {
-        if (productCache.newArrivals.data) {
-            return productCache.newArrivals.data;
+        if (productCache.homeProducts.data) {
+            return productCache.homeProducts.data;
         }
         return [];
     });
@@ -179,7 +179,7 @@ export default function Home() {
         const loadData = async () => {
             try {
                 const [productsRes, collectionsRes] = await Promise.all([
-                    fetchNewArrivalProducts(6),
+                    fetchHomeProducts(6),
                     fetchAllCollections()
                 ]);
                 setProducts(productsRes);

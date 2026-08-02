@@ -24,6 +24,7 @@ const fetchDeduplicated = (url, options = {}) => {
 export const productCache = {
     products: { data: null, timestamp: null },
     newArrivals: { data: null, timestamp: null },
+    homeProducts: { data: null, timestamp: null },
     collections: { data: null, timestamp: null },
     collectionProducts: {}
 };
@@ -31,6 +32,7 @@ export const productCache = {
 export const clearProductCache = () => {
     productCache.products.data = null;
     productCache.newArrivals.data = null;
+    productCache.homeProducts.data = null;
     productCache.collectionProducts = {};
 };
 
@@ -80,6 +82,37 @@ export const fetchNewArrivalProducts = async (limit = null) => {
         return data;
     } catch (error) {
         console.error('Error fetching new arrival products:', error);
+        throw error;
+    }
+};
+
+/**
+ * Fetches products flagged as show_on_home = true from the backend.
+ * @param {number|null} limit
+ * @returns {Promise<Array>}
+ */
+export const fetchHomeProducts = async (limit = null) => {
+    if (
+        productCache.homeProducts.data &&
+        (Date.now() - productCache.homeProducts.timestamp < CACHE_DURATION)
+    ) {
+        return limit ? productCache.homeProducts.data.slice(0, limit) : productCache.homeProducts.data;
+    }
+
+    try {
+        const url = limit ? `/api/products/home?limit=${limit}` : '/api/products/home';
+        const data = await fetchDeduplicated(url);
+
+        if (!limit) {
+            productCache.homeProducts = {
+                data,
+                timestamp: Date.now(),
+            };
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error fetching home products:', error);
         throw error;
     }
 };

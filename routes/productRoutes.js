@@ -7,6 +7,7 @@ const router = express.Router();
 // Public routes (with optional auth for saved products check)
 router.get('/', optionalAuthMiddleware, productController.getProducts);
 router.get('/new-arrivals', optionalAuthMiddleware, productController.getNewArrivals);
+router.get('/home', optionalAuthMiddleware, productController.getHomeProducts);
 router.get('/collections', productController.getAllCollections);
 router.get('/collections/:id', productController.getCollectionById);
 router.get('/collections/:collectionId/products', optionalAuthMiddleware, productController.getProductsByCollection);

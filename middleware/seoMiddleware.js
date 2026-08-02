@@ -179,7 +179,7 @@ export default async function seoMiddleware(req, res, next) {
                                 ${heroSlides.map((slide, idx) => `
                                     <div class="hero-slide ${idx === 0 ? 'active' : ''}">
                                         <a href="${slide.link_url || '/shop'}">
-                                            <img src="${slide.desktop_image_url}" alt="QISSEY Creative Studio — ${slide.title || 'Sustainable minimalist luxury clothing'} — ${slide.subtitle || 'Shop the collection'}" loading="${idx === 0 ? 'eager' : 'lazy'}" />
+                                            <img src="${slide.desktop_image_url}" alt="QISSEY Creative Studio — ${slide.title || 'Sustainable minimalist luxury clothing'} — ${slide.subtitle || 'Shop the collection'}" loading="${idx === 0 ? 'eager' : 'lazy'}" ${idx === 0 ? 'fetchpriority="high"' : ''} />
                                             ${(slide.title || slide.subtitle) ? `
                                                 <div class="slide-caption">
                                                     <h2>${slide.title || ''}</h2>

@@ -722,12 +722,16 @@ export default async function seoMiddleware(req, res, next) {
         // Inject dynamic tags immediately after <head>
         html = html.replace('<head>', `<head>\n${headInjections}`);
 
-        // Inject pre-rendered body inside <div id="root"></div>
+        // Inject pre-rendered SEO content OUTSIDE the React root div.
+        // We keep #root empty so ReactDOM.createRoot() can mount cleanly without
+        // conflicting with pre-rendered DOM (which causes React warnings + visual flash on mobile).
+        // Search crawlers see the hidden div and index all the content.
+        const seoDiv = `<div id="seo-content" aria-hidden="true" style="display:none">${bodyHtml}</div>`;
         const rootDivRegex = /<div\s+id="root"\s*><\/div>/i;
         if (rootDivRegex.test(html)) {
-            html = html.replace(rootDivRegex, `<div id="root">${bodyHtml}</div>`);
+            html = html.replace(rootDivRegex, `<div id="root"></div>\n${seoDiv}`);
         } else {
-            html = html.replace('id="root"', `id="root">\n${bodyHtml}`);
+            html = html + `\n${seoDiv}`;
         }
 
         res.setHeader('Content-Type', 'text/html');

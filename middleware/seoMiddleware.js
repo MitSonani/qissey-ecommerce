@@ -8,6 +8,13 @@ const __dirname = path.dirname(__filename);
 const distPath = path.join(__dirname, '..', 'dist');
 
 export default async function seoMiddleware(req, res, next) {
+    // Canonical Redirect: www.qissey.com → qissey.com (always HTTPS)
+    const host = req.headers.host;
+    if (host && host.startsWith('www.')) {
+        const newHost = host.slice(4);
+        return res.redirect(301, `https://${newHost}${req.originalUrl}`);
+    }
+
     // Only intercept GET requests
     if (req.method !== 'GET') {
         return next();
@@ -723,10 +730,10 @@ export default async function seoMiddleware(req, res, next) {
         html = html.replace('<head>', `<head>\n${headInjections}`);
 
         // Inject pre-rendered SEO content OUTSIDE the React root div.
-        // We keep #root empty so ReactDOM.createRoot() can mount cleanly without
-        // conflicting with pre-rendered DOM (which causes React warnings + visual flash on mobile).
-        // Search crawlers see the hidden div and index all the content.
-        const seoDiv = `<div id="seo-content" aria-hidden="true" style="display:none">${bodyHtml}</div>`;
+        // Uses the sr-only clip technique (NOT display:none) so Google crawls
+        // and indexes the content, but it is not visible to sighted users.
+        // React mounts cleanly into #root without conflict.
+        const seoDiv = `<div id="seo-content" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">${bodyHtml}</div>`;
         const rootDivRegex = /<div\s+id="root"\s*><\/div>/i;
         if (rootDivRegex.test(html)) {
             html = html.replace(rootDivRegex, `<div id="root"></div>\n${seoDiv}`);

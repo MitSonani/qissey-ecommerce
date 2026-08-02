@@ -395,8 +395,20 @@ export default async function seoMiddleware(req, res, next) {
                 .single();
 
             if (collection) {
+                // Dynamic fallback descriptions for categories
+                let collDesc = collection.description;
+                if (!collDesc || collDesc.trim() === '') {
+                    const descMap = {
+                        'formals': 'A curation of architectural, tailored luxury formal wear designed for clean structure and elegant proportions.',
+                        'tops': 'Refined minimalist tops and shirts featuring sculptural silhouettes, delicate gathers, and premium natural materials.',
+                        'bottoms': 'Sleek tailored trousers, casual shorts, and flowing maxi skirts crafted for comfortable fit and architectural lines.',
+                        'dresses': 'Sculptural luxury midi and maxi dresses blending structural draping, delicate halter straps, and sustainable fabrics.'
+                    };
+                    collDesc = descMap[collection.name.toLowerCase()] || `Browse our exclusive collection of ${collection.name} at QISSEY. Premium minimalist fashion for women.`;
+                }
+
                 title = collection.name;
-                description = `Browse our exclusive collection of ${collection.name} at QISSEY. Premium minimalist fashion for women.`;
+                description = collDesc;
                 ogImage = collection.image_url || ogImage;
 
                 const collectionSchema = {
@@ -432,7 +444,9 @@ export default async function seoMiddleware(req, res, next) {
                             
                             <div class="collection-header-block">
                                 <h1>${collection.name}</h1>
-                                <p class="collection-description">${collection.description || ''}</p>
+                                <p class="collection-description" style="font-size: 11px; font-weight: 300; letter-spacing: 0.1em; color: #666; text-transform: uppercase; margin-bottom: 2rem; max-width: 600px; line-height: 1.6;">
+                                    ${collDesc}
+                                </p>
                             </div>
                             
                             <div class="products-grid">
@@ -480,7 +494,9 @@ export default async function seoMiddleware(req, res, next) {
                         
                         <div class="collection-header-block">
                             <h1>New Arrivals</h1>
-                            <p class="collection-description">The latest drops and design launches from QISSEY.</p>
+                            <p class="collection-description" style="font-size: 11px; font-weight: 300; letter-spacing: 0.1em; color: #666; text-transform: uppercase; margin-bottom: 2rem; max-width: 600px; line-height: 1.6;">
+                                Explore the newest design launches and limited-edition sustainable luxury arrivals from QISSEY Creative Studio.
+                            </p>
                         </div>
                         
                         <div class="products-grid">
@@ -526,7 +542,9 @@ export default async function seoMiddleware(req, res, next) {
                         
                         <div class="collection-header-block">
                             <h1>Shop All</h1>
-                            <p class="collection-description">Explore our full line of sustainably crafted clothing.</p>
+                            <p class="collection-description" style="font-size: 11px; font-weight: 300; letter-spacing: 0.1em; color: #666; text-transform: uppercase; margin-bottom: 2rem; max-width: 600px; line-height: 1.6;">
+                                Browse the complete collection of sustainably crafted minimalist luxury garments, structured tops, tailored trousers, and flowing dresses.
+                            </p>
                         </div>
                         
                         <div class="products-grid">

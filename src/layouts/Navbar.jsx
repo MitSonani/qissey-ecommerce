@@ -71,7 +71,7 @@ export default function Navbar() {
             {/* Mobile Search Overlay - Minimalist & Inline */}
             <div className={cn(
                 "fixed inset-x-0 top-[28px] h-16 bg-white z-[150] flex items-center px-6 md:hidden transition-all duration-300 ease-out",
-                isMobileSearchOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                isMobileSearchOpen ? "opacity-100 pointer-events-auto translate-y-0" : "opacity-0 pointer-events-none -translate-y-full"
             )}>
                 <form onSubmit={handleSearch} className="flex-grow w-full relative">
                     <input

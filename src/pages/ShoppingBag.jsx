@@ -179,6 +179,9 @@ export default function ShoppingBag() {
                                     Including GST <br className="hidden md:block" />
                                     * excl Shipping cost
                                 </p>
+                                <p className="text-[9px] uppercase tracking-widest text-neutral-500 mt-1">
+                                    Enjoy 5% off on prepaid orders
+                                </p>
                             </div>
 
                             <Button

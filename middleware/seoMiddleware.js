@@ -98,6 +98,9 @@ export default async function seoMiddleware(req, res, next) {
             .order('created_at', { ascending: false });
 
         const navbarHtml = `
+            <div class="announcement-bar" style="background-color: #0a0a0a; color: #fff; text-align: center; padding: 6px 0; font-size: 9px; text-transform: uppercase; letter-spacing: 0.25em; font-weight: 300;">
+                Enjoy 5% off on prepaid orders
+            </div>
             <header class="site-header">
                 <nav class="navigation-menu" aria-label="Main Navigation">
                     <a href="/" class="brand-logo">QISSEY</a>
@@ -210,9 +213,9 @@ export default async function seoMiddleware(req, res, next) {
                             </div>
                             <div class="product-grid">
                                 ${newArrivals.map(prod => {
-                                    const image = prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG';
-                                    const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
-                                    return `
+                const image = prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG';
+                const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
+                return `
                                         <article class="product-card">
                                             <a href="/product/${prod.slug || prod.id}">
                                                 <img src="${image}" alt="${altText}" loading="lazy" />
@@ -221,7 +224,7 @@ export default async function seoMiddleware(req, res, next) {
                                             </a>
                                         </article>
                                     `;
-                                }).join('')}
+            }).join('')}
                             </div>
                         </section>
                         ` : ''}
@@ -333,9 +336,9 @@ export default async function seoMiddleware(req, res, next) {
                             <article class="product-details-layout">
                                 <div class="product-gallery">
                                     ${primaryVariant?.image_urls?.map((url, idx) => {
-                                        const altText = `QISSEY ${product.name} — view ${idx + 1} — ${product.description ? product.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium sustainable minimalist luxury designer fashion clothing'}`;
-                                        return `<img src="${url}" alt="${altText}" ${idx > 0 ? 'loading="lazy"' : ''} />`;
-                                    }).join('\n') || `<img src="/logo.PNG" alt="${product.name} — sustainable minimalist luxury designer fashion clothing" />`}
+                    const altText = `QISSEY ${product.name} — view ${idx + 1} — ${product.description ? product.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium sustainable minimalist luxury designer fashion clothing'}`;
+                    return `<img src="${url}" alt="${altText}" ${idx > 0 ? 'loading="lazy"' : ''} />`;
+                }).join('\n') || `<img src="/logo.PNG" alt="${product.name} — sustainable minimalist luxury designer fashion clothing" />`}
                                 </div>
                                 
                                 <div class="product-meta-panel">
@@ -451,8 +454,8 @@ export default async function seoMiddleware(req, res, next) {
                             
                             <div class="products-grid">
                                 ${products && products.length > 0 ? products.map(prod => {
-                                    const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
-                                    return `
+                    const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
+                    return `
                                         <article class="product-card">
                                             <a href="/product/${prod.slug || prod.id}">
                                                 <img src="${prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG'}" alt="${altText}" loading="lazy" />
@@ -461,7 +464,7 @@ export default async function seoMiddleware(req, res, next) {
                                             </a>
                                         </article>
                                     `;
-                                }).join('\n') : '<p class="no-products">No products found in this collection.</p>'}
+                }).join('\n') : '<p class="no-products">No products found in this collection.</p>'}
                             </div>
                         </main>
                         ${footerHtml}
@@ -471,7 +474,7 @@ export default async function seoMiddleware(req, res, next) {
         } else if (isNewArrivals) {
             title = 'New Arrivals';
             description = 'Discover the newest additions to the QISSEY collection. Premium, sustainably made minimalist fashion for women.';
-            
+
             breadcrumbs = [
                 { name: 'Home', path: '/' },
                 { name: 'New Arrivals', path: '/new-arrivals' }
@@ -501,8 +504,8 @@ export default async function seoMiddleware(req, res, next) {
                         
                         <div class="products-grid">
                             ${products && products.length > 0 ? products.map(prod => {
-                                const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
-                                return `
+                const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
+                return `
                                     <article class="product-card">
                                         <a href="/product/${prod.slug || prod.id}">
                                             <img src="${prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG'}" alt="${altText}" loading="lazy" />
@@ -511,7 +514,7 @@ export default async function seoMiddleware(req, res, next) {
                                         </a>
                                     </article>
                                   `;
-                            }).join('\n') : '<p class="no-products">No new arrivals found.</p>'}
+            }).join('\n') : '<p class="no-products">No new arrivals found.</p>'}
                         </div>
                     </main>
                     ${footerHtml}
@@ -520,7 +523,7 @@ export default async function seoMiddleware(req, res, next) {
         } else if (isShop) {
             title = 'Shop All';
             description = 'Shop the entire collection of QISSEY. Refined minimalist luxury fashion for women.';
-            
+
             breadcrumbs = [
                 { name: 'Home', path: '/' },
                 { name: 'Shop', path: '/shop' }
@@ -549,8 +552,8 @@ export default async function seoMiddleware(req, res, next) {
                         
                         <div class="products-grid">
                             ${products && products.length > 0 ? products.map(prod => {
-                                const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
-                                return `
+                const altText = `QISSEY ${prod.name} — ${prod.description ? prod.description.substring(0, 100).replace(/"/g, '&quot;') : 'Premium minimalist designer clothing'}`;
+                return `
                                     <article class="product-card">
                                         <a href="/product/${prod.slug || prod.id}">
                                             <img src="${prod.product_variants?.[0]?.image_urls?.[0] || '/logo.PNG'}" alt="${altText}" loading="lazy" />
@@ -559,7 +562,7 @@ export default async function seoMiddleware(req, res, next) {
                                         </a>
                                     </article>
                                 `;
-                            }).join('\n') : '<p class="no-products">No products found.</p>'}
+            }).join('\n') : '<p class="no-products">No products found.</p>'}
                         </div>
                     </main>
                     ${footerHtml}

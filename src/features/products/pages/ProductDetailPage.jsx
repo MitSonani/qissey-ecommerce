@@ -469,7 +469,7 @@ export default function ProductDetail() {
                                         ₹ {product?.price.toLocaleString()}
                                     </p>
                                     {averageRating && (
-                                        <div 
+                                        <div
                                             onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
                                             className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-neutral-500 mb-2 cursor-pointer hover:text-black transition-colors"
                                         >
@@ -488,8 +488,11 @@ export default function ProductDetail() {
                                             <span className="opacity-60">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
                                         </div>
                                     )}
-                                    <p className="text-[10px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-6">
+                                    <p className="text-[10px] font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-1">
                                         MRP incl. of all taxes
+                                    </p>
+                                    <p className="text-[9px] uppercase tracking-[0.1em] text-neutral-500 pb-6">
+                                        Enjoy 5% off on prepaid orders
                                     </p>
                                 </div>
 
@@ -657,7 +660,7 @@ export default function ProductDetail() {
                                                 <ArrowRight size={14} />
                                             </button>
                                         </div>
-                                        
+
                                         {/* Quiet Trust Cues Section */}
                                         <div className="border-t border-neutral-100 mt-10 pt-8 grid grid-cols-2 gap-4 text-[9px] uppercase tracking-wider text-neutral-500 font-light">
                                             <div className="space-y-1">
@@ -963,8 +966,11 @@ export default function ProductDetail() {
                                                 <span className="opacity-60">({reviews.length})</span>
                                             </div>
                                         )}
-                                        <p className="text-[10px] pt-1 font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-6">
+                                        <p className="text-[10px] pt-1 font-medium uppercase tracking-[0.1em] opacity-60 hover:opacity-100 transition-opacity whitespace-nowrap text-black pb-1">
                                             MRP incl. of all taxes
+                                        </p>
+                                        <p className="text-[9px] uppercase tracking-[0.1em] text-neutral-500  pb-6">
+                                            Enjoy 5% off on prepaid orders
                                         </p>
                                     </div>
 

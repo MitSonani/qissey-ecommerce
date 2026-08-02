@@ -61,9 +61,16 @@ export default function Navbar() {
 
     return (
         <>
+            {/* Elegant Announcement Bar */}
+            <div className="fixed top-0 inset-x-0 h-[28px] bg-neutral-950 text-white flex items-center justify-center z-[200]">
+                <p className="text-[9px] uppercase tracking-[0.25em] text-neutral-200">
+                    Enjoy 5% off on prepaid orders
+                </p>
+            </div>
+
             {/* Mobile Search Overlay - Minimalist & Inline */}
             <div className={cn(
-                "fixed inset-x-0 top-0 h-16 bg-white z-[150] flex items-center px-6 md:hidden transition-all duration-300 ease-out",
+                "fixed inset-x-0 top-[28px] h-16 bg-white z-[150] flex items-center px-6 md:hidden transition-all duration-300 ease-out",
                 isMobileSearchOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             )}>
                 <form onSubmit={handleSearch} className="flex-grow w-full relative">
@@ -88,7 +95,7 @@ export default function Navbar() {
 
             <nav
                 className={cn(
-                    "fixed top-0 w-full z-[100] transition-all duration-500 px-6 md:px-12",
+                    "fixed top-[28px] w-full z-[100] transition-all duration-500 px-6 md:px-12",
                 )}
             >
                 <div className="flex items-center w-full h-16 md:h-32">
@@ -144,7 +151,7 @@ export default function Navbar() {
             </nav>
 
             {/* Top Layer: Logo, Menu Toggle and Mobile Utilities (Interactive on top of overlay) */}
-            <div className="fixed top-0 w-full z-[130] flex items-center px-6 md:px-12 h-16 md:h-32 pointer-events-none">
+            <div className="fixed top-[28px] w-full z-[130] flex items-center px-6 md:px-12 h-16 md:h-32 pointer-events-none">
                 <div className="flex items-center w-full h-full relative">
                     {/* Menu Toggle */}
                     <div className="flex-none pointer-events-auto">

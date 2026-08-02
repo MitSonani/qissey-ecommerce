@@ -15,6 +15,7 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import addressRoutes from './routes/addressRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import seoMiddleware from './middleware/seoMiddleware.js';
 
 const otpStore = new Map();
 
@@ -50,6 +51,7 @@ app.use((err, req, res, next) => {
 
 
 // Serve frontend static files
+app.use(seoMiddleware);
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Fallback to index.html for single-page app routing

@@ -237,12 +237,8 @@ export default function Navbar() {
                 "duration-700 md:duration-500 md:ease-in-out",
                 isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             )}>
-                {/* Mobile Menu Header (Cleaned up: only Close icon) */}
-                <div className="flex items-center h-16 px-6 shrink-0 md:hidden">
-                    <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 -ml-2">
-                        <X size={24} strokeWidth={1} className="text-black" />
-                    </button>
-                </div>
+                {/* Mobile Menu Header (Cleaned up: no duplicate close icon) */}
+                <div className="h-16 shrink-0 md:hidden" />
 
                 {/* Mobile Menu Content (Scrollable - zara style for mobile) */}
                 <div className="flex-grow overflow-y-auto no-scrollbar md:hidden">

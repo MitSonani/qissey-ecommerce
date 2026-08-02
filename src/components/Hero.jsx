@@ -33,7 +33,7 @@ export default function Hero() {
 
     useEffect(() => {
         if (!slides.length) return;
-        
+
         const timer = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % slides.length);
         }, 5000);
@@ -68,12 +68,12 @@ export default function Hero() {
                 />
             </AnimatePresence>
             <div className="absolute inset-0 bg-black/5" />
-            
+
             {/* Added overlay content support if needed in future */}
             {(currentSlide.title || currentSlide.subtitle) && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4">
                     {currentSlide.title && (
-                        <motion.h2 
+                        <motion.h2
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             key={`title-${currentIndex}`}
@@ -83,7 +83,7 @@ export default function Hero() {
                         </motion.h2>
                     )}
                     {currentSlide.subtitle && (
-                        <motion.p 
+                        <motion.p
                             initial={{ y: 20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             transition={{ delay: 0.2 }}
@@ -99,7 +99,7 @@ export default function Hero() {
     );
 
     return (
-        <section className="relative mx-auto max-w-[1080px] h-[79vh] md:h-[calc(100vh-8.6rem)] w-full flex flex-col items-center md:justify-center overflow-hidden bg-white">
+        <section className="relative mx-auto max-w-[1080px] h-[79vh] md:h-[calc(100vh-8.6rem)] w-full flex flex-col items-center md:justify-center overflow-hidden bg-white mt-5 md:mt-[20px]">
             {currentSlide.link_url ? (
                 <Link to={currentSlide.link_url} className="absolute inset-0 block">
                     {SlideContent}

@@ -15,8 +15,9 @@ export default async function seoMiddleware(req, res, next) {
         return res.redirect(301, `https://${newHost}${req.originalUrl}`);
     }
 
-    // Only intercept GET requests
-    if (req.method !== 'GET') {
+    // Intercept GET and HEAD requests — HEAD must go through the same
+    // rendering pipeline so it reports the same Content-Length as GET.
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
         return next();
     }
 
@@ -742,6 +743,11 @@ export default async function seoMiddleware(req, res, next) {
         }
 
         res.setHeader('Content-Type', 'text/html');
+
+        // Compute the exact byte length of the final HTML so Content-Length
+        // is accurate. Express strips the body automatically for HEAD requests
+        // but only sets Content-Length correctly when we call res.send() with
+        // the full string — so we pass the full html for both GET and HEAD.
         return res.send(html);
 
     } catch (err) {

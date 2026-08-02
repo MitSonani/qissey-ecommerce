@@ -110,7 +110,7 @@ export default function Hero() {
     );
 
     return (
-        <section className="relative mx-auto max-w-[1080px] h-[79vh] md:h-[calc(100vh-9.65rem)] w-full flex flex-col items-center md:justify-center overflow-hidden bg-white mt-5 md:mt-[20px]">
+        <section className="relative mx-auto max-w-[1080px] h-[calc(100vh-10.65rem)] md:h-[calc(100vh-9.65rem)] w-full flex flex-col items-center md:justify-center overflow-hidden bg-white mt-5 md:mt-[20px]">
             {currentSlide.link_url ? (
                 <Link to={currentSlide.link_url} className="absolute inset-0 block cursor-pointer">
                     {SlideContent}

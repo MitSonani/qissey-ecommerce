@@ -293,7 +293,8 @@ export default async function seoMiddleware(req, res, next) {
                         'url': `https://qissey.com/product/${product.slug}`,
                         'priceCurrency': 'INR',
                         'price': product.price,
-                        'availability': 'https://schema.org/InStock'
+                        'availability': 'https://schema.org/InStock',
+                        'itemCondition': 'https://schema.org/NewCondition'
                     }
                 };
                 schemas.push(productSchema);
@@ -358,6 +359,25 @@ export default async function seoMiddleware(req, res, next) {
                                                 <li>${s}</li>
                                             `).join('\n') || ''}
                                         </ul>
+                                    </div>
+
+                                    <div class="product-composition-care">
+                                        <h3>Composition & Care Guide</h3>
+                                        <p><strong>Composition:</strong> Premium fabric crafted for lasting comfort, durability, and everyday elegant wear.</p>
+                                        <p><strong>Care Instructions:</strong></p>
+                                        <ul>
+                                            <li>Machine wash at max. 30ºC/86ºF</li>
+                                            <li>Do not use bleach</li>
+                                            <li>Iron at a maximum of 110ºC/230ºF</li>
+                                            <li>Use mild detergent</li>
+                                            <li>Tumble dry low or hang to dry</li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="product-shipping-returns">
+                                        <h3>Shipping & Returns Policy</h3>
+                                        <p><strong>Shipping:</strong> Standard delivery within 7-10 business days. Free delivery at any location. Cash on delivery is available.</p>
+                                        <p><strong>Returns & Exchanges:</strong> You can request a return or exchange within 10 days of delivery, as long as the item is unused and in its original condition. Please note: Custom size products are not eligible for return or exchange.</p>
                                     </div>
                                 </div>
                             </article>

@@ -16,6 +16,7 @@ import addressRoutes from './routes/addressRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import seoMiddleware from './middleware/seoMiddleware.js';
+import { getSitemap } from './controllers/productController.js';
 
 const otpStore = new Map();
 
@@ -51,6 +52,7 @@ app.use((err, req, res, next) => {
 
 
 // Serve frontend static files
+app.get('/sitemap.xml', getSitemap);
 app.use(seoMiddleware);
 app.use(express.static(path.join(__dirname, 'dist')));
 

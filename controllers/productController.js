@@ -450,3 +450,83 @@ export const unsaveProduct = async (req, res) => {
         res.status(500).json({ error: 'Failed to unsave product' });
     }
 };
+
+export const getSitemap = async (req, res) => {
+    try {
+        const { data: collections, error: collError } = await supabaseAdmin
+            .from('collections')
+            .select('id, updated_at, created_at');
+        if (collError) throw collError;
+
+        const { data: products, error: prodError } = await supabaseAdmin
+            .from('products')
+            .select('slug, updated_at, created_at');
+        if (prodError) throw prodError;
+
+        const formatDate = (dateStr) => {
+            if (!dateStr) return new Date().toISOString().split('T')[0];
+            return new Date(dateStr).toISOString().split('T')[0];
+        };
+
+        const staticPages = [
+            { path: '', priority: '1.0', changefreq: 'daily' },
+            { path: 'shop', priority: '0.9', changefreq: 'daily' },
+            { path: 'new-arrivals', priority: '0.9', changefreq: 'daily' },
+            { path: 'about', priority: '0.7', changefreq: 'monthly' },
+            { path: 'contact', priority: '0.7', changefreq: 'monthly' },
+            { path: 'faq', priority: '0.8', changefreq: 'weekly' },
+            { path: 'shipping-policy', priority: '0.5', changefreq: 'monthly' },
+            { path: 'payment-policy', priority: '0.5', changefreq: 'monthly' },
+            { path: 'return-policy', priority: '0.5', changefreq: 'monthly' },
+            { path: 'privacy-policy', priority: '0.5', changefreq: 'monthly' },
+            { path: 'purchase-conditions', priority: '0.5', changefreq: 'monthly' },
+            { path: 'sitemap', priority: '0.5', changefreq: 'monthly' }
+        ];
+
+        let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+        xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+        const today = formatDate(new Date());
+        for (const page of staticPages) {
+            xml += `  <url>\n`;
+            xml += `    <loc>https://qissey.com/${page.path}</loc>\n`;
+            xml += `    <lastmod>${today}</lastmod>\n`;
+            xml += `    <changefreq>${page.changefreq}</changefreq>\n`;
+            xml += `    <priority>${page.priority}</priority>\n`;
+            xml += `  </url>\n`;
+        }
+
+        if (collections) {
+            for (const coll of collections) {
+                xml += `  <url>\n`;
+                xml += `    <loc>https://qissey.com/collection/${coll.id}</loc>\n`;
+                xml += `    <lastmod>${formatDate(coll.updated_at || coll.created_at)}</lastmod>\n`;
+                xml += `    <changefreq>weekly</changefreq>\n`;
+                xml += `    <priority>0.8</priority>\n`;
+                xml += `  </url>\n`;
+            }
+        }
+
+        if (products) {
+            for (const prod of products) {
+                if (prod.slug) {
+                    xml += `  <url>\n`;
+                    xml += `    <loc>https://qissey.com/product/${prod.slug}</loc>\n`;
+                    xml += `    <lastmod>${formatDate(prod.updated_at || prod.created_at)}</lastmod>\n`;
+                    xml += `    <changefreq>weekly</changefreq>\n`;
+                    xml += `    <priority>0.9</priority>\n`;
+                    xml += `  </url>\n`;
+                }
+            }
+        }
+
+        xml += '</urlset>\n';
+
+        res.setHeader('Content-Type', 'application/xml');
+        res.send(xml);
+    } catch (error) {
+        console.error('Error generating sitemap:', error);
+        res.status(500).send('Error generating sitemap');
+    }
+};
+
